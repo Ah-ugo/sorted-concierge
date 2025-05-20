@@ -12,22 +12,22 @@ export default function AboutPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [heroRef, heroInView] = useInView({
-    threshold: 0.3,
+    threshold: 0.03,
     triggerOnce: true,
   });
   const [storyRef, storyInView] = useInView({
-    threshold: 0.3,
+    threshold: 0.03,
     triggerOnce: true,
   });
   const [valuesRef, valuesInView] = useInView({
-    threshold: 0.3,
+    threshold: 0.03,
     triggerOnce: true,
   });
   const [teamRef, teamInView] = useInView({
-    threshold: 0.3,
+    threshold: 0.03,
     triggerOnce: true,
   });
-  const [ctaRef, ctaInView] = useInView({ threshold: 0.3, triggerOnce: true });
+  const [ctaRef, ctaInView] = useInView({ threshold: 0.03, triggerOnce: true });
 
   useEffect(() => {
     // Simulate loading

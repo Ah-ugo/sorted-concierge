@@ -22,9 +22,9 @@ export default function Home() {
   const heroScale = useTransform(scrollY, [0, 500], [1, 1.1]);
 
   const [heroRef, heroInView] = useInView({ threshold: 0.3 });
-  const [experienceRef, experienceInView] = useInView({ threshold: 0.3 });
-  const [servicesRef, servicesInView] = useInView({ threshold: 0.3 });
-  const [galleryRef, galleryInView] = useInView({ threshold: 0.3 });
+  const [experienceRef, experienceInView] = useInView({ threshold: 0.03 });
+  const [servicesRef, servicesInView] = useInView({ threshold: 0.03 });
+  const [galleryRef, galleryInView] = useInView({ threshold: 0.03 });
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -216,7 +216,7 @@ export default function Home() {
               animate={
                 experienceInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }
               }
-              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              transition={{ duration: 0.8, delay: 0.07, ease: "easeOut" }}
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
@@ -276,7 +276,7 @@ export default function Home() {
             animate={
               servicesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
             }
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.08, ease: "easeOut", delay: 0.07 }}
             className="mx-auto max-w-3xl text-center"
           >
             <h2 className="mb-16 text-3xl font-light uppercase tracking-widest text-neutral-800 md:text-4xl">
@@ -391,7 +391,7 @@ export default function Home() {
       </section>
 
       {/* Full-width CTA */}
-      <section className="relative aspect-[21/9] w-full">
+      <section className="relative aspect-[21/9] w-full sm:py-0 py-52">
         <Image
           src="/image4.png"
           alt="Book your experience"
@@ -405,7 +405,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center"
+            className="text-center mb"
           >
             <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-white md:text-4xl">
               Begin Your Journey
