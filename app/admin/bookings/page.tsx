@@ -1,8 +1,6 @@
 "use client";
 
-import React from "react";
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,97 +28,122 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Search, Filter, Download, Plus } from "lucide-react";
+import { apiClient, Booking, Service, User, BookingCreate } from "@/lib/api";
+import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
 
-interface Booking {
-  id: string;
-  customer: string;
-  email: string;
-  service: string;
-  date: string;
-  time: string;
-  status: "Pending" | "Confirmed" | "Completed" | "Cancelled";
-  amount: string;
+interface DisplayBooking extends Booking {
+  customer?: string;
+  email?: string;
+  serviceName?: string;
+  amount?: string;
 }
 
+// Predefined time slots (adjust as needed)
+const timeSlots = [
+  "09:00 AM",
+  "10:00 AM",
+  "11:00 AM",
+  "12:00 PM",
+  "01:00 PM",
+  "02:00 PM",
+  "03:00 PM",
+  "04:00 PM",
+  "05:00 PM",
+];
+
 export default function BookingsPage() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<DisplayBooking[]>([]);
+  const [filteredBookings, setFilteredBookings] = useState<DisplayBooking[]>(
+    []
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const itemsPerPage = 10;
 
+  // Form state for new booking
+  const [newBooking, setNewBooking] = useState<{
+    userId: string;
+    serviceId: string;
+    date: Date | undefined;
+    time: string;
+    status: string;
+    specialRequests: string;
+  }>({
+    userId: "",
+    serviceId: "",
+    date: new Date(),
+    time: timeSlots[0],
+    status: "Pending",
+    specialRequests: "",
+  });
+
   useEffect(() => {
-    // Simulate fetching bookings from API
-    const fetchBookings = async () => {
+    const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Mock data
-        const mockBookings: Booking[] = Array.from({ length: 50 }, (_, i) => ({
-          id: `B-${1000 + i}`,
-          customer: [
-            "John Doe",
-            "Jane Smith",
-            "Michael Johnson",
-            "Emily Davis",
-            "Robert Wilson",
-          ][Math.floor(Math.random() * 5)],
-          email: [
-            "john@example.com",
-            "jane@example.com",
-            "michael@example.com",
-            "emily@example.com",
-            "robert@example.com",
-          ][Math.floor(Math.random() * 5)],
-          service: [
-            "Airport Pickup",
-            "City Tour",
-            "Hotel Booking",
-            "Restaurant Reservation",
-            "Event Planning",
-          ][Math.floor(Math.random() * 5)],
-          date: new Date(
-            2023,
-            Math.floor(Math.random() * 12),
-            Math.floor(Math.random() * 28) + 1
-          )
-            .toISOString()
-            .split("T")[0],
-          time: ["09:00 AM", "10:30 AM", "12:00 PM", "02:30 PM", "05:00 PM"][
-            Math.floor(Math.random() * 5)
-          ],
-          status: ["Pending", "Confirmed", "Completed", "Cancelled"][
-            Math.floor(Math.random() * 4)
-          ] as any,
-          amount: `₦${(Math.floor(Math.random() * 50) + 10) * 1000}`,
-        }));
+        const bookingsData = await apiClient.getBookings();
+        const usersData = await apiClient.getUsers();
+        const servicesData = await apiClient.getServices();
+        setUsers(usersData);
+        setServices(servicesData);
 
-        setBookings(mockBookings);
-        setFilteredBookings(mockBookings);
-      } catch (error) {
-        console.error("Error fetching bookings:", error);
+        const enrichedBookings: DisplayBooking[] = bookingsData.map(
+          (booking) => {
+            const user = usersData.find((u) => u.id === booking.userId);
+            const service = servicesData.find(
+              (s) => s.id === booking.serviceId
+            );
+            return {
+              ...booking,
+              customer: user ? `${user.firstName} ${user.lastName}` : "Unknown",
+              email: user?.email || "N/A",
+              serviceName: service?.name || "Unknown",
+              amount: service ? `₦${service.price}` : "N/A",
+            };
+          }
+        );
+
+        setBookings(enrichedBookings);
+        setFilteredBookings(enrichedBookings);
+      } catch (error: any) {
+        console.error("Error fetching data:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.message || "Failed to fetch bookings",
+        });
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchBookings();
+    fetchData();
   }, []);
 
   useEffect(() => {
-    // Apply filters
     let result = bookings;
 
     if (searchTerm) {
       result = result.filter(
         (booking) =>
-          booking.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          booking.customer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           booking.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          booking.service.toLowerCase().includes(searchTerm.toLowerCase())
+          booking.serviceName?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -130,22 +153,21 @@ export default function BookingsPage() {
 
     if (dateFilter) {
       const filterDate = dateFilter.toISOString().split("T")[0];
-      result = result.filter((booking) => booking.date === filterDate);
+      result = result.filter((booking) =>
+        booking.bookingDate.startsWith(filterDate)
+      );
     }
 
     setFilteredBookings(result);
-    setCurrentPage(1); // Reset to first page when filters change
+    setCurrentPage(1);
   }, [searchTerm, statusFilter, dateFilter, bookings]);
 
-  // Get current page items
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredBookings.slice(
     indexOfFirstItem,
     indexOfLastItem
   );
-
-  // Calculate total pages
   const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
 
   const resetFilters = () => {
@@ -155,19 +177,89 @@ export default function BookingsPage() {
   };
 
   const exportToCSV = () => {
-    // Implementation for exporting to CSV
-    alert("Export to CSV functionality would go here");
+    toast({
+      title: "Export",
+      description: "Export to CSV functionality would go here",
+    });
+  };
+
+  const handleCreateBooking = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newBooking.date || !newBooking.userId || !newBooking.serviceId) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please fill all required fields",
+      });
+      return;
+    }
+
+    // Combine date and time into ISO string
+    const [hours, minutes, period] = newBooking.time
+      .match(/(\d+):(\d+)\s(\w+)/)!
+      .slice(1);
+    const hours24 =
+      period === "PM" && hours !== "12"
+        ? parseInt(hours) + 12
+        : parseInt(hours);
+    const bookingDate = new Date(newBooking.date);
+    bookingDate.setHours(hours24, parseInt(minutes));
+
+    const bookingData: BookingCreate = {
+      userId: newBooking.userId,
+      serviceId: newBooking.serviceId,
+      bookingDate: bookingDate.toISOString(),
+      status: newBooking.status,
+      specialRequests: newBooking.specialRequests,
+    };
+
+    try {
+      const createdBooking = await apiClient.createBooking(bookingData);
+      const user = users.find((u) => u.id === createdBooking.userId);
+      const service = services.find((s) => s.id === createdBooking.serviceId);
+      const enrichedBooking: DisplayBooking = {
+        ...createdBooking,
+        customer: user ? `${user.firstName} ${user.lastName}` : "Unknown",
+        email: user?.email || "N/A",
+        serviceName: service?.name || "Unknown",
+        amount: service ? `₦${service.price}` : "N/A",
+      };
+      setBookings((prev) => [enrichedBooking, ...prev]);
+      setFilteredBookings((prev) => [enrichedBooking, ...prev]);
+      setIsModalOpen(false);
+      setNewBooking({
+        userId: "",
+        serviceId: "",
+        date: new Date(),
+        time: timeSlots[0],
+        status: "Pending",
+        specialRequests: "",
+      });
+      toast({
+        title: "Success",
+        description: "Booking created successfully",
+      });
+    } catch (error: any) {
+      console.error("Error creating booking:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to create booking",
+      });
+    }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-bold tracking-tight">Bookings</h1>
-        <Button size="sm" className="flex items-center gap-1" asChild>
-          <Link href="/admin/bookings/new">
-            <Plus className="h-4 w-4" />
-            <span>New Booking</span>
-          </Link>
+        <Button
+          size="sm"
+          className="flex items-center gap-1"
+          onClick={() => setIsModalOpen(true)}
+        >
+          <Plus className="h-4 w-4" />
+          <span>New Booking</span>
         </Button>
       </div>
 
@@ -261,20 +353,36 @@ export default function BookingsPage() {
                           <TableCell>
                             <div>{booking.customer}</div>
                             <div className="text-xs text-gray-500 dark:text-gray-400 md:hidden">
-                              {booking.service}
+                              {booking.serviceName}
                             </div>
                             <div className="text-xs text-gray-500 dark:text-gray-400 md:hidden">
-                              {booking.date} • {booking.time}
+                              {new Date(
+                                booking.bookingDate
+                              ).toLocaleDateString()}{" "}
+                              •{" "}
+                              {new Date(booking.bookingDate).toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )}
                             </div>
                           </TableCell>
                           <TableCell className="hidden md:table-cell">
-                            {booking.service}
+                            {booking.serviceName}
                           </TableCell>
                           <TableCell className="hidden md:table-cell">
-                            {booking.date}
+                            {new Date(booking.bookingDate).toLocaleDateString()}
                             <br />
                             <span className="text-xs text-gray-500 dark:text-gray-400">
-                              {booking.time}
+                              {new Date(booking.bookingDate).toLocaleTimeString(
+                                [],
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )}
                             </span>
                           </TableCell>
                           <TableCell>
@@ -387,6 +495,147 @@ export default function BookingsPage() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Booking</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreateBooking} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Customer
+              </label>
+              <Select
+                value={newBooking.userId}
+                onValueChange={(value) =>
+                  setNewBooking((prev) => ({ ...prev, userId: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select customer" />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.firstName} {user.lastName} ({user.email})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Service
+              </label>
+              <Select
+                value={newBooking.serviceId}
+                onValueChange={(value) =>
+                  setNewBooking((prev) => ({ ...prev, serviceId: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select service" />
+                </SelectTrigger>
+                <SelectContent>
+                  {services.map((service) => (
+                    <SelectItem key={service.id} value={service.id}>
+                      {service.name} (₦{service.price})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Booking Date
+              </label>
+              <DatePicker
+                date={newBooking.date}
+                setDate={(date) => setNewBooking((prev) => ({ ...prev, date }))}
+                placeholder="Select date"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Booking Time
+              </label>
+              <Select
+                value={newBooking.time}
+                onValueChange={(value) =>
+                  setNewBooking((prev) => ({ ...prev, time: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select time" />
+                </SelectTrigger>
+                <SelectContent>
+                  {timeSlots.map((slot) => (
+                    <SelectItem key={slot} value={slot}>
+                      {slot}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Status
+              </label>
+              <Select
+                value={newBooking.status}
+                onValueChange={(value) =>
+                  setNewBooking((prev) => ({ ...prev, status: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Confirmed">Confirmed</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="Cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Special Requests
+              </label>
+              <Input
+                value={newBooking.specialRequests}
+                onChange={(e) =>
+                  setNewBooking((prev) => ({
+                    ...prev,
+                    specialRequests: e.target.value,
+                  }))
+                }
+                placeholder="Enter any special requests"
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={
+                  !newBooking.userId ||
+                  !newBooking.serviceId ||
+                  !newBooking.date
+                }
+              >
+                Create Booking
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

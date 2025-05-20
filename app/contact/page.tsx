@@ -5,23 +5,30 @@ import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { MapPin, Phone, Mail, Clock, CheckCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { contactAPI } from "@/lib/api";
-import { notificationService } from "@/lib/notification-service";
+import { apiClient } from "@/lib/api";
 
 export default function ContactPage() {
   const { toast } = useToast();
-  const [ref, inView] = useInView({
+  const [formRef, formInView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
+
+  const [infoRef, infoInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  const { scrollY } = useScroll();
+  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const heroScale = useTransform(scrollY, [0, 300], [1, 1.1]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -46,44 +53,33 @@ export default function ContactPage() {
 
     try {
       // Send contact message to API
-      const success = await contactAPI.sendContactMessage(formData);
+      await apiClient.sendContactMessage(formData);
 
-      // Send notification to admins
-      await notificationService.sendContactFormNotification(
-        formData.name,
-        formData.email,
-        formData.subject,
-        formData.message
-      );
+      toast({
+        title: "Message Sent!",
+        description:
+          "We've received your message and will get back to you shortly.",
+        action: (
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/20">
+            <CheckCircle className="h-5 w-5 text-green-500" />
+          </div>
+        ),
+      });
 
-      if (success) {
-        toast({
-          title: "Message Sent!",
-          description:
-            "We've received your message and will get back to you shortly.",
-          action: (
-            <div className="h-8 w-8 bg-green-500/20 rounded-full flex items-center justify-center">
-              <CheckCircle className="h-5 w-5 text-green-500" />
-            </div>
-          ),
-        });
-
-        // Reset form
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          subject: "",
-          message: "",
-        });
-      } else {
-        throw new Error("Failed to send message");
-      }
-    } catch (error) {
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error: any) {
       console.error("Error sending message:", error);
       toast({
         title: "Error",
         description:
+          error.message ||
           "There was a problem sending your message. Please try again.",
         variant: "destructive",
       });
@@ -95,83 +91,112 @@ export default function ContactPage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="py-20 bg-gray-50 pt-32">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <Badge className="mb-4 bg-primary/10 text-primary px-4 py-1">
-              Contact Us
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Get in Touch
+      <section className="relative flex min-h-[60vh] items-center justify-center">
+        <motion.div
+          style={{ opacity: heroOpacity, scale: heroScale }}
+          className="absolute inset-0"
+        >
+          <div className="absolute inset-0 bg-neutral-900">
+            <div className="h-full w-full bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center bg-no-repeat opacity-50" />
+          </div>
+        </motion.div>
+
+        <div className="container relative z-10 mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="mx-auto max-w-3xl"
+          >
+            <p className="mb-4 text-center font-medium uppercase tracking-wider text-white/90">
+              REACH OUT TO US
+            </p>
+            <h1 className="mb-6 text-center text-4xl font-bold uppercase tracking-widest text-white md:text-5xl">
+              GET IN TOUCH
             </h1>
-            <p className="text-gray-600 text-lg mb-8">
+            <p className="text-lg text-white/80">
               Have questions or need assistance? Our team is here to help you
               with any inquiries.
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Contact Form Section */}
-      <section className="py-20 bg-white" ref={ref}>
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <section className="bg-white py-32">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
             {/* Contact Information */}
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
-              transition={{ duration: 0.8 }}
+              ref={infoRef}
+              initial={{ opacity: 0, x: -40 }}
+              animate={
+                infoInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }
+              }
+              transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <h2 className="text-3xl font-bold mb-6">Contact Information</h2>
-              <p className="text-gray-600 mb-8">
+              <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-neutral-800">
+                Contact Information
+              </h2>
+              <p className="mb-12 text-lg text-neutral-700">
                 Feel free to reach out to us through any of the following
                 channels. We're available 24/7 to assist you with your concierge
                 needs.
               </p>
 
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="bg-primary/10 p-3 rounded-full">
-                    <MapPin className="h-6 w-6 text-primary" />
+              <div className="space-y-8">
+                <div className="flex items-start space-x-6">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-400/10">
+                    <MapPin className="h-6 w-6 text-teal-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Our Location</h3>
-                    <p className="text-gray-600">
+                    <h3 className="mb-2 text-xl font-light uppercase tracking-wider text-neutral-800">
+                      Our Location
+                    </h3>
+                    <p className="text-neutral-600">
                       123 Victoria Island, Lagos, Nigeria
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="bg-primary/10 p-3 rounded-full">
-                    <Phone className="h-6 w-6 text-primary" />
+                <div className="flex items-start space-x-6">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-400/10">
+                    <Phone className="h-6 w-6 text-teal-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Phone Number</h3>
-                    <p className="text-gray-600">+234 123 456 7890</p>
-                    <p className="text-gray-600">+234 987 654 3210</p>
+                    <h3 className="mb-2 text-xl font-light uppercase tracking-wider text-neutral-800">
+                      Phone Number
+                    </h3>
+                    <p className="text-neutral-600">+234 123 456 7890</p>
+                    <p className="text-neutral-600">+234 987 654 3210</p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="bg-primary/10 p-3 rounded-full">
-                    <Mail className="h-6 w-6 text-primary" />
+                <div className="flex items-start space-x-6">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-400/10">
+                    <Mail className="h-6 w-6 text-teal-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Email Address</h3>
-                    <p className="text-gray-600">info@sortedconcierge.com</p>
-                    <p className="text-gray-600">support@sortedconcierge.com</p>
+                    <h3 className="mb-2 text-xl font-light uppercase tracking-wider text-neutral-800">
+                      Email Address
+                    </h3>
+                    <p className="text-neutral-600">info@naijaconcierge.com</p>
+                    <p className="text-neutral-600">
+                      support@naijaconcierge.com
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="bg-primary/10 p-3 rounded-full">
-                    <Clock className="h-6 w-6 text-primary" />
+                <div className="flex items-start space-x-6">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-400/10">
+                    <Clock className="h-6 w-6 text-teal-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Working Hours</h3>
-                    <p className="text-gray-600">24/7 Concierge Service</p>
-                    <p className="text-gray-600">
+                    <h3 className="mb-2 text-xl font-light uppercase tracking-wider text-neutral-800">
+                      Working Hours
+                    </h3>
+                    <p className="text-neutral-600">24/7 Concierge Service</p>
+                    <p className="text-neutral-600">
                       Office Hours: 9 AM - 6 PM (Mon-Fri)
                     </p>
                   </div>
@@ -179,7 +204,7 @@ export default function ContactPage() {
               </div>
 
               {/* Google Map */}
-              <div className="mt-8 h-[300px] rounded-lg overflow-hidden bg-gray-200">
+              <div className="mt-12 h-[300px] overflow-hidden rounded-lg">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.7286885532443!2d3.4226242!3d6.4280555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103bf53280e7648d%3A0x4d01e5de6b847fe!2sVictoria%20Island%2C%20Lagos!5e0!3m2!1sen!2sng!4v1652345678901!5m2!1sen!2sng"
                   width="100%"
@@ -194,16 +219,26 @@ export default function ContactPage() {
 
             {/* Contact Form */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              ref={formRef}
+              initial={{ opacity: 0, x: 40 }}
+              animate={
+                formInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }
+              }
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
-              <Card>
-                <CardContent className="p-6 md:p-8">
-                  <h2 className="text-3xl font-bold mb-6">Send Us a Message</h2>
-                  <form onSubmit={handleSubmit} className="space-y-4">
+              <Card className="overflow-hidden border-none bg-neutral-50 shadow-lg">
+                <CardContent className="p-8">
+                  <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-neutral-800">
+                    Send Us a Message
+                  </h2>
+                  <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                      <Label htmlFor="name">Full Name *</Label>
+                      <Label
+                        htmlFor="name"
+                        className="mb-2 block text-sm font-medium uppercase tracking-wider"
+                      >
+                        Full Name *
+                      </Label>
                       <Input
                         id="name"
                         name="name"
@@ -212,11 +247,17 @@ export default function ContactPage() {
                         placeholder="Enter your full name"
                         required
                         disabled={isSubmitting}
+                        className="border-neutral-300 bg-white py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="email">Email Address *</Label>
+                      <Label
+                        htmlFor="email"
+                        className="mb-2 block text-sm font-medium uppercase tracking-wider"
+                      >
+                        Email Address *
+                      </Label>
                       <Input
                         id="email"
                         name="email"
@@ -226,11 +267,17 @@ export default function ContactPage() {
                         placeholder="Enter your email address"
                         required
                         disabled={isSubmitting}
+                        className="border-neutral-300 bg-white py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="phone">Phone Number</Label>
+                      <Label
+                        htmlFor="phone"
+                        className="mb-2 block text-sm font-medium uppercase tracking-wider"
+                      >
+                        Phone Number
+                      </Label>
                       <Input
                         id="phone"
                         name="phone"
@@ -238,11 +285,17 @@ export default function ContactPage() {
                         onChange={handleChange}
                         placeholder="Enter your phone number"
                         disabled={isSubmitting}
+                        className="border-neutral-300 bg-white py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="subject">Subject *</Label>
+                      <Label
+                        htmlFor="subject"
+                        className="mb-2 block text-sm font-medium uppercase tracking-wider"
+                      >
+                        Subject *
+                      </Label>
                       <Input
                         id="subject"
                         name="subject"
@@ -251,11 +304,17 @@ export default function ContactPage() {
                         placeholder="Enter the subject of your message"
                         required
                         disabled={isSubmitting}
+                        className="border-neutral-300 bg-white py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="message">Message *</Label>
+                      <Label
+                        htmlFor="message"
+                        className="mb-2 block text-sm font-medium uppercase tracking-wider"
+                      >
+                        Message *
+                      </Label>
                       <Textarea
                         id="message"
                         name="message"
@@ -265,12 +324,13 @@ export default function ContactPage() {
                         rows={6}
                         required
                         disabled={isSubmitting}
+                        className="border-neutral-300 bg-white text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
                       />
                     </div>
 
                     <Button
                       type="submit"
-                      className="w-full bg-primary hover:bg-primary/90 text-white"
+                      className="w-full bg-teal-400 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -291,24 +351,31 @@ export default function ContactPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Ready to Experience Our Service?
+      <section
+        className="relative aspect-[21/9] w-full"
+        style={{ minHeight: "300px" }}
+      >
+        <div className="absolute inset-0 bg-neutral-900">
+          <div className="h-full w-full bg-[url('/placeholder.svg?height=900&width=1920')] bg-cover bg-center bg-no-repeat opacity-30" />
+        </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-white md:text-4xl">
+              Begin Your Journey
             </h2>
-            <p className="text-white/90 mb-8 text-lg">
-              Book your first service today and discover the difference our
-              concierge can make.
-            </p>
             <Button
               asChild
-              size="lg"
-              className="bg-white text-primary hover:bg-white/90"
+              className="bg-teal-400 px-8 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
             >
               <a href="/booking">Book Now</a>
             </Button>
-          </div>
+          </motion.div>
         </div>
       </section>
     </>

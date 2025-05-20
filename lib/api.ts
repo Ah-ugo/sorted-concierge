@@ -1,1194 +1,1147 @@
-import { toast } from "@/components/ui/use-toast"
+// api.ts
+import axios, { AxiosResponse } from "axios";
+import { ObjectId } from "bson";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://naija-concierge-api.onrender.com"
+// Base URL for the API
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || "https://naija-concierge-api.onrender.com";
 
-// Helper function to handle API errors
-const handleApiError = (error: any) => {
-  console.error("API Error:", error)
-  const errorMessage = error.response?.data?.detail || error.message || "An error occurred"
-  toast({
-    title: "Error",
-    description: errorMessage,
-    variant: "destructive",
-  })
-  return null
+// Configure axios instance
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Interceptor to add auth token
+api.interceptors.request.use(
+  (config: any) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error: any) => Promise.reject(error)
+);
+
+// Type definitions matching Pydantic models
+export interface UserBase {
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  address?: string;
+  profileImage?: string;
 }
 
-// Types
-export interface User {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  phone?: string
-  address?: string
-  profileImage?: string
-  role: string
-  createdAt: string
-  updatedAt: string
+export interface UserCreate extends UserBase {
+  password: string;
 }
 
-export interface Service {
-  id: string
-  name: string
-  description: string
-  category: string
-  price: number
-  image?: string
-  duration: string
-  isAvailable: boolean
-  createdAt: string
-  updatedAt: string
+export interface UserUpdate {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  address?: string;
+  profileImage?: string;
 }
 
-export interface Package {
-  id: string
-  name: string
-  description: string
-  price: number
-  duration: string
-  features: string[]
-  image?: string
-  type: string
-  isPopular: boolean
-  createdAt: string
-  updatedAt: string
+export interface User extends UserBase {
+  id: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface Booking {
-  id: string
-  userId: string
-  serviceId: string
-  bookingDate: string
-  status: string
-  specialRequests?: string
-  createdAt: string
-  updatedAt: string
-  service?: Service
+export interface Token {
+  access_token: string;
+  token_type: string;
+  user: User;
 }
 
-export interface Subscription {
-  id: string
-  userId: string
-  packageId: string
-  startDate: string
-  endDate: string
-  status: string
-  createdAt: string
-  updatedAt: string
-  package?: Package
+export enum Timeframe {
+  weekly = "weekly",
+  monthly = "monthly",
 }
 
-export interface Blog {
-  id: string
-  title: string
-  slug: string
-  content: string
-  excerpt: string
-  coverImage?: string
-  author: {
-    name: string
-    avatar?: string
-  }
-  tags: string[]
-  createdAt: string
-  updatedAt: string
+export interface BookingDataPoint {
+  name: string;
+  bookings: number;
+  completed: number;
 }
 
-export interface EmergencyAlert {
-  id: string
-  userId: string
-  message: string
-  location?: string
-  status: string
-  createdAt: string
-  updatedAt: string
+export interface RevenueDataPoint {
+  name: string;
+  revenue: number;
+}
+
+export interface ChartDataResponse {
+  bookingData: BookingDataPoint[];
+  revenueData: RevenueDataPoint[];
+}
+
+export interface ServiceBase {
+  name: string;
+  description: string;
+  category: string;
+  price: number;
+  image?: string;
+  duration: string;
+  isAvailable: boolean;
+}
+
+export interface ServiceCreate extends ServiceBase {}
+
+export interface ServiceUpdate {
+  name?: string;
+  description?: string;
+  category?: string;
+  price?: number;
+  image?: string;
+  duration?: string;
+  isAvailable?: boolean;
+}
+
+export interface Service extends ServiceBase {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CRMClientBase {
+  clientName: string;
+  contactInfo: { [key: string]: string };
+  serviceBooked: string;
+  status: string;
+  assignedVendor?: string;
+  notes?: string;
+  dueDate?: string;
+}
+
+export interface CRMClientCreate extends CRMClientBase {}
+
+export interface CRMClientUpdate {
+  clientName?: string;
+  contactInfo?: { [key: string]: string };
+  serviceBooked?: string;
+  status?: string;
+  assignedVendor?: string;
+  notes?: string;
+  dueDate?: string;
+}
+
+export interface CRMClient extends CRMClientBase {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AirtableBookingForm {
+  clientName: string;
+  email: string;
+  phone?: string;
+  serviceId: string;
+  bookingDate: string;
+  specialRequests?: string;
+}
+
+export interface PackageBase {
+  name: string;
+  description: string;
+  price: number;
+  duration: string;
+  features: string[];
+  image?: string;
+  type: string;
+  isPopular: boolean;
+}
+
+export interface PackageCreate extends PackageBase {}
+
+export interface PackageUpdate {
+  name?: string;
+  description?: string;
+  price?: number;
+  duration?: string;
+  features?: string[];
+  image?: string;
+  type?: string;
+  isPopular?: boolean;
+}
+
+export interface Package extends PackageBase {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BookingBase {
+  userId: string;
+  serviceId: string;
+  bookingDate: string;
+  status: string;
+  specialRequests?: string;
+}
+
+export interface BookingCreate extends BookingBase {}
+
+export interface BookingUpdate {
+  bookingDate?: string;
+  status?: string;
+  specialRequests?: string;
+}
+
+export interface Booking extends BookingBase {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  service?: Service;
+}
+
+export enum SubscriptionStatus {
+  active = "active",
+  inactive = "inactive",
+  cancelled = "cancelled",
+}
+
+export interface SubscriptionInitiate {
+  userId: string;
+  packageId: string;
+  preferredCurrency?: string;
+}
+
+export interface SubscriptionBase {
+  userId: string;
+  packageId: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+}
+
+export interface SubscriptionCreate extends SubscriptionBase {}
+
+export interface SubscriptionUpdate {
+  startDate?: string;
+  endDate?: string;
+  status?: SubscriptionStatus;
+}
+
+export interface Subscription extends SubscriptionBase {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  package?: Package;
+}
+
+export interface BlogBase {
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  coverImage?: string;
+  author: { [key: string]: string };
+  tags: string[];
+}
+
+export interface BlogCreate extends BlogBase {}
+
+export interface BlogUpdate {
+  title?: string;
+  slug?: string;
+  content?: string;
+  excerpt?: string;
+  coverImage?: string;
+  author?: { [key: string]: string };
+  tags?: string[];
+}
+
+export interface Blog extends BlogBase {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EmergencyAlertBase {
+  userId: string;
+  message: string;
+  location?: string;
+  status: string;
+}
+
+export interface EmergencyAlertCreate extends EmergencyAlertBase {}
+
+export interface EmergencyAlertUpdate {
+  message?: string;
+  location?: string;
+  status?: string;
+}
+
+export interface EmergencyAlert extends EmergencyAlertBase {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ContactMessage {
-  name: string
-  email: string
-  phone?: string
-  subject: string
-  message: string
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
 }
 
-export interface Document {
-  id: string
-  userId: string
-  name: string
-  type: string
-  url: string
-  uploadDate: string
+export interface DocumentBase {
+  userId: string;
+  name: string;
+  type: string;
+  url: string;
+}
+
+export interface DocumentCreate extends DocumentBase {}
+
+export interface Document extends DocumentBase {
+  id: string;
+  uploadDate: string;
+}
+
+export interface TransactionCreate {
+  tx_ref: string;
+  transactionId: string;
+  userId: string;
+  packageId: string;
+  amount: number;
+  currency: string;
+  preferredCurrency: string;
+  status: string;
+}
+
+export interface Transaction extends TransactionCreate {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AdminStats {
-  totalUsers: number
-  totalBookings: number
-  totalRevenue: number
-  activePackages: number
-  userGrowth: number
-  bookingGrowth: number
-  revenueGrowth: number
-  packageGrowth: number
+  totalUsers: number;
+  totalBookings: number;
+  totalRevenue: number;
+  activePackages: number;
+  userGrowth: number;
+  bookingGrowth: number;
+  revenueGrowth: number;
+  packageGrowth: number;
 }
 
-// Auth API
-export const authAPI = {
-  register: async (userData: any) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Registration failed")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  login: async (email: string, password: string) => {
-    try {
-      const formData = new URLSearchParams()
-      formData.append("username", email)
-      formData.append("password", password)
-
-      const response = await fetch(`${API_BASE_URL}/auth/token`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData.toString(),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Login failed")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  getMe: async (token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get user data")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-}
-
-// Users API
-export const usersAPI = {
-  getUsers: async (token: string, skip = 0, limit = 100) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users?skip=${skip}&limit=${limit}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get users")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return []
-    }
-  },
-
-  getUserById: async (userId: string, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get user")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  updateUser: async (userId: string, userData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(userData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to update user")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  uploadProfileImage: async (file: File, token: string) => {
-    try {
-      const formData = new FormData()
-      formData.append("file", file)
-
-      const response = await fetch(`${API_BASE_URL}/users/profile-image`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to upload profile image")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-}
-
-// Services API
-export const servicesAPI = {
-  getServices: async (category?: string, skip = 0, limit = 100) => {
-    try {
-      let url = `${API_BASE_URL}/services?skip=${skip}&limit=${limit}`
-      if (category) {
-        url += `&category=${category}`
-      }
-
-      const response = await fetch(url)
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get services")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return []
-    }
-  },
-
-  getServiceById: async (serviceId: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/services/${serviceId}`)
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get service")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  createService: async (serviceData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/services`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(serviceData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to create service")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  updateService: async (serviceId: string, serviceData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/services/${serviceId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(serviceData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to update service")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  deleteService: async (serviceId: string, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/services/${serviceId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to delete service")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  uploadServiceImage: async (file: File, token: string) => {
-    try {
-      const formData = new FormData()
-      formData.append("file", file)
-
-      const response = await fetch(`${API_BASE_URL}/services/image`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to upload service image")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-}
-
-// Packages API
-export const packagesAPI = {
-  getPackages: async (type?: string, skip = 0, limit = 100) => {
-    try {
-      let url = `${API_BASE_URL}/packages?skip=${skip}&limit=${limit}`
-      if (type) {
-        url += `&type=${type}`
-      }
-
-      const response = await fetch(url)
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get packages")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return []
-    }
-  },
-
-  getPackageById: async (packageId: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/packages/${packageId}`)
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get package")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  createPackage: async (packageData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/packages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(packageData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to create package")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  updatePackage: async (packageId: string, packageData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/packages/${packageId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(packageData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to update package")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  deletePackage: async (packageId: string, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/packages/${packageId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to delete package")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  uploadPackageImage: async (file: File, token: string) => {
-    try {
-      const formData = new FormData()
-      formData.append("file", file)
-
-      const response = await fetch(`${API_BASE_URL}/packages/image`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to upload package image")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-}
-
-// Bookings API
-export const bookingsAPI = {
-  getBookings: async (token: string, status?: string, skip = 0, limit = 100) => {
-    try {
-      let url = `${API_BASE_URL}/bookings?skip=${skip}&limit=${limit}`
-      if (status) {
-        url += `&status=${status}`
-      }
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get bookings")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return []
-    }
-  },
-
-  getBookingById: async (bookingId: string, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get booking")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  createBooking: async (bookingData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/bookings`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(bookingData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to create booking")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  updateBooking: async (bookingId: string, bookingData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(bookingData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to update booking")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  deleteBooking: async (bookingId: string, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to delete booking")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  getUserBookings: async (token: string, status?: string) => {
-    try {
-      let url = `${API_BASE_URL}/bookings`
-      if (status) {
-        url += `?status=${status}`
-      }
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get user bookings")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return []
-    }
-  },
-}
-
-// Subscriptions API
-export const subscriptionsAPI = {
-  getSubscriptions: async (token: string, status?: string, skip = 0, limit = 100) => {
-    try {
-      let url = `${API_BASE_URL}/subscriptions?skip=${skip}&limit=${limit}`
-      if (status) {
-        url += `&status=${status}`
-      }
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get subscriptions")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return []
-    }
-  },
-
-  getSubscriptionById: async (subscriptionId: string, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/subscriptions/${subscriptionId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get subscription")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  createSubscription: async (subscriptionData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/subscriptions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(subscriptionData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to create subscription")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  updateSubscription: async (subscriptionId: string, subscriptionData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/subscriptions/${subscriptionId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(subscriptionData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to update subscription")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  deleteSubscription: async (subscriptionId: string, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/subscriptions/${subscriptionId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to delete subscription")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  getUserSubscriptions: async (token: string, status?: string) => {
-    try {
-      let url = `${API_BASE_URL}/subscriptions`
-      if (status) {
-        url += `?status=${status}`
-      }
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get user subscriptions")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return []
-    }
-  },
-}
-
-// Blogs API
-export const blogsAPI = {
-  getBlogs: async (tag?: string, skip = 0, limit = 100) => {
-    try {
-      let url = `${API_BASE_URL}/blogs?skip=${skip}&limit=${limit}`
-      if (tag) {
-        url += `&tag=${tag}`
-      }
-
-      const response = await fetch(url)
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get blogs")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return []
-    }
-  },
-
-  getBlogBySlug: async (slug: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/blogs/${slug}`)
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get blog")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  createBlog: async (blogData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/blogs`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(blogData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to create blog")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  updateBlog: async (blogId: string, blogData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/blogs/${blogId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(blogData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to update blog")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  deleteBlog: async (blogId: string, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/blogs/${blogId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to delete blog")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  uploadBlogImage: async (file: File, token: string) => {
-    try {
-      const formData = new FormData()
-      formData.append("file", file)
-
-      const response = await fetch(`${API_BASE_URL}/blogs/image`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to upload blog image")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-}
-
-// Emergency Alerts API
-export const emergencyAlertsAPI = {
-  getEmergencyAlerts: async (token: string, status?: string, skip = 0, limit = 100) => {
-    try {
-      let url = `${API_BASE_URL}/emergency-alerts?skip=${skip}&limit=${limit}`
-      if (status) {
-        url += `&status=${status}`
-      }
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get emergency alerts")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return []
-    }
-  },
-
-  createEmergencyAlert: async (alertData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/emergency-alerts`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(alertData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to create emergency alert")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  updateEmergencyAlert: async (alertId: string, alertData: any, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/emergency-alerts/${alertId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(alertData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to update emergency alert")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-}
-
-// Contact API
-export const contactAPI = {
-  sendContactMessage: async (messageData: ContactMessage) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/contact`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(messageData),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to send contact message")
-      }
-
-      return true
-    } catch (error) {
-      handleApiError(error)
-      return false
-    }
-  },
-}
-
-// Documents API
-export const documentsAPI = {
-  getDocuments: async (token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/documents`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get documents")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return []
-    }
-  },
-
-  uploadDocument: async (file: File, userId: string, documentType: string, token: string) => {
-    try {
-      const formData = new FormData()
-      formData.append("file", file)
-      formData.append("userId", userId)
-      formData.append("documentType", documentType)
-
-      const response = await fetch(`${API_BASE_URL}/documents`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to upload document")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-
-  deleteDocument: async (documentId: string, token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/documents/${documentId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to delete document")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-}
-
-// Admin API
-export const adminAPI = {
-  getStats: async (token: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/admin/stats`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.detail || "Failed to get admin stats")
-      }
-
-      return await response.json()
-    } catch (error) {
-      handleApiError(error)
-      return null
-    }
-  },
-}
-
-export const createBooking = async (bookingData: any) => {
-  try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    const response = {
-      id: "BK-SIMULATED",
-      ...bookingData,
-    }
-
-    return response
-  } catch (error) {
-    handleApiError(error)
-    return null
+// Error handling
+// export class APIError extends Error {
+//   constructor(
+//     public status: number,
+//     public message: string,
+//     public details?: any
+//   ) {
+//     super(message);
+//     this.name = "APIError";
+//   }
+// }
+
+export class APIError extends Error {
+  constructor(
+    public status: number,
+    public message: string,
+    public details?: any
+  ) {
+    super(message);
+    this.name = "APIError";
+    Object.setPrototypeOf(this, APIError.prototype);
+  }
+
+  toString() {
+    return `APIError: ${this.status} - ${this.message}`;
   }
 }
+
+// API Client Functions
+export const apiClient = {
+  // Auth
+  async register(user: UserCreate): Promise<Token> {
+    try {
+      const response = await api.post("/auth/register", user);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Registration failed"
+      );
+    }
+  },
+
+  // async login(credentials: {
+  //   username: string;
+  //   password: string;
+  // }): Promise<Token> {
+  //   try {
+  //     const response = await api.post(
+  //       "/auth/token",
+  //       new URLSearchParams(credentials)
+  //     );
+  //     return response.data;
+  //   } catch (error: any) {
+  //     throw new APIError(
+  //       error.response?.status || 500,
+  //       error.response?.data?.detail || "Login failed"
+  //     );
+  //   }
+  // },
+
+  async login(credentials: { username: string; password: string }): Promise<{
+    access_token: string;
+    token_type: string;
+    user: User;
+  }> {
+    try {
+      const formData = new URLSearchParams();
+      formData.append("grant_type", "password");
+      formData.append("username", credentials.username);
+      formData.append("password", credentials.password);
+      formData.append("scope", "");
+      formData.append("client_id", "");
+      formData.append("client_secret", "");
+
+      const response = await api.post("/auth/token", formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
+        },
+      });
+
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        // Handle 422 validation errors specifically
+        if (error.response.status === 422) {
+          const details = error.response.data?.detail || "Invalid credentials";
+          throw new APIError(
+            422,
+            typeof details === "string" ? details : "Validation failed",
+            error.response.data
+          );
+        }
+
+        throw new APIError(
+          error.response.status,
+          error.response.data?.detail || error.message || "Login failed",
+          error.response.data
+        );
+      } else {
+        throw new APIError(0, error.message || "Network error");
+      }
+    }
+  },
+
+  async getCurrentUser(): Promise<User> {
+    try {
+      const response = await api.get("/auth/me");
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch current user"
+      );
+    }
+  },
+
+  // Users
+  async getUsers(
+    params: { skip?: number; limit?: number } = {}
+  ): Promise<User[]> {
+    try {
+      const response = await api.get("/users", { params });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch users"
+      );
+    }
+  },
+
+  async getUser(userId: string): Promise<User> {
+    try {
+      const response = await api.get(`/users/${userId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch user"
+      );
+    }
+  },
+
+  async updateUser(userId: string, update: UserUpdate): Promise<User> {
+    try {
+      const response = await api.put(`/users/${userId}`, update);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to update user"
+      );
+    }
+  },
+
+  async deleteUser(userId: string): Promise<{ message: string }> {
+    try {
+      const response = await api.delete(`/users/${userId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to delete user"
+      );
+    }
+  },
+
+  async uploadProfileImage(file: File): Promise<{ profileImage: string }> {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const response = await api.post("/users/profile-image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to upload profile image"
+      );
+    }
+  },
+
+  // CRM Clients
+  async getCRMClients(
+    params: { skip?: number; limit?: number; status?: string } = {}
+  ): Promise<CRMClient[]> {
+    try {
+      const response = await api.get("/crm/clients", { params });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch CRM clients"
+      );
+    }
+  },
+
+  async createCRMClient(client: CRMClientCreate): Promise<CRMClient> {
+    try {
+      const response = await api.post("/crm/clients", client);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to create CRM client"
+      );
+    }
+  },
+
+  async getCRMClient(clientId: string): Promise<CRMClient> {
+    try {
+      const response = await api.get(`/crm/clients/${clientId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch CRM client"
+      );
+    }
+  },
+
+  async updateCRMClient(
+    clientId: string,
+    update: CRMClientUpdate
+  ): Promise<CRMClient> {
+    try {
+      const response = await api.put(`/crm/clients/${clientId}`, update);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to update CRM client"
+      );
+    }
+  },
+
+  async deleteCRMClient(clientId: string): Promise<{ message: string }> {
+    try {
+      const response = await api.delete(`/crm/clients/${clientId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to delete CRM client"
+      );
+    }
+  },
+
+  // Airtable Bookings
+  async createAirtableBooking(booking: AirtableBookingForm): Promise<Booking> {
+    try {
+      const response = await api.post("/bookings/airtable", booking);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to create Airtable booking"
+      );
+    }
+  },
+
+  // Services
+  async getServices(
+    params: { skip?: number; limit?: number; category?: string } = {}
+  ): Promise<Service[]> {
+    try {
+      const response = await api.get("/services", { params });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch services"
+      );
+    }
+  },
+
+  async getService(serviceId: string): Promise<Service> {
+    try {
+      const response = await api.get(`/services/${serviceId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch service"
+      );
+    }
+  },
+
+  async createService(service: ServiceCreate): Promise<Service> {
+    try {
+      const response = await api.post("/services", service);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to create service"
+      );
+    }
+  },
+
+  async updateService(
+    serviceId: string,
+    update: ServiceUpdate
+  ): Promise<Service> {
+    try {
+      const response = await api.put(`/services/${serviceId}`, update);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to update service"
+      );
+    }
+  },
+
+  async deleteService(serviceId: string): Promise<{ message: string }> {
+    try {
+      const response = await api.delete(`/services/${serviceId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to delete service"
+      );
+    }
+  },
+
+  async uploadServiceImage(file: File): Promise<{ imageUrl: string }> {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const response = await api.post("/services/image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to upload service image"
+      );
+    }
+  },
+
+  // Packages
+  async getPackages(
+    params: { skip?: number; limit?: number; type?: string } = {}
+  ): Promise<Package[]> {
+    try {
+      const response = await api.get("/packages", { params });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch packages"
+      );
+    }
+  },
+
+  async getPackage(packageId: string): Promise<Package> {
+    try {
+      const response = await api.get(`/packages/${packageId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch package"
+      );
+    }
+  },
+
+  async createPackage(packageData: PackageCreate): Promise<Package> {
+    try {
+      const response = await api.post("/packages", packageData);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to create package"
+      );
+    }
+  },
+
+  async updatePackage(
+    packageId: string,
+    update: PackageUpdate
+  ): Promise<Package> {
+    try {
+      const response = await api.put(`/packages/${packageId}`, update);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to update package"
+      );
+    }
+  },
+
+  async deletePackage(packageId: string): Promise<{ message: string }> {
+    try {
+      const response = await api.delete(`/packages/${packageId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to delete package"
+      );
+    }
+  },
+
+  async uploadPackageImage(file: File): Promise<{ imageUrl: string }> {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const response = await api.post("/packages/image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to upload package image"
+      );
+    }
+  },
+
+  // Bookings
+  async getBookings(
+    params: { skip?: number; limit?: number; status?: string } = {}
+  ): Promise<Booking[]> {
+    try {
+      const response = await api.get("/bookings", { params });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch bookings"
+      );
+    }
+  },
+
+  async getBooking(bookingId: string): Promise<Booking> {
+    try {
+      const response = await api.get(`/bookings/${bookingId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch booking"
+      );
+    }
+  },
+
+  async createBooking(booking: BookingCreate): Promise<Booking> {
+    try {
+      const response = await api.post("/bookings", booking);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to create booking"
+      );
+    }
+  },
+
+  async updateBooking(
+    bookingId: string,
+    update: BookingUpdate
+  ): Promise<Booking> {
+    try {
+      const response = await api.put(`/bookings/${bookingId}`, update);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to update booking"
+      );
+    }
+  },
+
+  async deleteBooking(bookingId: string): Promise<{ message: string }> {
+    try {
+      const response = await api.delete(`/bookings/${bookingId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to delete booking"
+      );
+    }
+  },
+
+  // Subscriptions
+  async getSubscriptions(
+    params: { skip?: number; limit?: number; status?: string } = {}
+  ): Promise<Subscription[]> {
+    try {
+      const response = await api.get("/subscriptions", { params });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch subscriptions"
+      );
+    }
+  },
+
+  async getSubscription(subscriptionId: string): Promise<Subscription> {
+    try {
+      const response = await api.get(`/subscriptions/${subscriptionId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch subscription"
+      );
+    }
+  },
+
+  async createSubscription(
+    subscription: SubscriptionCreate
+  ): Promise<Subscription> {
+    try {
+      const response = await api.post("/subscriptions", subscription);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to create subscription"
+      );
+    }
+  },
+
+  async initiateSubscriptionPayment(
+    subscription: SubscriptionInitiate
+  ): Promise<{ payment_url: string }> {
+    try {
+      const response = await api.post(
+        "/subscriptions/initiate_payment",
+        subscription
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail ||
+          "Failed to initiate subscription payment"
+      );
+    }
+  },
+
+  async updateSubscription(
+    subscriptionId: string,
+    update: SubscriptionUpdate
+  ): Promise<Subscription> {
+    try {
+      const response = await api.put(
+        `/subscriptions/${subscriptionId}`,
+        update
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to update subscription"
+      );
+    }
+  },
+
+  async deleteSubscription(
+    subscriptionId: string
+  ): Promise<{ message: string }> {
+    try {
+      const response = await api.delete(`/subscriptions/${subscriptionId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to delete subscription"
+      );
+    }
+  },
+
+  // Blogs
+  async getBlogs(
+    params: { skip?: number; limit?: number; tag?: string } = {}
+  ): Promise<Blog[]> {
+    try {
+      const response = await api.get("/blogs", { params });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch blogs"
+      );
+    }
+  },
+
+  async getBlog(blogId: string): Promise<Blog> {
+    try {
+      const response = await api.get(`/blogs/${blogId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch blog"
+      );
+    }
+  },
+
+  async getBlogBySlug(slug: string): Promise<Blog> {
+    try {
+      const response = await api.get(`/blogs/blog/${slug}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch blog by slug"
+      );
+    }
+  },
+
+  async createBlog(blog: BlogCreate): Promise<Blog> {
+    try {
+      const response = await api.post("/blogs", blog);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to create blog"
+      );
+    }
+  },
+
+  async updateBlog(blogId: string, update: BlogUpdate): Promise<Blog> {
+    try {
+      const response = await api.put(`/blogs/${blogId}`, update);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to update blog"
+      );
+    }
+  },
+
+  async deleteBlog(blogId: string): Promise<{ message: string }> {
+    try {
+      const response = await api.delete(`/blogs/${blogId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to delete blog"
+      );
+    }
+  },
+
+  async uploadBlogImage(file: File): Promise<{ imageUrl: string }> {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const response = await api.post("/blogs/image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to upload blog image"
+      );
+    }
+  },
+
+  // Emergency Alerts
+  async getEmergencyAlerts(
+    params: { skip?: number; limit?: number; status?: string } = {}
+  ): Promise<EmergencyAlert[]> {
+    try {
+      const response = await api.get("/emergency-alerts", { params });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch emergency alerts"
+      );
+    }
+  },
+
+  async createEmergencyAlert(
+    alert: EmergencyAlertCreate
+  ): Promise<EmergencyAlert> {
+    try {
+      const response = await api.post("/emergency-alerts", alert);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to create emergency alert"
+      );
+    }
+  },
+
+  async updateEmergencyAlert(
+    alertId: string,
+    update: EmergencyAlertUpdate
+  ): Promise<EmergencyAlert> {
+    try {
+      const response = await api.put(`/emergency-alerts/${alertId}`, update);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to update emergency alert"
+      );
+    }
+  },
+
+  // Contact
+  async sendContactMessage(
+    message: ContactMessage
+  ): Promise<{ message: string }> {
+    try {
+      const response = await api.post("/contact", message);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to send contact message"
+      );
+    }
+  },
+
+  // Documents
+  async getDocuments(): Promise<Document[]> {
+    try {
+      const response = await api.get("/documents");
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch documents"
+      );
+    }
+  },
+
+  async createDocument(data: {
+    name: string;
+    type: string;
+    file: File;
+  }): Promise<Document> {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("type", data.type);
+    formData.append("file", data.file);
+    try {
+      const response = await api.post("/documents", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to create document"
+      );
+    }
+  },
+
+  async deleteDocument(documentId: string): Promise<{ message: string }> {
+    try {
+      const response = await api.delete(`/documents/${documentId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to delete document"
+      );
+    }
+  },
+
+  // Admin Stats
+  async getAdminStats(): Promise<AdminStats> {
+    try {
+      const response = await api.get("/admin/stats");
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch admin stats"
+      );
+    }
+  },
+
+  async getChartData(
+    timeframe: Timeframe = Timeframe.weekly
+  ): Promise<ChartDataResponse> {
+    try {
+      const response = await api.get("/analytics/chart-data", {
+        params: { timeframe },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch chart data"
+      );
+    }
+  },
+};

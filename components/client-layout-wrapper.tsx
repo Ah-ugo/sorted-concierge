@@ -1,9 +1,10 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Header from "@/components/header";
+// import Header from "@/components/header";
 import Footer from "@/components/footer";
 import WhatsAppChat from "@/components/whatsapp-chat";
+import Header from "./header1";
 
 export default function ClientLayoutWrapper({
   children,
