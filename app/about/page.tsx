@@ -112,7 +112,7 @@ export default function AboutPage() {
       >
         <div className="absolute inset-0">
           <Image
-            src="/placeholder.svg?height=1080&width=1920&text=About Us"
+            src="/image5.png"
             alt="About Sorted Concierge"
             fill
             priority
@@ -188,7 +188,7 @@ export default function AboutPage() {
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
-                  src="/placeholder.svg?height=800&width=600&text=Our Story"
+                  src="https://thewheatbakerlagos.com/oatchace/2023/08/dl.beatsnoop.com-3000-qXWf3j7NcD-2048x1366.jpg"
                   alt="Our journey"
                   fill
                   className="object-cover"

@@ -97,7 +97,7 @@ export default function ContactPage() {
           className="absolute inset-0"
         >
           <div className="absolute inset-0 bg-neutral-900">
-            <div className="h-full w-full bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center bg-no-repeat opacity-50" />
+            <div className="h-full w-full bg-[url('/image9.png')] bg-cover bg-center bg-no-repeat opacity-50" />
           </div>
         </motion.div>
 
@@ -356,7 +356,7 @@ export default function ContactPage() {
         style={{ minHeight: "300px" }}
       >
         <div className="absolute inset-0 bg-neutral-900">
-          <div className="h-full w-full bg-[url('/placeholder.svg?height=900&width=1920')] bg-cover bg-center bg-no-repeat opacity-30" />
+          <div className="h-full w-full bg-[url('/image10.png')] bg-cover bg-center bg-no-repeat opacity-30" />
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
           <motion.div

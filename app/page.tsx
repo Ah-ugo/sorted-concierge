@@ -146,7 +146,7 @@ export default function Home() {
             playsInline
             preload="auto"
           >
-            <source src="/hero-bg4.mp4" type="video/mp4" />
+            <source src="/hero-bg2.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           <div className="absolute inset-0 bg-black/40" />
@@ -293,8 +293,8 @@ export default function Home() {
                   servicesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
                 }
                 transition={{
-                  duration: 0.6,
-                  delay: index * 0.1,
+                  duration: 0.3,
+                  delay: 0.1,
                   ease: "easeOut",
                 }}
                 className="group relative aspect-square overflow-hidden"

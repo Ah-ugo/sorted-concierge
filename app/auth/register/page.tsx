@@ -146,7 +146,7 @@ export default function RegisterPage() {
             </div>
           </div>
           <Image
-            src="/placeholder.svg?height=800&width=600&text=Luxury+Concierge"
+            src="/image13.png"
             alt="Luxury Concierge"
             width={600}
             height={800}

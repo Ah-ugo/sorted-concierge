@@ -118,9 +118,9 @@ export default function BlogPage() {
       {/* Hero Section */}
       <section className="relative flex min-h-[50vh] items-center justify-center">
         <div className="absolute inset-0 bg-neutral-900">
-          <div className="h-full w-full bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center bg-no-repeat opacity-50" />
+          <div className="h-full w-full bg-[url('/image8.png')] bg-cover bg-center bg-no-repeat opacity-50" />
         </div>
-        <div className="container relative z-10 mx-auto px-4">
+        <div className="container relative z-10 mx-auto my-32 px-4">
           <div className="max-w-3xl mx-auto text-center">
             <Badge className="mb-4 bg-teal-400/20 text-teal-400 px-4 py-1">
               Our Blog

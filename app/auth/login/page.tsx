@@ -132,7 +132,7 @@ export default function LoginPage() {
             </div>
           </div>
           <Image
-            src="/placeholder.svg?height=800&width=600&text=Naija+Concierge"
+            src="/image12.png"
             alt="Naija Concierge"
             width={600}
             height={800}

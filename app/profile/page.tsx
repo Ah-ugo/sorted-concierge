@@ -220,11 +220,11 @@ export default function ProfilePage() {
           className="absolute inset-0"
         >
           <div className="absolute inset-0 bg-neutral-900">
-            <div className="h-full w-full bg-[url('/placeholder.svg?height=1080&width=1920')] bg-cover bg-center bg-no-repeat opacity-50" />
+            <div className="h-full w-full bg-[url('/image14.png')] bg-cover bg-center bg-no-repeat opacity-50" />
           </div>
         </motion.div>
 
-        <div className="container relative z-10 mx-auto px-6 text-center">
+        <div className="container relative z-10 mx-auto my-32 px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -555,7 +555,7 @@ export default function ProfilePage() {
         style={{ minHeight: "300px" }}
       >
         <div className="absolute inset-0 bg-neutral-900">
-          <div className="h-full w-full bg-[url('/placeholder.svg?height=900&width=1920')] bg-cover bg-center bg-no-repeat opacity-30" />
+          <div className="h-full w-full bg-[url('/image15.png')] bg-cover bg-center bg-no-repeat opacity-30" />
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
           <motion.div
