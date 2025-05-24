@@ -21,8 +21,8 @@ interface Blog {
   excerpt: string;
   content?: string;
   coverImage?: string;
-  published_at?: string; // Assumed date field
-  author: { [key: string]: string }; // Matches api.ts
+  published_at?: string;
+  author: { [key: string]: string };
   tags: string[];
 }
 
@@ -54,7 +54,6 @@ export default function BlogPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch blog posts
     const fetchBlogPosts = async () => {
       try {
         const params =
@@ -62,7 +61,6 @@ export default function BlogPage() {
             ? { tag: searchQuery }
             : {};
         const apiPosts: Blog[] = await apiClient.getBlogs(params);
-        // Transform Blog[] to BlogPost[]
         const posts: BlogPost[] = apiPosts.map((post) => ({
           ...post,
           date:
@@ -71,9 +69,9 @@ export default function BlogPage() {
               year: "numeric",
               month: "long",
               day: "numeric",
-            }), // Fallback to current date
+            }),
           author: {
-            name: post.author.name || post.author.username || "Unknown Author", // Fallback for name
+            name: post.author.name || post.author.username || "Unknown Author",
             avatar: post.author.avatar || "/placeholder.svg?height=80&width=80",
           },
         }));
@@ -107,8 +105,8 @@ export default function BlogPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
       </div>
     );
   }
@@ -117,18 +115,27 @@ export default function BlogPage() {
     <>
       {/* Hero Section */}
       <section className="relative flex min-h-[50vh] items-center justify-center">
-        <div className="absolute inset-0 bg-neutral-900">
-          <div className="h-full w-full bg-[url('/image8.png')] bg-cover bg-center bg-no-repeat opacity-50" />
+        <div className="absolute inset-0">
+          <Image
+            src="/image8.png"
+            alt="Blog Hero"
+            width={1920}
+            height={1080}
+            priority
+            className="w-full h-full object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
         <div className="container relative z-10 mx-auto my-32 px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <Badge className="mb-4 bg-teal-400/20 text-teal-400 px-4 py-1">
+            <Badge className="mb-4 bg-secondary/20 text-secondary px-4 py-1 font-lora">
               Our Blog
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+            <h1 className="text-4xl md:text-5xl font-cinzel font-bold tracking-widest text-overlay mb-6">
               Insights & Experiences
             </h1>
-            <p className="text-white/80 text-lg mb-8">
+            <p className="text-lg font-lora text-overlay mb-8">
               Discover the latest trends, tips, and stories from our concierge
               team and lifestyle experts.
             </p>
@@ -138,16 +145,16 @@ export default function BlogPage() {
                 placeholder="Search articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
+                className="pl-10 bg-card/10 border-border text-foreground placeholder:text-muted-foreground focus:bg-card/20 font-lora"
               />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             </div>
           </div>
         </div>
       </section>
 
       {/* Blog Posts Section */}
-      <section className="py-20 bg-white" ref={ref}>
+      <section className="py-20 bg-background" ref={ref}>
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Main Content */}
@@ -181,13 +188,13 @@ export default function BlogPage() {
                   ))
                 ) : (
                   <div className="text-center py-12">
-                    <p className="text-neutral-500 mb-4">
+                    <p className="text-muted-foreground font-lora mb-4">
                       No articles found matching your search.
                     </p>
                     <Button
                       onClick={() => setSearchQuery("")}
                       variant="outline"
-                      className="border-teal-400 text-teal-600 hover:bg-teal-50"
+                      className="border-secondary text-foreground hover:bg-secondary hover:text-secondary-foreground font-lora"
                     >
                       Clear Search
                     </Button>
@@ -200,14 +207,16 @@ export default function BlogPage() {
             <div className="mt-8 md:mt-0">
               <div className="sticky top-24">
                 {/* Categories */}
-                <div className="bg-neutral-50 p-6 rounded-lg mb-8">
-                  <h3 className="text-xl font-semibold mb-4">Categories</h3>
+                <div className="bg-card p-6 rounded-lg mb-8 subtle-glow">
+                  <h3 className="text-xl font-cinzel font-bold tracking-widest text-foreground mb-4">
+                    Categories
+                  </h3>
                   <ul className="space-y-2">
                     {allTags.map((tag) => (
                       <li key={tag}>
                         <Button
                           variant="ghost"
-                          className="w-full justify-start text-neutral-700 hover:text-teal-600 hover:bg-teal-50"
+                          className="w-full justify-start text-foreground hover:text-secondary hover:bg-secondary/10 font-lora"
                           onClick={() => setSearchQuery(tag)}
                         >
                           <Tag className="mr-2 h-4 w-4" />
@@ -219,8 +228,10 @@ export default function BlogPage() {
                 </div>
 
                 {/* Recent Posts */}
-                <div className="bg-neutral-50 p-6 rounded-lg mb-8">
-                  <h3 className="text-xl font-semibold mb-4">Recent Posts</h3>
+                <div className="bg-card p-6 rounded-lg mb-8 subtle-glow">
+                  <h3 className="text-xl font-cinzel font-bold tracking-widest text-foreground mb-4">
+                    Recent Posts
+                  </h3>
                   <ul className="space-y-4">
                     {blogPosts.slice(0, 3).map((post) => (
                       <li key={post.id} className="flex items-start space-x-3">
@@ -228,22 +239,23 @@ export default function BlogPage() {
                           <Image
                             src={
                               post.coverImage ||
-                              "/placeholder.svg?height=400&width=600" ||
-                              "/placeholder.svg"
+                              "/placeholder.svg?height=400&width=600"
                             }
                             alt={post.title}
-                            fill
-                            className="object-cover"
+                            width={80}
+                            height={80}
+                            className="object-cover w-full h-full"
+                            sizes="(max-width: 768px) 16vw, 80px"
                           />
                         </div>
                         <div>
                           <Link
                             href={`/blog/${post.slug}`}
-                            className="font-medium hover:text-teal-600 transition-colors"
+                            className="font-lora font-medium hover:text-secondary transition-colors"
                           >
                             {post.title}
                           </Link>
-                          <div className="flex items-center text-sm text-neutral-500 mt-1">
+                          <div className="flex items-center text-sm text-muted-foreground font-lora mt-1">
                             <Calendar className="h-3 w-3 mr-1" />
                             {post.date}
                           </div>
@@ -254,16 +266,19 @@ export default function BlogPage() {
                 </div>
 
                 {/* Newsletter */}
-                <div className="bg-teal-50 p-6 rounded-lg">
-                  <h3 className="text-xl font-semibold mb-4">
+                <div className="bg-card p-6 rounded-lg subtle-glow">
+                  <h3 className="text-xl font-cinzel font-bold tracking-widest text-foreground mb-4">
                     Subscribe to Our Newsletter
                   </h3>
-                  <p className="text-neutral-600 mb-4">
+                  <p className="text-muted-foreground font-lora mb-4">
                     Stay updated with our latest articles and exclusive offers.
                   </p>
                   <div className="space-y-3">
-                    <Input placeholder="Your email address" />
-                    <Button className="w-full bg-teal-400 hover:bg-teal-500 text-neutral-900">
+                    <Input
+                      placeholder="Your email address"
+                      className="bg-muted text-foreground placeholder:text-muted-foreground font-lora"
+                    />
+                    <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-lora">
                       Subscribe
                     </Button>
                   </div>

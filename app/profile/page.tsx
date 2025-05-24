@@ -5,7 +5,7 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import Image from "next/image";
 
 export default function ProfilePage() {
   const {
@@ -167,41 +168,41 @@ export default function ProfilePage() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "completed":
-        return "bg-green-500";
+        return "bg-green-600"; // Slightly darker green for theme consistency
       case "confirmed":
-        return "bg-teal-500";
+        return "bg-secondary"; // Use theme's gold for confirmed
       case "pending":
-        return "bg-amber-500";
+        return "bg-amber-600"; // Slightly darker amber
       case "cancelled":
-        return "bg-red-500";
+        return "bg-red-600"; // Slightly darker red
       default:
-        return "bg-neutral-500";
+        return "bg-muted";
     }
   };
 
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-50 p-4">
-        <Card className="max-w-md border-none bg-white p-8 shadow-lg">
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <Card className="max-w-md border-border bg-card p-8 shadow-lg subtle-glow">
           <div className="text-center">
-            <User className="mx-auto mb-4 h-12 w-12 text-neutral-300" />
-            <h2 className="mb-2 text-2xl font-light uppercase tracking-widest text-neutral-800">
+            <User className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+            <h2 className="mb-2 text-2xl font-cinzel font-bold uppercase tracking-widest text-foreground">
               Authentication Required
             </h2>
-            <p className="mb-8 text-neutral-600">
+            <p className="mb-8 text-muted-foreground font-lora">
               Please log in to view your profile
             </p>
             <Button
               asChild
-              className="w-full bg-teal-400 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
+              className="w-full bg-secondary py-6 text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
             >
               <Link href="/auth/login">Login</Link>
             </Button>
@@ -219,9 +220,16 @@ export default function ProfilePage() {
           style={{ opacity: heroOpacity, scale: heroScale }}
           className="absolute inset-0"
         >
-          <div className="absolute inset-0 bg-neutral-900">
-            <div className="h-full w-full bg-[url('/image14.png')] bg-cover bg-center bg-no-repeat opacity-50" />
-          </div>
+          <Image
+            src="/image14.png"
+            alt="Profile Hero"
+            width={1920}
+            height={1080}
+            priority
+            className="w-full h-full object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent subtle-grain" />
         </motion.div>
 
         <div className="container relative z-10 mx-auto my-32 px-6 text-center">
@@ -231,13 +239,13 @@ export default function ProfilePage() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="mx-auto max-w-3xl"
           >
-            <p className="mb-4 text-center font-medium uppercase tracking-wider text-white/90">
+            <p className="mb-4 text-center font-lora uppercase tracking-wider text-overlay">
               YOUR ACCOUNT
             </p>
-            <h1 className="mb-6 text-center text-4xl font-bold uppercase tracking-widest text-white md:text-5xl">
+            <h1 className="mb-6 text-center text-4xl font-cinzel font-bold uppercase tracking-widest text-overlay md:text-5xl">
               MY PROFILE
             </h1>
-            <p className="text-lg text-white/80">
+            <p className="text-lg font-lora text-overlay">
               Manage your account details and view your booking history
             </p>
           </motion.div>
@@ -245,7 +253,7 @@ export default function ProfilePage() {
       </section>
 
       {/* Profile Content */}
-      <section className="bg-neutral-50 py-32">
+      <section className="bg-background py-32">
         <div className="container mx-auto px-6">
           <motion.div
             ref={profileRef}
@@ -261,38 +269,44 @@ export default function ProfilePage() {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="mb-12 grid w-full grid-cols-2 bg-neutral-100">
+              <TabsList className="mb-12 grid w-full grid-cols-2 bg-muted">
                 <TabsTrigger
                   value="profile"
-                  className="py-6 text-sm font-medium uppercase tracking-widest data-[state=active]:bg-teal-400 data-[state=active]:text-neutral-900"
+                  className="py-6 text-sm font-lora uppercase tracking-widest text-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
                 >
                   Profile
                 </TabsTrigger>
                 <TabsTrigger
                   value="bookings"
-                  className="py-6 text-sm font-medium uppercase tracking-widest data-[state=active]:bg-teal-400 data-[state=active]:text-neutral-900"
+                  className="py-6 text-sm font-lora uppercase tracking-widest text-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
                 >
                   My Bookings
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="profile">
-                <Card className="overflow-hidden border-none bg-white shadow-lg">
+                <Card className="overflow-hidden border-border bg-card shadow-lg subtle-glow">
                   <CardContent className="p-8">
-                    <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-neutral-800">
+                    <h2 className="mb-8 text-3xl font-cinzel font-bold uppercase tracking-widest text-foreground">
                       Profile Information
                     </h2>
                     <form onSubmit={handleSubmit} className="space-y-8">
                       <div className="flex items-center space-x-6">
-                        <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-teal-400/10">
+                        <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-secondary/10">
                           {user.profileImage ? (
-                            <img
-                              src={user.profileImage || "/placeholder.svg"}
+                            <Image
+                              src={
+                                user.profileImage ||
+                                "/placeholder.svg?height=96&width=96"
+                              }
                               alt="Profile"
+                              width={96}
+                              height={96}
                               className="h-full w-full object-cover"
+                              sizes="(max-width: 768px) 24vw, 96px"
                             />
                           ) : (
-                            <span className="text-2xl font-semibold text-teal-600">
+                            <span className="text-2xl font-semibold text-secondary">
                               {getInitials(
                                 `${user.firstName} ${user.lastName}`
                               )}
@@ -304,7 +318,7 @@ export default function ProfilePage() {
                             htmlFor="profileImage"
                             className="cursor-pointer"
                           >
-                            <div className="flex items-center space-x-2 text-sm font-medium uppercase tracking-wider text-teal-600 hover:text-teal-700">
+                            <div className="flex items-center space-x-2 text-sm font-lora uppercase tracking-wider text-secondary hover:text-secondary/80">
                               <Upload className="h-4 w-4" />
                               <span>Change Profile Picture</span>
                             </div>
@@ -324,7 +338,7 @@ export default function ProfilePage() {
                         <div className="space-y-2">
                           <Label
                             htmlFor="firstName"
-                            className="text-sm font-medium uppercase tracking-wider text-neutral-700"
+                            className="text-sm font-lora uppercase tracking-wider text-foreground"
                           >
                             First Name
                           </Label>
@@ -334,13 +348,13 @@ export default function ProfilePage() {
                             value={formData.firstName}
                             onChange={handleChange}
                             disabled={isLoading}
-                            className="border-neutral-300 bg-neutral-50 py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
+                            className="border-border bg-card py-6 text-foreground focus:border-secondary focus:ring-secondary font-lora"
                           />
                         </div>
                         <div className="space-y-2">
                           <Label
                             htmlFor="lastName"
-                            className="text-sm font-medium uppercase tracking-wider text-neutral-700"
+                            className="text-sm font-lora uppercase tracking-wider text-foreground"
                           >
                             Last Name
                           </Label>
@@ -350,7 +364,7 @@ export default function ProfilePage() {
                             value={formData.lastName}
                             onChange={handleChange}
                             disabled={isLoading}
-                            className="border-neutral-300 bg-neutral-50 py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
+                            className="border-border bg-card py-6 text-foreground focus:border-secondary focus:ring-secondary font-lora"
                           />
                         </div>
                       </div>
@@ -358,7 +372,7 @@ export default function ProfilePage() {
                       <div className="space-y-2">
                         <Label
                           htmlFor="email"
-                          className="text-sm font-medium uppercase tracking-wider text-neutral-700"
+                          className="text-sm font-lora uppercase tracking-wider text-foreground"
                         >
                           Email
                         </Label>
@@ -369,14 +383,14 @@ export default function ProfilePage() {
                           value={formData.email}
                           onChange={handleChange}
                           disabled
-                          className="border-neutral-300 bg-neutral-100 py-6 text-neutral-600 focus:border-teal-400 focus:ring-teal-400"
+                          className="border-border bg-muted py-6 text-muted-foreground focus:border-secondary focus:ring-secondary font-lora"
                         />
                       </div>
 
                       <div className="space-y-2">
                         <Label
                           htmlFor="phone"
-                          className="text-sm font-medium uppercase tracking-wider text-neutral-700"
+                          className="text-sm font-lora uppercase tracking-wider text-foreground"
                         >
                           Phone
                         </Label>
@@ -386,14 +400,14 @@ export default function ProfilePage() {
                           value={formData.phone}
                           onChange={handleChange}
                           disabled={isLoading}
-                          className="border-neutral-300 bg-neutral-50 py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
+                          className="border-border bg-card py-6 text-foreground focus:border-secondary focus:ring-secondary font-lora"
                         />
                       </div>
 
                       <div className="space-y-2">
                         <Label
                           htmlFor="address"
-                          className="text-sm font-medium uppercase tracking-wider text-neutral-700"
+                          className="text-sm font-lora uppercase tracking-wider text-foreground"
                         >
                           Address
                         </Label>
@@ -403,13 +417,13 @@ export default function ProfilePage() {
                           value={formData.address}
                           onChange={handleChange}
                           disabled={isLoading}
-                          className="border-neutral-300 bg-neutral-50 py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
+                          className="border-border bg-card py-6 text-foreground focus:border-secondary focus:ring-secondary font-lora"
                         />
                       </div>
 
                       <Button
                         type="submit"
-                        className="w-full bg-teal-400 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
+                        className="w-full bg-secondary py-6 text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
                         disabled={isLoading}
                       >
                         {isLoading ? (
@@ -424,25 +438,25 @@ export default function ProfilePage() {
               </TabsContent>
 
               <TabsContent value="bookings">
-                <Card className="overflow-hidden border-none bg-white shadow-lg">
+                <Card className="overflow-hidden border-border bg-card shadow-lg subtle-glow">
                   <CardContent className="p-8">
-                    <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-neutral-800">
+                    <h2 className="mb-8 text-3xl font-cinzel font-bold uppercase tracking-widest text-foreground">
                       Your Bookings
                     </h2>
 
                     {isLoadingBookings ? (
                       <div className="flex justify-center py-12">
-                        <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+                        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
                       </div>
                     ) : bookings.length === 0 ? (
                       <div className="py-12 text-center">
-                        <Calendar className="mx-auto mb-4 h-12 w-12 text-neutral-300" />
-                        <p className="mb-8 text-neutral-600">
+                        <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                        <p className="mb-8 text-muted-foreground font-lora">
                           You have no bookings yet.
                         </p>
                         <Button
                           asChild
-                          className="bg-teal-400 px-8 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
+                          className="bg-secondary px-8 py-6 text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
                         >
                           <Link href="/booking">Book a Service</Link>
                         </Button>
@@ -452,14 +466,14 @@ export default function ProfilePage() {
                         {bookings.map((booking) => (
                           <Card
                             key={booking.id}
-                            className="overflow-hidden border border-neutral-100 bg-neutral-50 p-0 transition-all duration-300 hover:shadow-md"
+                            className="overflow-hidden border-border bg-card p-0 transition-all duration-300 hover:shadow-md subtle-glow"
                           >
                             <div className="grid grid-cols-1 md:grid-cols-4">
-                              <div className="bg-neutral-100 p-6 md:col-span-1">
+                              <div className="bg-muted p-6 md:col-span-1">
                                 <div className="flex flex-col space-y-4">
                                   <div className="flex items-center space-x-2">
-                                    <Calendar className="h-5 w-5 text-teal-600" />
-                                    <span className="text-sm text-neutral-600">
+                                    <Calendar className="h-5 w-5 text-secondary" />
+                                    <span className="text-sm text-muted-foreground font-lora">
                                       {format(
                                         new Date(booking.bookingDate),
                                         "PPP"
@@ -467,8 +481,8 @@ export default function ProfilePage() {
                                     </span>
                                   </div>
                                   <div className="flex items-center space-x-2">
-                                    <Clock className="h-5 w-5 text-teal-600" />
-                                    <span className="text-sm text-neutral-600">
+                                    <Clock className="h-5 w-5 text-secondary" />
+                                    <span className="text-sm text-muted-foreground font-lora">
                                       {format(
                                         new Date(booking.bookingDate),
                                         "p"
@@ -476,8 +490,8 @@ export default function ProfilePage() {
                                     </span>
                                   </div>
                                   <div className="flex items-center space-x-2">
-                                    <MapPin className="h-5 w-5 text-teal-600" />
-                                    <span className="text-sm text-neutral-600">
+                                    <MapPin className="h-5 w-5 text-secondary" />
+                                    <span className="text-sm text-muted-foreground font-lora">
                                       {booking.location || "Not specified"}
                                     </span>
                                   </div>
@@ -486,19 +500,19 @@ export default function ProfilePage() {
 
                               <div className="p-6 md:col-span-3">
                                 <div className="mb-4 flex items-center justify-between">
-                                  <h3 className="text-xl font-light uppercase tracking-wider text-neutral-800">
+                                  <h3 className="text-xl font-cinzel font-bold uppercase tracking-wider text-foreground">
                                     {booking.service?.name || "Service"}
                                   </h3>
                                   <Badge
                                     className={`${getStatusColor(
                                       booking.status
-                                    )} px-3 py-1 text-xs font-medium uppercase tracking-wider text-white`}
+                                    )} px-3 py-1 text-xs font-lora uppercase tracking-wider text-white`}
                                   >
                                     {booking.status}
                                   </Badge>
                                 </div>
 
-                                <p className="mb-6 text-neutral-600">
+                                <p className="mb-6 text-muted-foreground font-lora">
                                   {booking.specialRequests ||
                                     "No special requests"}
                                 </p>
@@ -506,7 +520,7 @@ export default function ProfilePage() {
                                 {booking.status.toLowerCase() === "pending" && (
                                   <Button
                                     variant="outline"
-                                    className="border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600"
+                                    className="border-red-600 text-red-600 hover:bg-red-600/10 hover:text-red-700 font-lora"
                                     onClick={async () => {
                                       try {
                                         await apiClient.updateBooking(
@@ -554,9 +568,16 @@ export default function ProfilePage() {
         className="relative aspect-[21/9] w-full"
         style={{ minHeight: "300px" }}
       >
-        <div className="absolute inset-0 bg-neutral-900">
-          <div className="h-full w-full bg-[url('/image15.png')] bg-cover bg-center bg-no-repeat opacity-30" />
-        </div>
+        <Image
+          src="/image15.png"
+          alt="CTA Background"
+          width={1920}
+          height={1080}
+          priority
+          className="w-full h-full object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent subtle-grain" />
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -565,12 +586,12 @@ export default function ProfilePage() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-white md:text-4xl">
+            <h2 className="mb-8 text-3xl font-cinzel font-bold uppercase tracking-widest text-overlay md:text-4xl">
               Experience Our Premium Services
             </h2>
             <Button
               asChild
-              className="bg-teal-400 px-8 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
+              className="bg-secondary px-8 py-6 text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
             >
               <Link href="/booking">Book Now</Link>
             </Button>

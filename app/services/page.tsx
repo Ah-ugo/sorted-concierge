@@ -9,6 +9,7 @@ import ServiceCard from "@/components/service-card";
 import PackageCard from "@/components/package-card";
 import { apiClient, type Service, type Package } from "@/lib/api";
 import { useToast } from "@/components/ui/use-toast";
+import Image from "next/image";
 
 export default function ServicesPage() {
   const { toast } = useToast();
@@ -101,9 +102,16 @@ export default function ServicesPage() {
           style={{ opacity: heroOpacity, scale: heroScale }}
           className="absolute inset-0"
         >
-          <div className="absolute inset-0 bg-neutral-900">
-            <div className="h-full w-full bg-[url('/image6.png')] bg-cover bg-center bg-no-repeat opacity-50" />
-          </div>
+          <Image
+            src="/image6.png"
+            alt="Services Hero"
+            width={1920}
+            height={1080}
+            priority
+            className="w-full h-full object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </motion.div>
 
         <div className="container relative z-10 mx-auto my-32 px-6 text-center">
@@ -113,19 +121,19 @@ export default function ServicesPage() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="mx-auto max-w-3xl"
           >
-            <p className="mb-4 text-center font-medium uppercase tracking-wider text-white/90">
+            <p className="mb-4 font-lora text-lg italic tracking-wider text-secondary">
               EXPLORE OUR OFFERINGS
             </p>
-            <h1 className="mb-6 text-center text-4xl font-bold uppercase tracking-widest text-white md:text-5xl">
+            <h1 className="mb-6 text-4xl font-cinzel font-bold uppercase tracking-widest text-overlay md:text-5xl">
               PREMIUM CONCIERGE SERVICES
             </h1>
-            <p className="mb-12 text-lg text-white/80">
+            <p className="mb-12 text-lg font-lora text-overlay">
               Discover our comprehensive range of concierge services designed to
               enhance your lifestyle and save you time.
             </p>
             <Button
               asChild
-              className="bg-teal-400 px-8 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
+              className="bg-secondary px-8 py-6 text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
             >
               <Link href="/booking">Book a Service</Link>
             </Button>
@@ -134,7 +142,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Category Filter */}
-      <section className="bg-white py-16">
+      <section className="bg-background py-16">
         <div className="container mx-auto px-6">
           <div className="overflow-x-auto">
             <div className="flex min-w-max space-x-2">
@@ -143,10 +151,10 @@ export default function ServicesPage() {
                   key={category}
                   variant={activeCategory === category ? "default" : "outline"}
                   onClick={() => setActiveCategory(category)}
-                  className={`min-w-[120px] py-6 text-sm font-medium uppercase tracking-widest ${
+                  className={`min-w-[120px] py-6 text-sm font-lora uppercase tracking-widest ${
                     activeCategory === category
-                      ? "bg-teal-400 text-neutral-900 hover:bg-teal-500"
-                      : "border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                      ? "bg-secondary text-secondary-foreground hover:bg-secondary/90"
+                      : "border-border text-foreground hover:bg-secondary/10"
                   }`}
                 >
                   {category}
@@ -158,7 +166,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Services Section */}
-      <section className="bg-white py-16" ref={servicesRef}>
+      <section className="bg-background py-16" ref={servicesRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -168,7 +176,7 @@ export default function ServicesPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-16 text-3xl font-light uppercase tracking-widest text-neutral-800 md:text-4xl">
+            <h2 className="mb-16 text-3xl font-cinzel font-bold uppercase tracking-widest text-white md:text-4xl">
               Our Services
             </h2>
           </motion.div>
@@ -181,16 +189,16 @@ export default function ServicesPage() {
                   .map((_, index) => (
                     <div
                       key={index}
-                      className="h-[400px] animate-pulse overflow-hidden rounded-lg bg-neutral-100 p-6"
+                      className="h-[400px] animate-pulse overflow-hidden rounded-lg bg-card p-6"
                       style={{ minHeight: "250px" }}
                     >
-                      <div className="mb-4 h-12 w-12 rounded-full bg-neutral-200"></div>
-                      <div className="mb-2 h-4 w-1/3 rounded bg-neutral-200"></div>
-                      <div className="mb-2 h-6 w-3/4 rounded bg-neutral-200"></div>
-                      <div className="mb-2 h-4 w-full rounded bg-neutral-200"></div>
-                      <div className="mb-2 h-4 w-full rounded bg-neutral-200"></div>
-                      <div className="mb-4 h-4 w-2/3 rounded bg-neutral-200"></div>
-                      <div className="mt-auto h-10 w-full rounded bg-neutral-200"></div>
+                      <div className="mb-4 h-12 w-12 rounded-full bg-muted"></div>
+                      <div className="mb-2 h-4 w-1/3 rounded bg-muted"></div>
+                      <div className="mb-2 h-6 w-3/4 rounded bg-muted"></div>
+                      <div className="mb-2 h-4 w-full rounded bg-muted"></div>
+                      <div className="mb-2 h-4 w-full rounded bg-muted"></div>
+                      <div className="mb-4 h-4 w-2/3 rounded bg-muted"></div>
+                      <div className="mt-auto h-10 w-full rounded bg-muted"></div>
                     </div>
                   ))
               : // Actual services
@@ -224,7 +232,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Packages Section */}
-      <section className="bg-neutral-50 py-32" ref={packagesRef}>
+      <section className="bg-muted py-32" ref={packagesRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -234,7 +242,7 @@ export default function ServicesPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-16 text-3xl font-light uppercase tracking-widest text-neutral-800 md:text-4xl">
+            <h2 className="mb-16 text-3xl font-cinzel font-bold uppercase tracking-widest text-white md:text-4xl">
               Concierge Membership Packages
             </h2>
           </motion.div>
@@ -247,15 +255,15 @@ export default function ServicesPage() {
                   .map((_, index) => (
                     <div
                       key={index}
-                      className="h-[500px] animate-pulse overflow-hidden rounded-lg bg-white p-6 shadow-lg"
+                      className="h-[500px] animate-pulse overflow-hidden rounded-lg bg-card p-6 shadow-lg"
                     >
-                      <div className="mb-4 h-6 w-1/2 rounded bg-neutral-200"></div>
-                      <div className="mb-4 h-4 w-3/4 rounded bg-neutral-200"></div>
-                      <div className="mb-2 h-4 w-full rounded bg-neutral-200"></div>
-                      <div className="mb-2 h-4 w-full rounded bg-neutral-200"></div>
-                      <div className="mb-2 h-4 w-full rounded bg-neutral-200"></div>
-                      <div className="mb-4 h-4 w-2/3 rounded bg-neutral-200"></div>
-                      <div className="mt-auto h-10 w-full rounded bg-neutral-200"></div>
+                      <div className="mb-4 h-6 w-1/2 rounded bg-muted"></div>
+                      <div className="mb-4 h-4 w-3/4 rounded bg-muted"></div>
+                      <div className="mb-2 h-4 w-full rounded bg-muted"></div>
+                      <div className="mb-2 h-4 w-full rounded bg-muted"></div>
+                      <div className="mb-2 h-4 w-full rounded bg-muted"></div>
+                      <div className="mb-4 h-4 w-2/3 rounded bg-muted"></div>
+                      <div className="mt-auto h-10 w-full rounded bg-muted"></div>
                     </div>
                   ))
               : // Actual packages
@@ -293,13 +301,13 @@ export default function ServicesPage() {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="mt-16 text-center"
           >
-            <p className="mb-8 text-lg text-neutral-700">
+            <p className="mb-8 text-lg font-lora text-foreground">
               Need a custom package? We can create a bespoke solution tailored
               to your specific needs.
             </p>
             <Button
               asChild
-              className="bg-teal-400 px-8 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
+              className="bg-secondary px-8 py-6 text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
             >
               <Link href="/contact">Contact Us for Custom Packages</Link>
             </Button>
@@ -308,7 +316,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Process Section */}
-      <section className="bg-white py-32" ref={processRef}>
+      <section className="bg-background py-32" ref={processRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -318,7 +326,7 @@ export default function ServicesPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-16 text-3xl font-light uppercase tracking-widest text-neutral-800 md:text-4xl">
+            <h2 className="mb-16 text-3xl font-cinzel font-bold uppercase tracking-widest text-white md:text-4xl">
               Our Simple Process
             </h2>
           </motion.div>
@@ -353,15 +361,15 @@ export default function ServicesPage() {
                 transition={{ duration: 0.5, delay: index * 0.2 }}
                 className="text-center"
               >
-                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-teal-400/10">
-                  <span className="text-3xl font-light text-teal-600">
+                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-secondary/10">
+                  <span className="text-3xl font-lora text-secondary">
                     {item.step}
                   </span>
                 </div>
-                <h3 className="mb-4 text-xl font-light uppercase tracking-wider text-neutral-800">
+                <h3 className="mb-4 text-xl font-cinzel font-bold uppercase tracking-wider text-white">
                   {item.title}
                 </h3>
-                <p className="text-neutral-600">{item.description}</p>
+                <p className="text-foreground font-lora">{item.description}</p>
               </motion.div>
             ))}
           </div>
@@ -373,8 +381,16 @@ export default function ServicesPage() {
         className="relative aspect-[21/9] w-full"
         style={{ minHeight: "300px" }}
       >
-        <div className="absolute inset-0 bg-neutral-900">
-          <div className="h-full w-full bg-[url('/image7.png')] bg-cover bg-center bg-no-repeat opacity-30" />
+        <div className="absolute inset-0">
+          <Image
+            src="/image7.png"
+            alt="CTA Background"
+            width={1920}
+            height={1080}
+            className="w-full h-full object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
           <motion.div
@@ -384,12 +400,12 @@ export default function ServicesPage() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-white md:text-4xl">
+            <h2 className="mb-8 text-3xl font-cinzel font-bold uppercase tracking-widest text-overlay md:text-4xl">
               Ready to Experience Our Services?
             </h2>
             <Button
               asChild
-              className="bg-teal-400 px-8 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
+              className="bg-secondary px-8 py-6 text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
             >
               <Link href="/booking">Book Now</Link>
             </Button>

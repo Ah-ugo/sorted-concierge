@@ -30,7 +30,6 @@ export default function AboutPage() {
   const [ctaRef, ctaInView] = useInView({ threshold: 0.03, triggerOnce: true });
 
   useEffect(() => {
-    // Simulate loading
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1000);
@@ -70,25 +69,25 @@ export default function AboutPage() {
 
   const values = [
     {
-      icon: <Check className="h-6 w-6 text-teal-500" />,
+      icon: <Check className="h-6 w-6 text-secondary" />,
       title: "EXCELLENCE",
       description:
         "We are committed to delivering exceptional service that exceeds expectations in every interaction.",
     },
     {
-      icon: <Users className="h-6 w-6 text-teal-500" />,
+      icon: <Users className="h-6 w-6 text-secondary" />,
       title: "PERSONALIZATION",
       description:
         "We tailor our services to meet the unique needs and preferences of each client.",
     },
     {
-      icon: <Award className="h-6 w-6 text-teal-500" />,
+      icon: <Award className="h-6 w-6 text-secondary" />,
       title: "INTEGRITY",
       description:
         "We operate with honesty, transparency, and the highest ethical standards in all our dealings.",
     },
     {
-      icon: <Clock className="h-6 w-6 text-teal-500" />,
+      icon: <Clock className="h-6 w-6 text-secondary" />,
       title: "RELIABILITY",
       description:
         "We are available 24/7 to ensure that our clients receive prompt and dependable service.",
@@ -97,8 +96,8 @@ export default function AboutPage() {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white dark:bg-neutral-900">
-        <div className="h-16 w-16 animate-spin rounded-full border-4 border-neutral-300 border-t-teal-600"></div>
+      <div className="fixed inset-0 flex items-center justify-center bg-background">
+        <div className="h-16 w-16 animate-spin rounded-full border-4 border-background border-t-secondary"></div>
       </div>
     );
   }
@@ -114,11 +113,13 @@ export default function AboutPage() {
           <Image
             src="/image5.png"
             alt="About Sorted Concierge"
-            fill
+            width={1920}
+            height={1080}
             priority
-            className="object-cover"
+            className="w-full h-full object-cover"
+            sizes="100vw"
           />
-          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
 
         <div className="container relative z-10 mx-auto px-6 text-center">
@@ -128,13 +129,13 @@ export default function AboutPage() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="mx-auto max-w-3xl"
           >
-            <p className="mb-4 text-center font-medium uppercase tracking-wider text-white/90">
+            <p className="mb-4 font-lora text-lg italic tracking-wider text-secondary">
               OUR STORY
             </p>
-            <h1 className="mb-8 text-center text-4xl font-bold uppercase tracking-widest text-white md:text-5xl lg:text-6xl">
+            <h1 className="mb-8 text-4xl font-cinzel font-bold uppercase tracking-widest text-overlay md:text-5xl lg:text-6xl">
               THE ESSENCE OF LUXURY
             </h1>
-            <p className="mb-12 text-lg text-white/90">
+            <p className="mb-12 text-lg font-lora text-overlay">
               Sorted Concierge was founded with a vision to redefine luxury
               lifestyle management in Lagos. We combine local expertise with
               international standards to provide unparalleled concierge
@@ -145,7 +146,7 @@ export default function AboutPage() {
       </section>
 
       {/* Story Section */}
-      <section className="bg-white py-32" ref={storyRef}>
+      <section className="bg-background py-32" ref={storyRef}>
         <div className="container mx-auto px-6">
           <div className="grid gap-12 md:gap-24 md:grid-cols-2">
             <motion.div
@@ -156,22 +157,22 @@ export default function AboutPage() {
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
               className="flex flex-col justify-center order-2 md:order-1"
             >
-              <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-neutral-800">
+              <h2 className="mb-8 text-3xl font-cinzel font-bold uppercase tracking-widest text-secondary">
                 Our Journey
               </h2>
-              <p className="mb-8 text-lg text-neutral-700">
+              <p className="mb-8 text-lg font-lora text-muted-foreground">
                 Founded in 2018, Sorted Concierge emerged from a simple
                 observation: Lagos, a city of boundless energy and opportunity,
                 needed a service that could navigate its complexities with
                 elegance and precision.
               </p>
-              <p className="mb-12 text-lg text-neutral-700">
+              <p className="mb-12 text-lg font-lora text-muted-foreground">
                 Our founder, drawing from extensive experience in luxury
                 hospitality across three continents, assembled a team of
                 dedicated professionals united by a passion for exceptional
                 service and deep local knowledge.
               </p>
-              <p className="mb-12 text-lg text-neutral-700">
+              <p className="mb-12 text-lg font-lora text-muted-foreground">
                 Today, we stand as the premier concierge service in Lagos,
                 trusted by discerning clients who value time, quality, and
                 memorable experiences.
@@ -186,12 +187,14 @@ export default function AboutPage() {
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
               className="order-1 md:order-2"
             >
-              <div className="relative aspect-[4/3] overflow-hidden">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
                 <Image
                   src="https://thewheatbakerlagos.com/oatchace/2023/08/dl.beatsnoop.com-3000-qXWf3j7NcD-2048x1366.jpg"
                   alt="Our journey"
-                  fill
-                  className="object-cover"
+                  width={800}
+                  height={600}
+                  className="w-full h-full object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             </motion.div>
@@ -200,7 +203,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values Section */}
-      <section className="bg-neutral-100 py-32" ref={valuesRef}>
+      <section className="bg-primary py-32" ref={valuesRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -210,7 +213,7 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-16 text-3xl font-light uppercase tracking-widest text-neutral-800 md:text-4xl">
+            <h2 className="mb-16 text-3xl font-cinzel font-bold uppercase tracking-widest text-secondary md:text-4xl">
               Our Values
             </h2>
           </motion.div>
@@ -228,15 +231,17 @@ export default function AboutPage() {
                   delay: index * 0.1,
                   ease: "easeOut",
                 }}
-                className="bg-white p-8 shadow-sm"
+                className="bg-card p-8 shadow-sm rounded-lg"
               >
-                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-teal-50">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-secondary/10">
                   {value.icon}
                 </div>
-                <h3 className="mb-4 text-xl font-light tracking-wider">
+                <h3 className="mb-4 text-xl font-cinzel font-bold tracking-wider text-foreground">
                   {value.title}
                 </h3>
-                <p className="text-neutral-600">{value.description}</p>
+                <p className="text-muted-foreground font-lora">
+                  {value.description}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -244,7 +249,7 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="bg-white py-32" ref={teamRef}>
+      <section className="bg-background py-32" ref={teamRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -252,7 +257,7 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-16 text-3xl font-light uppercase tracking-widest text-neutral-800 md:text-4xl">
+            <h2 className="mb-16 text-3xl font-cinzel font-bold uppercase tracking-widest text-secondary md:text-4xl">
               Our Team
             </h2>
           </motion.div>
@@ -272,20 +277,23 @@ export default function AboutPage() {
                 }}
                 className="group"
               >
-                <div className="relative mb-6 aspect-square overflow-hidden">
+                <div className="relative mb-6 aspect-square overflow-hidden rounded-lg">
                   <Image
                     src={member.image || "/placeholder.svg"}
                     alt={member.name}
                     width={600}
                     height={600}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 </div>
-                <h3 className="mb-1 text-xl font-medium">{member.name}</h3>
-                <p className="mb-4 text-sm uppercase tracking-wider text-teal-600">
+                <h3 className="mb-1 text-xl font-cinzel font-bold text-foreground">
+                  {member.name}
+                </h3>
+                <p className="mb-4 text-sm font-lora uppercase tracking-wider text-secondary">
                   {member.role}
                 </p>
-                <p className="text-neutral-600">{member.bio}</p>
+                <p className="text-muted-foreground font-lora">{member.bio}</p>
               </motion.div>
             ))}
           </div>
@@ -293,7 +301,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-32 bg-neutral-900" ref={ctaRef}>
+      <section className="relative py-32 bg-primary" ref={ctaRef}>
         <div className="container relative z-10 mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -301,10 +309,10 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-white md:text-4xl">
+            <h2 className="mb-8 text-3xl font-cinzel font-bold uppercase tracking-widest text-primary-foreground md:text-4xl">
               Experience Our Service
             </h2>
-            <p className="mb-12 text-lg text-white/80">
+            <p className="mb-12 text-lg font-lora text-primary-foreground/80">
               Let us help you make the most of your time in Lagos with our
               premium concierge services.
             </p>
@@ -312,14 +320,13 @@ export default function AboutPage() {
               <Button
                 asChild
                 variant="outline"
-                className="border-teal-400 bg-transparent px-8 py-6 text-sm font-medium uppercase tracking-widest text-white hover:bg-teal-400/10"
+                className="border-secondary px-8 py-6 text-sm font-lora uppercase tracking-widest bg-primary text-primary-foreground hover:bg-secondary hover:text-secondary-foreground"
               >
                 <Link href="/services">Explore Services</Link>
               </Button>
-
               <Button
                 asChild
-                className="bg-teal-400 px-8 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
+                className="bg-secondary px-8 py-6 text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
               >
                 <Link href="/contact">Contact Us</Link>
               </Button>

@@ -30,52 +30,31 @@ export default function Header() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
-    // Prevent body scroll when menu is open
     if (isMenuOpen) {
-      document.body.classList.add("overflow-hidden");
+      document.body.classList.add("mobile-menu-open");
     } else {
-      document.body.classList.remove("overflow-hidden");
+      document.body.classList.remove("mobile-menu-open");
     }
-
-    // Cleanup
     return () => {
-      document.body.classList.remove("overflow-hidden");
+      document.body.classList.remove("mobile-menu-open");
     };
   }, [isMenuOpen]);
 
   const mainCategories = [
-    {
-      name: "HOME",
-      href: "/",
-    },
-    {
-      name: "ABOUT",
-      href: "/about",
-    },
-    {
-      name: "SERVICES",
-      href: "/services",
-    },
-    {
-      name: "BLOG",
-      href: "/blog",
-    },
-    {
-      name: "CONTACT",
-      href: "/contact",
-    },
+    { name: "HOME", href: "/" },
+    { name: "ABOUT", href: "/about" },
+    { name: "SERVICES", href: "/services" },
+    { name: "BLOG", href: "/blog" },
+    { name: "CONTACT", href: "/contact" },
   ];
 
   const isActive = (href: string) => {
-    if (href === "/") {
-      return pathname === href;
-    }
+    if (href === "/") return pathname === href;
     return pathname.startsWith(href);
   };
 
@@ -84,36 +63,35 @@ export default function Header() {
       <header
         className={cn(
           "fixed left-0 right-0 top-0 z-40 transition-all duration-300",
-          isScrolled ? "bg-white shadow-md" : "bg-transparent"
+          isScrolled ? "bg-background subtle-glow shadow-sm" : "bg-transparent"
         )}
       >
         <div className="container flex h-16 items-center justify-between px-4 md:h-20">
           <Link href="/" className="flex items-center">
             <span
-              className={`text-xl font-bold ${
-                isScrolled ? "text-neutral-900" : "text-white"
-              }`}
+              className={cn(
+                "text-xl font-cinzel font-bold tracking-wider",
+                isScrolled ? "text-foreground" : "text-header"
+              )}
             >
               SORTED CONCIERGE
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:block">
-            <ul className="flex space-x-8">
+            <ul className="flex space-x-6">
               {mainCategories.map((category) => (
                 <li key={category.name}>
                   <Link
                     href={category.href}
-                    className={`border-b-2 text-sm font-medium tracking-wide ${
+                    className={cn(
+                      "text-sm font-lora uppercase tracking-widest",
                       isActive(category.href)
-                        ? `border-teal-400 ${
-                            isScrolled ? "text-neutral-900" : "text-white"
-                          }`
-                        : `border-transparent ${
-                            isScrolled ? "text-neutral-700" : "text-white/80"
-                          } hover:border-white/50`
-                    } pb-1 transition-all duration-300`}
+                        ? "text-secondary"
+                        : isScrolled
+                        ? "text-foreground/80 hover:text-secondary"
+                        : "text-header hover:text-secondary"
+                    )}
                   >
                     {category.name}
                   </Link>
@@ -122,16 +100,17 @@ export default function Header() {
             </ul>
           </nav>
 
-          {/* Right Side Buttons */}
-          <div className="flex items-center space-x-1">
-            {/* <ModeToggle /> */}
-
+          <div className="flex items-center space-x-2">
+            <ModeToggle />
             {user ? (
               <Link href="/profile">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className={isScrolled ? "text-neutral-900" : "text-white"}
+                  className={cn(
+                    "hover:bg-secondary/10",
+                    isScrolled ? "text-foreground" : "text-header"
+                  )}
                 >
                   <User className="h-5 w-5" />
                 </Button>
@@ -139,24 +118,23 @@ export default function Header() {
             ) : (
               <Link href="/auth/login">
                 <Button
-                  className={`border ${
-                    isScrolled
-                      ? "border-teal-600 text-teal-600"
-                      : "border-white text-white"
-                  } bg-transparent hover:bg-teal-600 hover:text-white`}
+                  className={cn(
+                    "text-sm font-lora uppercase tracking-widest bg-secondary text-secondary-foreground hover:bg-secondary/90",
+                    isScrolled ? "text-secondary-foreground" : "text-header"
+                  )}
                 >
                   Login
                 </Button>
               </Link>
             )}
-
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(true)}
-              className={`md:hidden ${
-                isScrolled ? "text-neutral-900" : "text-white"
-              }`}
+              className={cn(
+                "md:hidden",
+                isScrolled ? "text-foreground" : "text-header"
+              )}
             >
               <Menu className="h-6 w-6" />
             </Button>
@@ -164,17 +142,17 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-white md:hidden">
-          <div className="flex h-16 items-center justify-between border-b px-4">
-            <span className="text-xl font-bold text-neutral-900">
+        <div className="fixed inset-0 z-50 flex flex-col bg-background subtle-glow md:hidden">
+          <div className="flex h-16 items-center justify-between border-b border-border px-4">
+            <span className="text-xl font-cinzel font-bold tracking-wider text-foreground">
               SORTED CONCIERGE
             </span>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(false)}
+              className="text-foreground"
             >
               <X className="h-6 w-6" />
             </Button>
@@ -187,11 +165,12 @@ export default function Header() {
                   <li key={category.name}>
                     <Link
                       href={category.href}
-                      className={`text-xl font-medium ${
+                      className={cn(
+                        "text-xl font-lora uppercase tracking-widest",
                         isActive(category.href)
-                          ? "text-teal-600"
-                          : "text-neutral-900"
-                      }`}
+                          ? "text-secondary"
+                          : "text-foreground hover:text-secondary"
+                      )}
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {category.name}
@@ -201,24 +180,24 @@ export default function Header() {
               </ul>
             </nav>
 
-            <div className="space-y-6 border-t border-neutral-200 pt-6">
+            <div className="space-y-6 border-t border-border pt-6">
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-neutral-500">
+                <h3 className="text-sm font-lora uppercase text-muted-foreground">
                   Contact Us
                 </h3>
-                <p className="flex items-center gap-2 text-sm">
+                <p className="flex items-center gap-2 text-sm font-lora text-foreground">
                   <Phone className="h-4 w-4" /> +234 123 456 7890
                 </p>
-                <p className="flex items-center gap-2 text-sm">
+                <p className="flex items-center gap-2 text-sm font-lora text-foreground">
                   <Mail className="h-4 w-4" /> info@naijaconcierge.com
                 </p>
-                <p className="flex items-center gap-2 text-sm">
+                <p className="flex items-center gap-2 text-sm font-lora text-foreground">
                   <MapPin className="h-4 w-4" /> Lagos, Nigeria
                 </p>
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-neutral-500">
+                <h3 className="text-sm font-lora uppercase text-muted-foreground">
                   Follow Us
                 </h3>
                 <div className="flex gap-4">
@@ -227,7 +206,11 @@ export default function Header() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 text-foreground hover:bg-secondary/10"
+                    >
                       <Instagram className="h-5 w-5" />
                     </Button>
                   </Link>
@@ -236,7 +219,11 @@ export default function Header() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 text-foreground hover:bg-secondary/10"
+                    >
                       <Facebook className="h-5 w-5" />
                     </Button>
                   </Link>
@@ -245,7 +232,11 @@ export default function Header() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <Button variant="ghost" size="icon" className="h-9 w-9">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 text-foreground hover:bg-secondary/10"
+                    >
                       <Twitter className="h-5 w-5" />
                     </Button>
                   </Link>
@@ -260,7 +251,7 @@ export default function Header() {
                       setIsMenuOpen(false);
                     }}
                     variant="outline"
-                    className="w-full"
+                    className="w-full border-secondary text-foreground hover:bg-secondary hover:text-secondary-foreground"
                   >
                     <LogOut className="mr-2 h-4 w-4" /> Logout
                   </Button>
@@ -269,7 +260,7 @@ export default function Header() {
                 <div className="flex flex-col gap-2 pt-2">
                   <Button
                     asChild
-                    className="w-full bg-teal-600 hover:bg-teal-700"
+                    className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Link href="/auth/login">Login</Link>
@@ -277,7 +268,7 @@ export default function Header() {
                   <Button
                     asChild
                     variant="outline"
-                    className="w-full"
+                    className="w-full border-secondary text-foreground hover:bg-secondary hover:text-secondary-foreground"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Link href="/auth/register">Register</Link>

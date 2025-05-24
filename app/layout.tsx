@@ -36,7 +36,6 @@ export const metadata: Metadata = {
   description:
     "Curate extraordinary experiences in Lagos with our exclusive concierge services, tailored for the discerning.",
   keywords: "concierge, lagos, nigeria, luxury, bespoke, travel, lifestyle",
-  generator: "v0.dev",
 };
 
 export default function RootLayout({
@@ -51,8 +50,8 @@ export default function RootLayout({
           <CurrencyProvider>
             <ThemeProvider
               attribute="class"
-              defaultTheme="light"
-              enableSystem
+              defaultTheme="dark"
+              // enableSystem={true}
               disableTransitionOnChange
             >
               <ClientLayoutWrapper>

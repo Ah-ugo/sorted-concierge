@@ -13,6 +13,7 @@ import { useInView } from "react-intersection-observer";
 import { MapPin, Phone, Mail, Clock, CheckCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { apiClient } from "@/lib/api";
+import Image from "next/image";
 
 export default function ContactPage() {
   const { toast } = useToast();
@@ -52,7 +53,6 @@ export default function ContactPage() {
     setIsSubmitting(true);
 
     try {
-      // Send contact message to API
       await apiClient.sendContactMessage(formData);
 
       toast({
@@ -60,13 +60,12 @@ export default function ContactPage() {
         description:
           "We've received your message and will get back to you shortly.",
         action: (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/20">
-            <CheckCircle className="h-5 w-5 text-green-500" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/20">
+            <CheckCircle className="h-5 w-5 text-secondary" />
           </div>
         ),
       });
 
-      // Reset form
       setFormData({
         name: "",
         email: "",
@@ -96,9 +95,16 @@ export default function ContactPage() {
           style={{ opacity: heroOpacity, scale: heroScale }}
           className="absolute inset-0"
         >
-          <div className="absolute inset-0 bg-neutral-900">
-            <div className="h-full w-full bg-[url('/image9.png')] bg-cover bg-center bg-no-repeat opacity-50" />
-          </div>
+          <Image
+            src="/image9.png"
+            alt="Contact Hero"
+            width={1920}
+            height={1080}
+            priority
+            className="w-full h-full object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent subtle-grain" />
         </motion.div>
 
         <div className="container relative z-10 mx-auto px-6 text-center">
@@ -108,13 +114,13 @@ export default function ContactPage() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="mx-auto max-w-3xl"
           >
-            <p className="mb-4 text-center font-medium uppercase tracking-wider text-white/90">
+            <p className="mb-4 text-center font-lora uppercase tracking-wider text-overlay">
               REACH OUT TO US
             </p>
-            <h1 className="mb-6 text-center text-4xl font-bold uppercase tracking-widest text-white md:text-5xl">
+            <h1 className="mb-6 text-center text-4xl font-cinzel font-bold uppercase tracking-widest text-overlay md:text-5xl">
               GET IN TOUCH
             </h1>
-            <p className="text-lg text-white/80">
+            <p className="text-lg font-lora text-overlay">
               Have questions or need assistance? Our team is here to help you
               with any inquiries.
             </p>
@@ -123,7 +129,7 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Form Section */}
-      <section className="bg-white py-32">
+      <section className="bg-background py-32">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
             {/* Contact Information */}
@@ -135,10 +141,10 @@ export default function ContactPage() {
               }
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-neutral-800">
+              <h2 className="mb-8 text-3xl font-cinzel font-bold uppercase tracking-widest text-foreground">
                 Contact Information
               </h2>
-              <p className="mb-12 text-lg text-neutral-700">
+              <p className="mb-12 text-lg font-lora text-muted-foreground">
                 Feel free to reach out to us through any of the following
                 channels. We're available 24/7 to assist you with your concierge
                 needs.
@@ -146,57 +152,65 @@ export default function ContactPage() {
 
               <div className="space-y-8">
                 <div className="flex items-start space-x-6">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-400/10">
-                    <MapPin className="h-6 w-6 text-teal-600" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary/10">
+                    <MapPin className="h-6 w-6 text-secondary" />
                   </div>
                   <div>
-                    <h3 className="mb-2 text-xl font-light uppercase tracking-wider text-neutral-800">
+                    <h3 className="mb-2 text-xl font-cinzel font-bold uppercase tracking-wider text-foreground">
                       Our Location
                     </h3>
-                    <p className="text-neutral-600">
+                    <p className="text-muted-foreground font-lora">
                       123 Victoria Island, Lagos, Nigeria
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-6">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-400/10">
-                    <Phone className="h-6 w-6 text-teal-600" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary/10">
+                    <Phone className="h-6 w-6 text-secondary" />
                   </div>
                   <div>
-                    <h3 className="mb-2 text-xl font-light uppercase tracking-wider text-neutral-800">
+                    <h3 className="mb-2 text-xl font-cinzel font-bold uppercase tracking-wider text-foreground">
                       Phone Number
                     </h3>
-                    <p className="text-neutral-600">+234 123 456 7890</p>
-                    <p className="text-neutral-600">+234 987 654 3210</p>
+                    <p className="text-muted-foreground font-lora">
+                      +234 123 456 7890
+                    </p>
+                    <p className="text-muted-foreground font-lora">
+                      +234 987 654 3210
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-6">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-400/10">
-                    <Mail className="h-6 w-6 text-teal-600" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary/10">
+                    <Mail className="h-6 w-6 text-secondary" />
                   </div>
                   <div>
-                    <h3 className="mb-2 text-xl font-light uppercase tracking-wider text-neutral-800">
+                    <h3 className="mb-2 text-xl font-cinzel font-bold uppercase tracking-wider text-foreground">
                       Email Address
                     </h3>
-                    <p className="text-neutral-600">info@naijaconcierge.com</p>
-                    <p className="text-neutral-600">
+                    <p className="text-muted-foreground font-lora">
+                      info@naijaconcierge.com
+                    </p>
+                    <p className="text-muted-foreground font-lora">
                       support@naijaconcierge.com
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-6">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-400/10">
-                    <Clock className="h-6 w-6 text-teal-600" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary/10">
+                    <Clock className="h-6 w-6 text-secondary" />
                   </div>
                   <div>
-                    <h3 className="mb-2 text-xl font-light uppercase tracking-wider text-neutral-800">
+                    <h3 className="mb-2 text-xl font-cinzel font-bold uppercase tracking-wider text-foreground">
                       Working Hours
                     </h3>
-                    <p className="text-neutral-600">24/7 Concierge Service</p>
-                    <p className="text-neutral-600">
+                    <p className="text-muted-foreground font-lora">
+                      24/7 Concierge Service
+                    </p>
+                    <p className="text-muted-foreground font-lora">
                       Office Hours: 9 AM - 6 PM (Mon-Fri)
                     </p>
                   </div>
@@ -204,7 +218,7 @@ export default function ContactPage() {
               </div>
 
               {/* Google Map */}
-              <div className="mt-12 h-[300px] overflow-hidden rounded-lg">
+              <div className="mt-12 h-[300px] overflow-hidden rounded-lg subtle-glow">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.7286885532443!2d3.4226242!3d6.4280555!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103bf53280e7648d%3A0x4d01e5de6b847fe!2sVictoria%20Island%2C%20Lagos!5e0!3m2!1sen!2sng!4v1652345678901!5m2!1sen!2sng"
                   width="100%"
@@ -226,16 +240,16 @@ export default function ContactPage() {
               }
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
-              <Card className="overflow-hidden border-none bg-neutral-50 shadow-lg">
+              <Card className="overflow-hidden border-border bg-card shadow-lg subtle-glow">
                 <CardContent className="p-8">
-                  <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-neutral-800">
+                  <h2 className="mb-8 text-3xl font-cinzel font-bold uppercase tracking-widest text-foreground">
                     Send Us a Message
                   </h2>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                       <Label
                         htmlFor="name"
-                        className="mb-2 block text-sm font-medium uppercase tracking-wider"
+                        className="mb-2 block text-sm font-lora uppercase tracking-wider text-foreground"
                       >
                         Full Name *
                       </Label>
@@ -247,14 +261,14 @@ export default function ContactPage() {
                         placeholder="Enter your full name"
                         required
                         disabled={isSubmitting}
-                        className="border-neutral-300 bg-white py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
+                        className="border-border bg-card py-6 text-foreground focus:border-secondary focus:ring-secondary font-lora"
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="email"
-                        className="mb-2 block text-sm font-medium uppercase tracking-wider"
+                        className="mb-2 block text-sm font-lora uppercase tracking-wider text-foreground"
                       >
                         Email Address *
                       </Label>
@@ -267,14 +281,14 @@ export default function ContactPage() {
                         placeholder="Enter your email address"
                         required
                         disabled={isSubmitting}
-                        className="border-neutral-300 bg-white py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
+                        className="border-border bg-card py-6 text-foreground focus:border-secondary focus:ring-secondary font-lora"
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="phone"
-                        className="mb-2 block text-sm font-medium uppercase tracking-wider"
+                        className="mb-2 block text-sm font-lora uppercase tracking-wider text-foreground"
                       >
                         Phone Number
                       </Label>
@@ -285,14 +299,14 @@ export default function ContactPage() {
                         onChange={handleChange}
                         placeholder="Enter your phone number"
                         disabled={isSubmitting}
-                        className="border-neutral-300 bg-white py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
+                        className="border-border bg-card py-6 text-foreground focus:border-secondary focus:ring-secondary font-lora"
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="subject"
-                        className="mb-2 block text-sm font-medium uppercase tracking-wider"
+                        className="mb-2 block text-sm font-lora uppercase tracking-wider text-foreground"
                       >
                         Subject *
                       </Label>
@@ -304,14 +318,14 @@ export default function ContactPage() {
                         placeholder="Enter the subject of your message"
                         required
                         disabled={isSubmitting}
-                        className="border-neutral-300 bg-white py-6 text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
+                        className="border-border bg-card py-6 text-foreground focus:border-secondary focus:ring-secondary font-lora"
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="message"
-                        className="mb-2 block text-sm font-medium uppercase tracking-wider"
+                        className="mb-2 block text-sm font-lora uppercase tracking-wider text-foreground"
                       >
                         Message *
                       </Label>
@@ -324,13 +338,13 @@ export default function ContactPage() {
                         rows={6}
                         required
                         disabled={isSubmitting}
-                        className="border-neutral-300 bg-white text-neutral-800 focus:border-teal-400 focus:ring-teal-400"
+                        className="border-border bg-card text-foreground focus:border-secondary focus:ring-secondary font-lora"
                       />
                     </div>
 
                     <Button
                       type="submit"
-                      className="w-full bg-teal-400 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
+                      className="w-full bg-secondary py-6 text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -355,9 +369,16 @@ export default function ContactPage() {
         className="relative aspect-[21/9] w-full"
         style={{ minHeight: "300px" }}
       >
-        <div className="absolute inset-0 bg-neutral-900">
-          <div className="h-full w-full bg-[url('/image10.png')] bg-cover bg-center bg-no-repeat opacity-30" />
-        </div>
+        <Image
+          src="/image10.png"
+          alt="CTA Background"
+          width={1920}
+          height={1080}
+          priority
+          className="w-full h-full object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent subtle-grain" />
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -366,12 +387,12 @@ export default function ContactPage() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="mb-8 text-3xl font-light uppercase tracking-widest text-white md:text-4xl">
+            <h2 className="mb-8 text-3xl font-cinzel font-bold uppercase tracking-widest text-overlay md:text-4xl">
               Begin Your Journey
             </h2>
             <Button
               asChild
-              className="bg-teal-400 px-8 py-6 text-sm font-medium uppercase tracking-widest text-neutral-900 hover:bg-teal-500"
+              className="bg-secondary px-8 py-6 text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
             >
               <a href="/booking">Book Now</a>
             </Button>

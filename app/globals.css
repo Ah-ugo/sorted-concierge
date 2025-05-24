@@ -3,52 +3,52 @@
 @tailwind utilities;
 
 :root {
-  --background: 36 39% 95%; /* Off-white */
-  --foreground: 0 0% 10%; /* Soft black */
+  --background: 0 0% 98%; /* Soft white for light mode */
+  --foreground: 0 0% 10%; /* Dark navy */
   --card: 0 0% 100%;
   --card-foreground: 0 0% 10%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 10%;
-  --primary: 221 45% 20%; /* Navy blue */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 45 60% 60%; /* Gold */
+  --primary: 221 45% 27%; /* Muted navy */
+  --primary-foreground: 0 0% 98%;
+  --secondary: 45 60% 70%; /* Light gold */
   --secondary-foreground: 0 0% 10%;
-  --muted: 36 39% 95%;
-  --muted-foreground: 215 25% 46%;
-  --accent: 0 0% 17%; /* Charcoal */
-  --accent-foreground: 0 0% 100%;
-  --border: 214 20% 80%;
-  --input: 214 20% 80%;
-  --ring: 221 45% 20%;
+  --muted: 0 0% 85%; /* Slightly darker gray for contrast */
+  --muted-foreground: 0 0% 40%;
+  --accent: 0 0% 95%; /* Warm ivory */
+  --accent-foreground: 0 0% 10%;
+  --border: 0 0% 85%;
+  --input: 0 0% 85%;
+  --ring: 221 45% 27%;
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: 0 0% 17%; /* Charcoal */
-  --foreground: 0 0% 100%;
-  --card: 0 0% 17%;
-  --card-foreground: 0 0% 100%;
-  --popover: 0 0% 17%;
-  --popover-foreground: 0 0% 100%;
-  --primary: 221 45% 20%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 45 60% 60%;
+  --background: 221 45% 20%; /* Deep navy */
+  --foreground: 0 0% 95%; /* Warm ivory */
+  --card: 221 45% 25%;
+  --card-foreground: 0 0% 95%;
+  --popover: 221 45% 25%;
+  --popover-foreground: 0 0% 95%;
+  --primary: 221 45% 27%;
+  --primary-foreground: 0 0% 95%;
+  --secondary: 45 60% 60%; /* Soft gold */
   --secondary-foreground: 0 0% 10%;
-  --muted: 0 0% 20%;
-  --muted-foreground: 215 20% 65%;
-  --accent: 36 39% 95%;
+  --muted: 221 45% 30%;
+  --muted-foreground: 0 0% 60%;
+  --accent: 0 0% 95%;
   --accent-foreground: 0 0% 10%;
-  --border: 217 20% 25%;
-  --input: 217 20% 25%;
-  --ring: 221 45% 20%;
+  --border: 221 45% 35%;
+  --input: 221 45% 35%;
+  --ring: 45 60% 60%;
 }
 
 @layer base {
   * {
-    @apply border-gray-200 dark:border-gray-700;
+    @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans text-lg font-normal leading-relaxed;
+    @apply bg-background text-foreground font-lora text-base font-normal leading-relaxed;
   }
   h1,
   h2,
@@ -56,35 +56,20 @@
   h4,
   h5,
   h6 {
-    @apply font-cinzel font-bold tracking-tight text-primary;
+    @apply font-cinzel font-bold tracking-wider text-white; /* White headings */
   }
-  .badge,
-  blockquote {
-    @apply font-lora italic text-secondary;
+  button,
+  a {
+    @apply transition-colors duration-200;
   }
 }
 
 @layer utilities {
-  .textured-bg {
-    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.04' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  .subtle-glow {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
-  .grainy-bg {
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.1'/%3E%3C/svg%3E");
-  }
-  .frosted-glass {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-  .glow-cursor {
-    position: fixed;
-    width: 24px;
-    height: 24px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transition: transform 0.2s ease;
+  .subtle-grain {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
   }
   .link-underline {
     position: relative;
@@ -96,11 +81,21 @@
     left: 0;
     width: 0;
     height: 1px;
-    background: #d4af37;
+    background: hsl(var(--secondary));
     transition: width 0.3s ease;
   }
   .link-underline:hover::after {
     width: 100%;
+  }
+  .text-overlay {
+    @apply text-white; /* Pure white for overlays */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Subtle shadow for contrast */
+  }
+  .text-header {
+    @apply text-white; /* White for navbar pre-scroll in light mode */
+  }
+  .dark .text-header {
+    @apply text-foreground; /* Warm ivory in dark mode */
   }
 }
 
@@ -111,13 +106,6 @@ body.mobile-menu-open {
   height: 100%;
 }
 
-.hero-video-container {
-  position: relative;
-  height: 100vh;
-  width: 100%;
-  overflow: hidden;
-}
-
 .hero-video {
   position: absolute;
   top: 0;
@@ -125,50 +113,19 @@ body.mobile-menu-open {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(0.85);
-}
-
-.hero-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.6),
-    rgba(0, 0, 0, 0.4)
-  );
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  text-align: center;
-}
-
-.service-card,
-.testimonial-card {
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  border-radius: 0.75rem;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-}
-
-.service-card:hover,
-.testimonial-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  filter: brightness(0.8) contrast(1.1);
 }
 
 button.bg-secondary {
-  background: linear-gradient(90deg, #d4af37, #e8c96a);
-  color: #1a2a44;
+  background: linear-gradient(
+    90deg,
+    hsl(var(--secondary)),
+    hsl(var(--secondary) / 80%)
+  );
 }
 
 button.border-secondary {
-  @apply frosted-glass;
+  border-color: hsl(var(--secondary));
 }
 
 .whatsapp-button {
@@ -186,7 +143,7 @@ button.border-secondary {
   }
   70% {
     transform: scale(1.05);
-    box-shadow: 0 0 0 10px rgba(212, 175, 55, 0);
+    box-shadow: 0 0 0 12px rgba(212, 175, 55, 0);
   }
   100% {
     transform: scale(1);
@@ -194,64 +151,17 @@ button.border-secondary {
   }
 }
 
-.currency-selector {
-  position: relative;
-}
+.currency-selector,
 .currency-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: white;
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  min-width: 120px;
+  @apply subtle-glow rounded-md;
 }
+
 .currency-option {
-  padding: 8px 12px;
+  padding: 10px 14px;
   cursor: pointer;
   transition: background 0.2s;
 }
-.currency-option:hover {
-  background: #f8f1e9;
-}
 
-.instagram-feed {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
-}
-.instagram-post {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  border-radius: 0.5rem;
-}
-.instagram-post img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-  filter: brightness(0.9);
-}
-.instagram-post:hover img {
-  transform: scale(1.05);
-}
-.instagram-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-}
-.instagram-post:hover .instagram-overlay {
-  opacity: 1;
+.currency-option:hover {
+  background: hsl(var(--secondary) / 10%);
 }
