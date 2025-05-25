@@ -57,7 +57,7 @@ export default function RootLayout({
               <ClientLayoutWrapper>
                 <Preloader />
                 <CursorGlow />
-                <Header />
+                {/* <Header /> */}
                 {children}
                 {/* <Footer /> */}
                 <Toaster />

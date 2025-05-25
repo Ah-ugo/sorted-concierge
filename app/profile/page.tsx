@@ -223,13 +223,15 @@ export default function ProfilePage() {
           <Image
             src="/image14.png"
             alt="Profile Hero"
-            width={1920}
-            height={1080}
+            // width={1920}
+            // height={1080}
+            fill
             priority
             className="w-full h-full object-cover"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent subtle-grain" />
+          <div className="absolute inset-0 bg-black/50" />
+          {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent subtle-grain" /> */}
         </motion.div>
 
         <div className="container relative z-10 mx-auto my-32 px-6 text-center">

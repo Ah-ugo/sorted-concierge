@@ -112,50 +112,57 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="grid md:grid-cols-2 max-w-4xl w-full bg-white rounded-xl overflow-hidden shadow-lg">
-        <div className="hidden md:block relative bg-teal-400/20">
-          <div className="absolute inset-0 p-12 flex flex-col justify-between">
+    <div className="min-h-screen flex items-center justify-center bg-black py-12 px-4 sm:px-6 lg:px-8">
+      <div className="grid md:grid-cols-2 max-w-4xl w-full bg-black border border-gray-800 rounded-xl overflow-hidden elegant-shadow">
+        <div className="hidden md:block relative bg-gradient-to-br from-black to-gray-900">
+          <div className="absolute inset-0 p-12 flex flex-col justify-between z-10">
             <div>
-              <h1 className="text-3xl font-semibold text-teal-800">
+              <h1 className="text-3xl font-cinzel font-bold gold-accent tracking-wider">
                 Welcome Back
               </h1>
-              <p className="mt-4 text-teal-700">
+              <p className="mt-4 text-gray-300 font-lora">
                 Login to access premium concierge services tailored just for
                 you.
               </p>
             </div>
-            <div className="text-sm text-teal-700">
+            <div className="text-sm text-gray-400 font-lora">
               <p>Don't have an account?</p>
               <p>Sign up to experience luxury concierge services in Lagos.</p>
             </div>
           </div>
           <Image
             src="/image12.png"
-            alt="Naija Concierge"
+            alt="Sorted Concierge"
             width={600}
             height={800}
             className="w-full h-full object-cover opacity-20"
           />
+          {/* Luxury overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
         </div>
 
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
-          className="p-8 sm:p-12"
+          className="p-8 sm:p-12 bg-black"
         >
           <div className="mb-8 text-center">
-            <h1 className="text-2xl font-bold">Sign In</h1>
-            <p className="mt-2 text-neutral-600">
+            <h1 className="text-2xl font-cinzel font-bold text-white tracking-wider">
+              Sign In
+            </h1>
+            <p className="mt-2 text-gray-400 font-lora">
               Enter your credentials to access your account
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-white font-lora">
+                Email
+              </Label>
               <Input
                 id="email"
                 name="email"
@@ -164,19 +171,21 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 disabled={isLoading}
-                className="h-12"
+                className="h-12 bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-secondary focus:ring-secondary"
               />
               {errors.email && (
-                <p className="text-sm text-red-500">{errors.email}</p>
+                <p className="text-sm text-red-400">{errors.email}</p>
               )}
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-white font-lora">
+                  Password
+                </Label>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-sm text-teal-600 hover:underline"
+                  className="text-sm gold-accent hover:opacity-80 font-lora link-underline"
                 >
                   Forgot password?
                 </Link>
@@ -189,16 +198,16 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 disabled={isLoading}
-                className="h-12"
+                className="h-12 bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-secondary focus:ring-secondary"
               />
               {errors.password && (
-                <p className="text-sm text-red-500">{errors.password}</p>
+                <p className="text-sm text-red-400">{errors.password}</p>
               )}
             </div>
 
             <Button
               type="submit"
-              className="w-full h-12 bg-teal-400 hover:bg-teal-500 text-neutral-900"
+              className="w-full h-12 gold-gradient text-black font-lora uppercase tracking-wider hover:opacity-90 elegant-shadow"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -208,11 +217,11 @@ export default function LoginPage() {
               )}
             </Button>
 
-            <div className="text-center text-sm text-neutral-600">
+            <div className="text-center text-sm text-gray-400 font-lora">
               Don't have an account?{" "}
               <Link
                 href="/auth/register"
-                className="text-teal-600 hover:underline"
+                className="gold-accent hover:opacity-80 link-underline"
               >
                 Sign up
               </Link>

@@ -127,20 +127,20 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="grid md:grid-cols-2 max-w-5xl w-full bg-white rounded-xl overflow-hidden shadow-lg">
-        <div className="hidden md:block relative bg-teal-400/20">
+    <div className="min-h-screen flex items-center justify-center bg-black py-12 px-4 sm:px-6 lg:px-8">
+      <div className="grid md:grid-cols-2 max-w-5xl w-full bg-black border border-gray-800 rounded-xl overflow-hidden elegant-shadow">
+        <div className="hidden md:block relative bg-gradient-to-br from-black to-gray-900">
           <div className="absolute inset-0 p-12 flex flex-col justify-between z-10">
             <div>
-              <h1 className="text-3xl font-semibold text-teal-800">
+              <h1 className="text-3xl font-cinzel font-bold gold-accent tracking-wider">
                 Join Sorted Concierge
               </h1>
-              <p className="mt-4 text-teal-700">
+              <p className="mt-4 text-gray-300 font-lora">
                 Create your account to access exclusive concierge services and
                 luxurious experiences.
               </p>
             </div>
-            <div className="text-sm text-teal-700">
+            <div className="text-sm text-gray-400 font-lora">
               <p>Already have an account?</p>
               <p>Sign in to continue your premium concierge experience.</p>
             </div>
@@ -152,17 +152,21 @@ export default function RegisterPage() {
             height={800}
             className="w-full h-full object-cover opacity-20"
           />
+          {/* Luxury overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
         </div>
 
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
-          className="p-8 md:p-12"
+          className="p-8 md:p-12 bg-black"
         >
           <div className="mb-8 text-center">
-            <h1 className="text-2xl font-bold">Create an Account</h1>
-            <p className="mt-2 text-neutral-600">
+            <h1 className="text-2xl font-cinzel font-bold text-white tracking-wider">
+              Create an Account
+            </h1>
+            <p className="mt-2 text-gray-400 font-lora">
               Sign up to access our premium concierge services
             </p>
           </div>
@@ -170,37 +174,43 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName" className="text-white font-lora">
+                  First Name
+                </Label>
                 <Input
                   id="firstName"
                   name="firstName"
                   placeholder="John"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className="h-12"
+                  className="h-12 bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-secondary focus:ring-secondary"
                 />
                 {errors.firstName && (
-                  <p className="text-sm text-red-500">{errors.firstName}</p>
+                  <p className="text-sm text-red-400">{errors.firstName}</p>
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName" className="text-white font-lora">
+                  Last Name
+                </Label>
                 <Input
                   id="lastName"
                   name="lastName"
                   placeholder="Doe"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className="h-12"
+                  className="h-12 bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-secondary focus:ring-secondary"
                 />
                 {errors.lastName && (
-                  <p className="text-sm text-red-500">{errors.lastName}</p>
+                  <p className="text-sm text-red-400">{errors.lastName}</p>
                 )}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-white font-lora">
+                Email
+              </Label>
               <Input
                 id="email"
                 name="email"
@@ -208,30 +218,34 @@ export default function RegisterPage() {
                 placeholder="your.email@example.com"
                 value={formData.email}
                 onChange={handleChange}
-                className="h-12"
+                className="h-12 bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-secondary focus:ring-secondary"
               />
               {errors.email && (
-                <p className="text-sm text-red-500">{errors.email}</p>
+                <p className="text-sm text-red-400">{errors.email}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number (Optional)</Label>
+              <Label htmlFor="phone" className="text-white font-lora">
+                Phone Number (Optional)
+              </Label>
               <Input
                 id="phone"
                 name="phone"
                 placeholder="+234 123 456 7890"
                 value={formData.phone}
                 onChange={handleChange}
-                className="h-12"
+                className="h-12 bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-secondary focus:ring-secondary"
               />
               {errors.phone && (
-                <p className="text-sm text-red-500">{errors.phone}</p>
+                <p className="text-sm text-red-400">{errors.phone}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-white font-lora">
+                Password
+              </Label>
               <Input
                 id="password"
                 name="password"
@@ -239,15 +253,17 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
-                className="h-12"
+                className="h-12 bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-secondary focus:ring-secondary"
               />
               {errors.password && (
-                <p className="text-sm text-red-500">{errors.password}</p>
+                <p className="text-sm text-red-400">{errors.password}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-white font-lora">
+                Confirm Password
+              </Label>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -255,17 +271,17 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="h-12"
+                className="h-12 bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-secondary focus:ring-secondary"
               />
               {errors.confirmPassword && (
-                <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+                <p className="text-sm text-red-400">{errors.confirmPassword}</p>
               )}
             </div>
 
             <div className="mt-6">
               <Button
                 type="submit"
-                className="w-full h-12 bg-teal-400 hover:bg-teal-500 text-neutral-900"
+                className="w-full h-12 gold-gradient text-black font-lora uppercase tracking-wider hover:opacity-90 elegant-shadow"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -274,11 +290,11 @@ export default function RegisterPage() {
                   "Sign Up"
                 )}
               </Button>
-              <p className="text-center text-sm text-neutral-600 mt-4">
+              <p className="text-center text-sm text-gray-400 font-lora mt-4">
                 Already have an account?{" "}
                 <Link
                   href="/auth/login"
-                  className="text-teal-600 hover:underline"
+                  className="gold-accent hover:opacity-80 link-underline"
                 >
                   Sign in
                 </Link>
