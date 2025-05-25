@@ -165,7 +165,7 @@ export default function Home() {
             playsInline
             preload="auto"
           >
-            <source src="/0525.mp4" type="video/mp4" />
+            <source src="/0526.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
 
@@ -206,7 +206,7 @@ export default function Home() {
               <Button
                 asChild
                 variant="outline"
-                className="border-secondary text-white hover:bg-secondary hover:text-black px-8 py-6 text-sm font-lora uppercase tracking-widest elegant-shadow backdrop-blur-sm"
+                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-6 text-sm font-lora uppercase tracking-widest elegant-shadow backdrop-blur-sm"
               >
                 <Link href="/about">Discover More</Link>
               </Button>
@@ -881,7 +881,7 @@ export default function Home() {
             <Button
               asChild
               variant="outline"
-              className="border-secondary px-8 py-4 text-sm font-lora uppercase tracking-widest text-secondary hover:bg-secondary hover:text-black elegant-shadow"
+              className="border-secondary px-8 py-4 text-sm font-lora uppercase tracking-widest text-secondary hover:bg-secondary hover:text-gray-400 hover:border-gray-400 elegant-shadow"
             >
               <Link href="/booking">Book Experience</Link>
             </Button>
