@@ -165,7 +165,7 @@ export default function Home() {
             playsInline
             preload="auto"
           >
-            <source src="/hero-bg2.mp4" type="video/mp4" />
+            <source src="/new-hero.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
 
