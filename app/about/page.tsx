@@ -111,7 +111,7 @@ export default function AboutPage() {
       >
         <div className="absolute inset-0">
           <Image
-            src="/image5.png"
+            src="/image18.png"
             alt="About Sorted Concierge"
             // width={1920}
             // height={1080}

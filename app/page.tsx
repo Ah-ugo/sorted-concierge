@@ -891,7 +891,7 @@ export default function Home() {
 
       <section className="relative aspect-[21/9] w-full sm:py-0 py-32">
         <Image
-          src="/image4.png"
+          src="/image17.png"
           alt="Book your experience"
           // width={1920}
           // height={1080}
