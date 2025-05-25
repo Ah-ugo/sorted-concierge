@@ -233,7 +233,7 @@ export default function BlogPostPage() {
             <div className="container mx-auto max-w-4xl">
               <Link
                 href="/blog"
-                className="flex items-center text-white mb-4 hover:text-teal-400 transition-colors"
+                className="flex items-center text-white mb-4 hover:text-secondary transition-colors"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Blog

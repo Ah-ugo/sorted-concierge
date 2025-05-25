@@ -101,7 +101,7 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center space-x-2">
-            <ModeToggle />
+            {/* <ModeToggle /> */}
             {user ? (
               <Link href="/profile">
                 <Button

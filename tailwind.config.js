@@ -15,35 +15,35 @@ module.exports = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: "#000000", // Force black
+        foreground: "#ffffff", // Force white
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#000000", // Pure black
+          foreground: "#ffffff",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "#d4af37", // Gold
+          foreground: "#000000",
         },
         destructive: {
           DEFAULT: "hsl(0 60% 50%)",
-          foreground: "hsl(0 0% 98%)",
+          foreground: "#ffffff",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "#111111", // Very dark gray
+          foreground: "#cccccc",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#111111",
+          foreground: "#ffffff",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "#000000",
+          foreground: "#ffffff",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "#111111",
+          foreground: "#ffffff",
         },
       },
       borderRadius: {
@@ -69,11 +69,26 @@ module.exports = {
           "0%": { opacity: 0, transform: "translateY(10px)" },
           "100%": { opacity: 1, transform: "translateY(0)" },
         },
+        "pulse-gold": {
+          "0%": {
+            transform: "scale(1)",
+            boxShadow: "0 0 0 0 rgba(212, 175, 55, 0.6)",
+          },
+          "70%": {
+            transform: "scale(1.05)",
+            boxShadow: "0 0 0 12px rgba(212, 175, 55, 0)",
+          },
+          "100%": {
+            transform: "scale(1)",
+            boxShadow: "0 0 0 0 rgba(212, 175, 55, 0)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out",
+        "pulse-gold": "pulse-gold 2s infinite",
       },
     },
   },

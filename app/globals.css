@@ -3,44 +3,44 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 98%; /* Soft white for light mode */
-  --foreground: 0 0% 10%; /* Dark navy */
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 10%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 10%;
-  --primary: 221 45% 27%; /* Muted navy */
-  --primary-foreground: 0 0% 98%;
-  --secondary: 45 60% 70%; /* Light gold */
-  --secondary-foreground: 0 0% 10%;
-  --muted: 0 0% 85%; /* Slightly darker gray for contrast */
-  --muted-foreground: 0 0% 40%;
-  --accent: 0 0% 95%; /* Warm ivory */
-  --accent-foreground: 0 0% 10%;
-  --border: 0 0% 85%;
-  --input: 0 0% 85%;
-  --ring: 221 45% 27%;
+  --background: 0 0% 0%; /* Pure black */
+  --foreground: 0 0% 100%; /* Pure white */
+  --card: 0 0% 3%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 3%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 0 0% 0%; /* Pure black */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 45 100% 75%; /* Gold */
+  --secondary-foreground: 0 0% 0%;
+  --muted: 0 0% 8%; /* Very dark gray */
+  --muted-foreground: 0 0% 70%;
+  --accent: 0 0% 5%; /* Almost black */
+  --accent-foreground: 0 0% 100%;
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 45 100% 75%;
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: 221 45% 20%; /* Deep navy */
-  --foreground: 0 0% 95%; /* Warm ivory */
-  --card: 221 45% 25%;
-  --card-foreground: 0 0% 95%;
-  --popover: 221 45% 25%;
-  --popover-foreground: 0 0% 95%;
-  --primary: 221 45% 27%;
-  --primary-foreground: 0 0% 95%;
-  --secondary: 45 60% 60%; /* Soft gold */
-  --secondary-foreground: 0 0% 10%;
-  --muted: 221 45% 30%;
-  --muted-foreground: 0 0% 60%;
-  --accent: 0 0% 95%;
-  --accent-foreground: 0 0% 10%;
-  --border: 221 45% 35%;
-  --input: 221 45% 35%;
-  --ring: 45 60% 60%;
+  --background: 0 0% 0%; /* Pure black */
+  --foreground: 0 0% 100%; /* Pure white */
+  --card: 0 0% 3%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 3%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 0 0% 0%; /* Pure black */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 45 100% 75%; /* Gold */
+  --secondary-foreground: 0 0% 0%;
+  --muted: 0 0% 8%;
+  --muted-foreground: 0 0% 70%;
+  --accent: 0 0% 5%;
+  --accent-foreground: 0 0% 100%;
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 45 100% 75%;
 }
 
 @layer base {
@@ -48,7 +48,10 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-lora text-base font-normal leading-relaxed;
+    @apply bg-black text-white font-lora text-base font-normal leading-relaxed;
+    background-color: #000000;
+    color: #ffffff;
+    overflow-x: hidden; /* Prevent horizontal scroll during preloader */
   }
   h1,
   h2,
@@ -56,7 +59,7 @@
   h4,
   h5,
   h6 {
-    @apply font-cinzel font-bold tracking-wider text-white; /* White headings */
+    @apply font-cinzel font-bold tracking-wider text-white;
   }
   button,
   a {
@@ -66,7 +69,7 @@
 
 @layer utilities {
   .subtle-glow {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
   }
   .subtle-grain {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
@@ -81,21 +84,130 @@
     left: 0;
     width: 0;
     height: 1px;
-    background: hsl(var(--secondary));
+    background: #d4af37;
     transition: width 0.3s ease;
   }
   .link-underline:hover::after {
     width: 100%;
   }
   .text-overlay {
-    @apply text-white; /* Pure white for overlays */
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Subtle shadow for contrast */
+    @apply text-white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   }
   .text-header {
-    @apply text-white; /* White for navbar pre-scroll in light mode */
+    @apply text-white;
   }
-  .dark .text-header {
-    @apply text-foreground; /* Warm ivory in dark mode */
+
+  /* LOV Angels exact black theme */
+  .lov-black {
+    background-color: #000000;
+  }
+  .lov-white {
+    color: #ffffff;
+  }
+  .lov-gold {
+    color: #d4af37;
+  }
+
+  .gold-gradient {
+    background: linear-gradient(135deg, #d4af37, #b8941f);
+  }
+  .black-gradient {
+    background: linear-gradient(135deg, #000000, #111111);
+  }
+  .gold-accent {
+    color: #d4af37;
+  }
+  .white-text {
+    color: #ffffff;
+  }
+  .elegant-shadow {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  .luxury-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Enhanced texture overlay utilities */
+  .texture-overlay {
+    background-image: url("/images/texture-overlay.png");
+    background-repeat: repeat;
+    background-size: 400px 400px;
+    mix-blend-mode: overlay;
+    opacity: 0.3;
+  }
+
+  .texture-overlay-soft {
+    background-image: url("/images/texture-overlay.png");
+    background-repeat: repeat;
+    background-size: 300px 300px;
+    mix-blend-mode: soft-light;
+    opacity: 0.25;
+  }
+
+  /* LOV Angels style preloader animations */
+  .preloader-slide {
+    animation: slideUp 1.2s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+    animation-delay: 1.5s;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-100%);
+    }
+  }
+
+  .preloader-reveal {
+    animation: revealContent 0.8s ease-out forwards;
+    animation-delay: 2.5s;
+    opacity: 0;
+  }
+
+  @keyframes revealContent {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Sophisticated curtain effect */
+  .curtain-effect {
+    background: linear-gradient(180deg, #000000 0%, #111111 50%, #000000 100%);
+  }
+
+  /* All sections should be black */
+  .hero-section,
+  .content-section,
+  .dark-section,
+  .muted-section {
+    background: #000000;
+    color: #ffffff;
+  }
+
+  /* Override any white backgrounds */
+  .bg-background {
+    background-color: #000000 !important;
+  }
+
+  .bg-muted {
+    background-color: #111111 !important;
+  }
+
+  .text-foreground {
+    color: #ffffff !important;
+  }
+
+  .text-muted-foreground {
+    color: #cccccc !important;
   }
 }
 
@@ -113,19 +225,27 @@ body.mobile-menu-open {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(0.8) contrast(1.1);
+  filter: brightness(0.6) contrast(1.1);
+  z-index: 1;
 }
 
 button.bg-secondary {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--secondary)),
-    hsl(var(--secondary) / 80%)
-  );
+  background: linear-gradient(135deg, #d4af37, #b8941f);
+  color: #000000;
+}
+
+button.bg-secondary:hover {
+  background: linear-gradient(135deg, #b8941f, #d4af37);
 }
 
 button.border-secondary {
-  border-color: hsl(var(--secondary));
+  border-color: #d4af37;
+  color: #d4af37;
+}
+
+button.border-secondary:hover {
+  background-color: #d4af37;
+  color: #000000;
 }
 
 .whatsapp-button {
@@ -133,35 +253,115 @@ button.border-secondary {
   bottom: 20px;
   right: 20px;
   z-index: 100;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.6);
-  }
-  70% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 12px rgba(212, 175, 55, 0);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
-  }
+  animation: pulse-gold 2s infinite;
 }
 
 .currency-selector,
 .currency-dropdown {
-  @apply subtle-glow rounded-md;
+  background: #111111;
+  border: 1px solid #333333;
+  color: #ffffff;
 }
 
 .currency-option {
   padding: 10px 14px;
   cursor: pointer;
   transition: background 0.2s;
+  color: #ffffff;
 }
 
 .currency-option:hover {
-  background: hsl(var(--secondary) / 10%);
+  background: rgba(212, 175, 55, 0.1);
+}
+
+/* Enhanced button styles matching LOV Angels pure black theme */
+.btn-primary {
+  background: linear-gradient(135deg, #d4af37, #b8941f);
+  color: #000000;
+  border: none;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #b8941f, #d4af37);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #d4af37;
+  border: 2px solid #d4af37;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.btn-secondary:hover {
+  background: #d4af37;
+  color: #000000;
+}
+
+/* Text utilities for pure black theme */
+.text-gold {
+  color: #d4af37;
+}
+
+/* Force all backgrounds to be black */
+section {
+  background-color: #000000 !important;
+  color: #ffffff;
+}
+
+/* Ensure all text is white by default */
+p,
+span,
+div {
+  color: #ffffff;
+}
+
+/* Only gold should be the accent color */
+.gold-only {
+  color: #d4af37;
+}
+
+/* Preloader specific styles */
+.preloader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.preloader-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  transform: translateY(0);
+  transition: transform 1.2s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.preloader-panel.slide-up {
+  transform: translateY(-100%);
+}
+
+/* Prevent body scroll during preloader */
+body.preloader-active {
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* globals.css */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

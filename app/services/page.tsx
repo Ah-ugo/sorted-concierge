@@ -105,13 +105,15 @@ export default function ServicesPage() {
           <Image
             src="/image6.png"
             alt="Services Hero"
-            width={1920}
-            height={1080}
+            // width={1920}
+            // height={1080}
+            fill
             priority
             className="w-full h-full object-cover"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-black/50" />
+          {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" /> */}
         </motion.div>
 
         <div className="container relative z-10 mx-auto my-32 px-6 text-center">
@@ -309,7 +311,7 @@ export default function ServicesPage() {
               asChild
               className="bg-secondary px-8 py-6 text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
             >
-              <Link href="/contact">Contact Us for Custom Packages</Link>
+              <Link href="/contact">Contact Us</Link>
             </Button>
           </motion.div>
         </div>
