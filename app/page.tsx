@@ -52,9 +52,9 @@ export default function Home() {
 
   return (
     <>
-      {isPreloaderVisible && (
+      {/* {isPreloaderVisible && (
         <div className="preloader-container">
-          {/* Beautiful Slide In Animation */}
+          
           <motion.div
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
@@ -122,7 +122,7 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          {/* Beautiful Slide Out Animation */}
+          
           <motion.div
             initial={{ x: "-100%" }}
             animate={{ x: "100%" }}
@@ -134,7 +134,7 @@ export default function Home() {
             className="fixed inset-0 z-[59] bg-gradient-to-r from-black via-gray-900 to-black"
           />
 
-          {/* Final curtain effect */}
+          
           <motion.div
             initial={{ x: "-100%" }}
             animate={{ x: "100%" }}
@@ -146,7 +146,7 @@ export default function Home() {
             className="fixed inset-0 z-[58] bg-gradient-to-r from-black/60 to-transparent"
           />
         </div>
-      )}
+      )} */}
 
       <section
         className="relative flex h-screen items-center justify-center bg-black"
@@ -258,12 +258,13 @@ export default function Home() {
             >
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg elegant-shadow">
                 <Image
+                  loading="lazy"
                   src="/tourist-carrying-luggage.jpg"
                   alt="Premium experience"
                   width={600}
                   height={450}
                   className="object-cover w-full h-full"
-                  priority
+                  // priority
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -359,6 +360,7 @@ export default function Home() {
                       className="group relative w-[400px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
                     >
                       <Image
+                        loading="lazy"
                         src="/romantic-bohemian-couple-bed.jpg"
                         alt="Stay"
                         width={400}
@@ -392,6 +394,7 @@ export default function Home() {
                       className="group relative w-[320px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
                     >
                       <Image
+                        loading="lazy"
                         src="/medium-shot-people-eating.jpg"
                         alt="Dine"
                         width={320}
@@ -425,6 +428,7 @@ export default function Home() {
                       className="group relative w-[320px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
                     >
                       <Image
+                        loading="lazy"
                         src="/image.png"
                         alt="Adventure"
                         width={320}
@@ -491,6 +495,7 @@ export default function Home() {
                       className="group relative w-[400px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
                     >
                       <Image
+                        loading="lazy"
                         src="/image2.png"
                         alt="Rejuvenate"
                         width={400}
@@ -524,6 +529,7 @@ export default function Home() {
                       className="group relative w-[320px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
                     >
                       <Image
+                        loading="lazy"
                         src="/image1.png"
                         alt="Celebrate"
                         width={320}
@@ -557,6 +563,7 @@ export default function Home() {
                       className="group relative w-[320px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
                     >
                       <Image
+                        loading="lazy"
                         src="/image3.png"
                         alt="Offers"
                         width={320}
@@ -649,6 +656,7 @@ export default function Home() {
               className="group relative col-span-2 row-span-2 overflow-hidden rounded-lg elegant-shadow cursor-pointer"
             >
               <Image
+                loading="lazy"
                 src="/romantic-bohemian-couple-bed.jpg"
                 alt="Luxury accommodation"
                 width={600}
@@ -703,6 +711,7 @@ export default function Home() {
                 className="group relative col-span-1 row-span-1 overflow-hidden rounded-lg elegant-shadow cursor-pointer"
               >
                 <Image
+                  loading="lazy"
                   src={item.src || "/placeholder.svg"}
                   alt={item.title}
                   width={300}
@@ -731,6 +740,7 @@ export default function Home() {
               className="group relative col-span-2 row-span-2 overflow-hidden rounded-lg elegant-shadow cursor-pointer"
             >
               <Image
+                loading="lazy"
                 src="/image2.png"
                 alt="Spa and wellness"
                 width={600}
@@ -766,6 +776,7 @@ export default function Home() {
               className="group relative col-span-2 row-span-1 overflow-hidden rounded-lg elegant-shadow cursor-pointer"
             >
               <Image
+                loading="lazy"
                 src="/tourist-carrying-luggage.jpg"
                 alt="Travel experiences"
                 width={600}
@@ -804,6 +815,7 @@ export default function Home() {
                 className="group relative col-span-1 row-span-1 overflow-hidden rounded-lg elegant-shadow cursor-pointer"
               >
                 <Image
+                  loading="lazy"
                   src={`/placeholder.svg?height=200&width=300&text=Experience ${
                     index + 1
                   }`}
@@ -891,13 +903,14 @@ export default function Home() {
 
       <section className="relative aspect-[21/9] w-full sm:py-0 py-32">
         <Image
+          loading="lazy"
           src="/image17.png"
           alt="Book your experience"
           // width={1920}
           // height={1080}
           fill
           className="w-full h-full object-cover"
-          priority
+          // priority
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
