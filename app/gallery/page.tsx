@@ -1,0 +1,383 @@
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import Link from "next/link";
+import Image from "next/image";
+import { X, ChevronLeft, ChevronRight, Instagram } from "lucide-react";
+
+// Gallery images with Unsplash URLs
+const galleryImages = [
+  {
+    id: "1",
+    src: "https://images.unsplash.com/photo-1519741497674-611481863552",
+    alt: "Elegant Parisian Gala",
+    caption: "An Unforgettable Evening in Paris",
+  },
+  {
+    id: "2",
+    src: "https://images.unsplash.com/photo-1629236703739-9a2f03e0bdfa",
+    alt: "Private Jet Interior",
+    caption: "Travel in Ultimate Comfort",
+  },
+  {
+    id: "3",
+    src: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
+    alt: "Fine Dining Experience",
+    caption: "Exquisite Culinary Moments",
+  },
+  {
+    id: "4",
+    src: "https://images.unsplash.com/photo-1534453784731-3fadae1f28cb",
+    alt: "Fashion Week Runway",
+    caption: "Front Row at Fashion Week",
+  },
+  {
+    id: "5",
+    src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+    alt: "Private Island Paradise",
+    caption: "Escape to Paradise",
+  },
+  {
+    id: "6",
+    src: "https://images.unsplash.com/photo-1579965342575-16428a7c8881",
+    alt: "Art Auction Display",
+    caption: "Bidding on Masterpieces",
+  },
+];
+
+// Instagram images with Unsplash URLs
+const instagramImages = [
+  {
+    id: "1",
+    src: "https://images.unsplash.com/photo-1541783249090-82af7b4c36b5",
+    alt: "Detty December Celebration",
+    caption: "Celebrating Detty December in Style",
+    link: "https://www.instagram.com/sortedconcierge",
+  },
+  {
+    id: "2",
+    src: "https://images.unsplash.com/photo-1629236727147-5a9c474c7147",
+    alt: "Jet-Set Lifestyle",
+    caption: "Jet-Set Living",
+    link: "https://www.instagram.com/sortedconcierge",
+  },
+  {
+    id: "3",
+    src: "https://images.unsplash.com/photo-1483985988355-763728e1935b",
+    alt: "Fashion Week Style",
+    caption: "Stealing the Show at Fashion Week",
+    link: "https://www.instagram.com/sortedconcierge",
+  },
+  {
+    id: "4",
+    src: "https://images.unsplash.com/photo-1519225421980-715cb0215aed",
+    alt: "Private Dinner Setup",
+    caption: "Crafting Unforgettable Evenings",
+    link: "https://www.instagram.com/sortedconcierge",
+  },
+];
+
+export default function Gallery() {
+  const [selectedImage, setSelectedImage] = useState<{
+    src: string;
+    alt: string;
+    caption: string;
+  } | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const { scrollY } = useScroll();
+  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0.7]);
+  const heroScale = useTransform(scrollY, [0, 300], [1, 1.05]);
+  const heroTranslateY = useTransform(scrollY, [0, 300], [0, 50]);
+
+  const [heroRef, heroInView] = useInView({
+    triggerOnce: false,
+    threshold: 0.2,
+  });
+  const [galleryRef, galleryInView] = useInView({
+    triggerOnce: false,
+    threshold: 0.2,
+  });
+  const [instaRef, instaInView] = useInView({
+    triggerOnce: false,
+    threshold: 0.2,
+  });
+  const [ctaRef, ctaInView] = useInView({ triggerOnce: false, threshold: 0.2 });
+
+  const openPreview = (
+    image: { src: string; alt: string; caption: string },
+    index: number
+  ) => {
+    setSelectedImage(image);
+    setCurrentIndex(index);
+  };
+
+  const closePreview = () => {
+    setSelectedImage(null);
+  };
+
+  const nextImage = () => {
+    const nextIndex = (currentIndex + 1) % galleryImages.length;
+    setSelectedImage(galleryImages[nextIndex]);
+    setCurrentIndex(nextIndex);
+  };
+
+  const prevImage = () => {
+    const prevIndex =
+      (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+    setSelectedImage(galleryImages[prevIndex]);
+    setCurrentIndex(prevIndex);
+  };
+
+  return (
+    <>
+      {/* Hero Section */}
+      <section
+        ref={heroRef}
+        className="relative flex min-h-[60vh] items-center justify-center pt-10 overflow-hidden"
+      >
+        <motion.div
+          style={{ opacity: heroOpacity, scale: heroScale, y: heroTranslateY }}
+          className="absolute inset-0"
+        >
+          <Image
+            src="https://images.unsplash.com/photo-1519741497674-611481863552"
+            alt="Luxury Experiences Montage"
+            fill
+            priority
+            className="w-full h-full object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70" />
+        </motion.div>
+
+        <div className="container relative z-10 mx-auto my-16 md:my-32 px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="mx-auto max-w-3xl"
+          >
+            <p className="mb-4 font-lora text-sm sm:text-base md:text-lg italic tracking-wider text-secondary">
+              EXPLORE OUR MOMENTS
+            </p>
+            <h1 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold uppercase tracking-widest text-white">
+              OUR GALLERY
+            </h1>
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-200">
+              Discover the luxury experiences we curate, from exclusive events
+              to seamless travel.
+            </p>
+            <Button
+              asChild
+              className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:from-secondary/80 hover:to-primary/80"
+            >
+              <Link href="/booking">Book an Experience</Link>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Main Gallery Section */}
+      <section className="bg-gray-900 py-16 md:py-32" ref={galleryRef}>
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={
+              galleryInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
+            }
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mx-auto max-w-3xl text-center"
+          >
+            <h2 className="mb-8 md:mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+              Curated Moments
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {galleryImages.map((image, index) => (
+              <motion.div
+                key={image.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={
+                  galleryInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
+                }
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="relative group cursor-pointer"
+                onClick={() => openPreview(image, index)}
+              >
+                <div className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-md rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    width={400}
+                    height={300}
+                    className="w-full h-64 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-center text-white font-lora text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {image.caption}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Instagram Section */}
+      <section className="bg-gray-800/50 py-16 md:py-32" ref={instaRef}>
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={instaInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mx-auto max-w-3xl text-center"
+          >
+            <h2 className="mb-8 md:mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+              Follow Us on Instagram
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {instagramImages.map((image, index) => (
+              <motion.div
+                key={image.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={
+                  instaInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
+                }
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="relative group"
+              >
+                <div className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-md rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    width={300}
+                    height={300}
+                    className="w-full h-64 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-center text-white font-lora text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {image.caption}
+                    <a
+                      href={image.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block mt-2"
+                    >
+                      <Instagram className="w-5 h-5 text-secondary mx-auto" />
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={instaInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="mt-8 text-center"
+          >
+            <Button
+              asChild
+              className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:from-secondary/80 hover:to-primary/80"
+            >
+              <a
+                href="https://www.instagram.com/sortedconcierge"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View More on Instagram
+              </a>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section
+        className="relative aspect-[21/9] w-full"
+        style={{ minHeight: "300px" }}
+        ref={ctaRef}
+      >
+        <div className="absolute inset-0">
+          <Image
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+            alt="Luxury Yacht at Sunset"
+            fill
+            className="w-full h-full object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+        </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={ctaInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.8 }}
+            className="text-center"
+          >
+            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+              Ready to Create Your Own Moments?
+            </h2>
+            <Button
+              asChild
+              className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:from-secondary/80 hover:to-primary/80"
+            >
+              <Link href="/booking">Book Now</Link>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Image Preview Modal */}
+      {selectedImage && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        >
+          <div className="relative max-w-4xl w-full">
+            <button
+              onClick={closePreview}
+              className="absolute top-4 right-4 text-white hover:text-secondary"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <button
+              onClick={prevImage}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-secondary"
+            >
+              <ChevronLeft className="w-8 h-8" />
+            </button>
+            <button
+              onClick={nextImage}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-secondary"
+            >
+              <ChevronRight className="w-8 h-8" />
+            </button>
+            <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-md rounded-xl overflow-hidden">
+              <Image
+                src={selectedImage.src}
+                alt={selectedImage.alt}
+                width={800}
+                height={600}
+                className="w-full h-auto object-contain"
+              />
+              <div className="p-4 text-center text-white font-lora text-sm">
+                {selectedImage.caption}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </>
+  );
+}

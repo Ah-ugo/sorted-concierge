@@ -212,7 +212,7 @@ export default function Home() {
                 asChild
                 className="gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
               >
-                <Link href="/consultation">Request a Consultation</Link>
+                <Link href="/contact">Request a Consultation</Link>
               </Button>
             </div>
           </motion.div>
@@ -670,7 +670,7 @@ export default function Home() {
               asChild
               className="gold-gradient px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
             >
-              <Link href="/membership">Apply for Membership</Link>
+              <Link href="/services">Apply for Membership</Link>
             </Button>
           </motion.div>
         </div>
