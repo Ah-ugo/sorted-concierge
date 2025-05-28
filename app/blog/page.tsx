@@ -76,12 +76,14 @@ export default function BlogPage() {
           },
         }));
         setBlogPosts(posts);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error fetching blog posts:", error);
         toast({
           title: "Error",
           description:
-            error.message || "Failed to load blog posts. Please try again.",
+            error instanceof Error
+              ? error.message
+              : "Failed to load blog posts. Please try again.",
           variant: "destructive",
         });
       } finally {
@@ -119,25 +121,22 @@ export default function BlogPage() {
           <Image
             src="/image8.png"
             alt="Blog Hero"
-            // width={1920}
-            // height={1080}
             fill
             priority
             className="w-full h-full object-cover"
             sizes="100vw"
           />
           <div className="absolute inset-0 bg-black/50" />
-          {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" /> */}
         </div>
-        <div className="container relative z-10 mx-auto my-32 px-4">
+        <div className="container relative z-10 mx-auto my-16 md:my-32 px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <Badge className="mb-4 bg-secondary/20 text-secondary px-4 py-1 font-lora">
+            <Badge className="mb-4 bg-secondary/20 text-secondary px-4 py-1 text-xs sm:text-sm font-lora">
               Our Blog
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-cinzel font-bold tracking-widest text-overlay mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold tracking-widest text-overlay mb-6">
               Insights & Experiences
             </h1>
-            <p className="text-lg font-lora text-overlay mb-8">
+            <p className="text-sm sm:text-base md:text-lg font-lora text-overlay mb-8">
               Discover the latest trends, tips, and stories from our concierge
               team and lifestyle experts.
             </p>
@@ -147,7 +146,7 @@ export default function BlogPage() {
                 placeholder="Search articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-card/10 border-border text-foreground placeholder:text-muted-foreground focus:bg-card/20 font-lora"
+                className="pl-10 bg-card/10 border-border text-foreground placeholder:text-muted-foreground focus:bg-card/20 text-sm sm:text-base font-lora"
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             </div>
@@ -156,7 +155,7 @@ export default function BlogPage() {
       </section>
 
       {/* Blog Posts Section */}
-      <section className="py-20 bg-background" ref={ref}>
+      <section className="py-12 md:py-20 bg-background" ref={ref}>
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Main Content */}
@@ -190,13 +189,13 @@ export default function BlogPage() {
                   ))
                 ) : (
                   <div className="text-center py-12">
-                    <p className="text-muted-foreground font-lora mb-4">
+                    <p className="text-sm sm:text-base font-lora text-muted-foreground mb-4">
                       No articles found matching your search.
                     </p>
                     <Button
                       onClick={() => setSearchQuery("")}
                       variant="outline"
-                      className="border-secondary text-foreground hover:bg-secondary hover:text-secondary-foreground font-lora"
+                      className="border-secondary text-xs sm:text-sm text-foreground hover:bg-secondary hover:text-secondary-foreground font-lora"
                     >
                       Clear Search
                     </Button>
@@ -209,8 +208,8 @@ export default function BlogPage() {
             <div className="mt-8 md:mt-0">
               <div className="sticky top-24">
                 {/* Categories */}
-                <div className="bg-card p-6 rounded-lg mb-8 subtle-glow">
-                  <h3 className="text-xl font-cinzel font-bold tracking-widest text-foreground mb-4">
+                <div className="bg-card p-6 rounded-lg mb-8 shadow-sm">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-cinzel font-bold tracking-wider text-foreground mb-4">
                     Categories
                   </h3>
                   <ul className="space-y-2">
@@ -218,7 +217,7 @@ export default function BlogPage() {
                       <li key={tag}>
                         <Button
                           variant="ghost"
-                          className="w-full justify-start text-foreground hover:text-secondary hover:bg-secondary/10 font-lora"
+                          className="w-full justify-start text-xs sm:text-sm text-foreground hover:text-secondary hover:bg-secondary/10 font-lora"
                           onClick={() => setSearchQuery(tag)}
                         >
                           <Tag className="mr-2 h-4 w-4" />
@@ -230,8 +229,8 @@ export default function BlogPage() {
                 </div>
 
                 {/* Recent Posts */}
-                <div className="bg-card p-6 rounded-lg mb-8 subtle-glow">
-                  <h3 className="text-xl font-cinzel font-bold tracking-widest text-foreground mb-4">
+                <div className="bg-card p-6 rounded-lg mb-8 shadow-sm">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-cinzel font-bold tracking-wider text-foreground mb-4">
                     Recent Posts
                   </h3>
                   <ul className="space-y-4">
@@ -253,11 +252,11 @@ export default function BlogPage() {
                         <div>
                           <Link
                             href={`/blog/${post.slug}`}
-                            className="font-lora font-medium hover:text-secondary transition-colors"
+                            className="text-sm sm:text-base font-lora font-medium hover:text-secondary transition-colors"
                           >
                             {post.title}
                           </Link>
-                          <div className="flex items-center text-sm text-muted-foreground font-lora mt-1">
+                          <div className="flex items-center text-xs sm:text-sm text-muted-foreground font-lora mt-1">
                             <Calendar className="h-3 w-3 mr-1" />
                             {post.date}
                           </div>
@@ -268,19 +267,19 @@ export default function BlogPage() {
                 </div>
 
                 {/* Newsletter */}
-                <div className="bg-card p-6 rounded-lg subtle-glow">
-                  <h3 className="text-xl font-cinzel font-bold tracking-widest text-foreground mb-4">
+                <div className="bg-card p-6 rounded-lg shadow-sm">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-cinzel font-bold tracking-wider text-foreground mb-4">
                     Subscribe to Our Newsletter
                   </h3>
-                  <p className="text-muted-foreground font-lora mb-4">
+                  <p className="text-sm sm:text-base font-lora text-muted-foreground mb-4">
                     Stay updated with our latest articles and exclusive offers.
                   </p>
                   <div className="space-y-3">
                     <Input
                       placeholder="Your email address"
-                      className="bg-muted text-foreground placeholder:text-muted-foreground font-lora"
+                      className="bg-muted text-sm sm:text-base text-foreground placeholder:text-muted-foreground font-lora"
                     />
-                    <Button className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-lora">
+                    <Button className="w-full bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground font-lora">
                       Subscribe
                     </Button>
                   </div>

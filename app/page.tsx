@@ -82,7 +82,7 @@ export default function Home() {
                 }}
                 className="mb-6"
               >
-                <h1 className="text-5xl md:text-6xl font-cinzel font-bold gold-accent tracking-widest">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold gold-accent tracking-widest">
                   SORTED
                 </h1>
               </motion.div>
@@ -98,7 +98,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.2 }}
-                className="text-sm md:text-base font-lora uppercase tracking-[0.3em] text-gray-300"
+                className="text-xs sm:text-sm font-lora uppercase tracking-[0.3em] text-gray-300"
               >
                 Concierge Experience
               </motion.p>
@@ -196,23 +196,23 @@ export default function Home() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="mx-auto max-w-3xl"
           >
-            <p className="mb-4 font-lora text-lg italic tracking-wider gold-accent">
+            <p className="mb-4 font-lora text-sm sm:text-base md:text-lg italic tracking-wider gold-accent">
               SORTED CONCIERGE EXPERIENCE
             </p>
-            <h1 className="mb-12 text-4xl font-cinzel font-bold uppercase tracking-widest text-white md:text-5xl lg:text-6xl drop-shadow-lg">
+            <h1 className="mb-12 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cinzel font-bold uppercase tracking-widest text-white drop-shadow-lg">
               A PREMIUM LUXURY ESCAPE
             </h1>
             <div className="mt-16 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
                 asChild
                 variant="outline"
-                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-6 text-sm font-lora uppercase tracking-widest elegant-shadow backdrop-blur-sm"
+                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow backdrop-blur-sm"
               >
                 <Link href="/about">Discover More</Link>
               </Button>
               <Button
                 asChild
-                className="gold-gradient px-8 py-6 text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+                className="gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
               >
                 <Link href="/booking">Book Now</Link>
               </Button>
@@ -240,10 +240,10 @@ export default function Home() {
             animate={
               experienceInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
             }
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-16 text-3xl font-cinzel font-bold uppercase tracking-widest text-white md:text-4xl">
+            <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               Our Essence
             </h2>
           </motion.div>
@@ -254,7 +254,7 @@ export default function Home() {
               animate={
                 experienceInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }
               }
-              transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+              transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
             >
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg elegant-shadow">
                 <Image
@@ -264,7 +264,6 @@ export default function Home() {
                   width={600}
                   height={450}
                   className="object-cover w-full h-full"
-                  // priority
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -278,22 +277,22 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
               className="flex flex-col justify-center"
             >
-              <h3 className="mb-8 text-2xl font-cinzel font-bold uppercase tracking-widest text-white">
+              <h3 className="mb-8 text-xl sm:text-2xl md:text-3xl font-cinzel font-bold uppercase tracking-widest text-white">
                 Luxurious Simplicity
               </h3>
-              <p className="mb-8 text-lg font-lora text-gray-300">
+              <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
                 Sorted Concierge blends Nigerian hospitality with world-class
                 service. Every detail is tailored to exceed expectations,
                 offering an authentic yet refined experience.
               </p>
-              <p className="mb-12 text-lg font-lora text-gray-300">
+              <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
                 From private excursions to bespoke dining, we curate exclusive
                 moments that celebrate Nigeria's vibrant culture and beauty.
               </p>
               <Button
                 asChild
                 variant="link"
-                className="px-0 text-sm font-lora uppercase tracking-widest gold-accent hover:opacity-80 link-underline"
+                className="px-0 text-xs sm:text-sm font-lora uppercase tracking-widest gold-accent hover:opacity-80 link-underline"
               >
                 <Link href="/about">Learn More</Link>
               </Button>
@@ -312,7 +311,7 @@ export default function Home() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-16 text-3xl font-cinzel font-bold uppercase tracking-widest text-white md:text-4xl">
+            <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               A 360 DEGREE EXPERIENCE
             </h2>
           </motion.div>
@@ -370,10 +369,10 @@ export default function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-6">
-                        <p className="text-sm font-lora uppercase tracking-widest gold-accent mb-2">
+                        <p className="text-xs sm:text-sm font-lora uppercase tracking-widest gold-accent mb-2">
                           RESERVATIONS
                         </p>
-                        <h3 className="text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
+                        <h3 className="text-xl sm:text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
                           Luxury Stays
                         </h3>
                       </div>
@@ -404,10 +403,10 @@ export default function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
-                        <p className="text-xs font-lora uppercase tracking-widest gold-accent mb-1">
+                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
                           EXPERIENCES
                         </p>
-                        <h3 className="text-xl font-cinzel font-bold uppercase tracking-wider text-white">
+                        <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
                           Fine Dining
                         </h3>
                       </div>
@@ -438,10 +437,10 @@ export default function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
-                        <p className="text-xs font-lora uppercase tracking-widest gold-accent mb-1">
+                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
                           ACTIVITIES
                         </p>
-                        <h3 className="text-xl font-cinzel font-bold uppercase tracking-wider text-white">
+                        <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
                           Adventures
                         </h3>
                       </div>
@@ -453,7 +452,9 @@ export default function Home() {
               {/* Scroll indicator */}
               <div className="absolute top-1/2 right-4 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="bg-black/50 backdrop-blur-sm rounded-full p-2">
-                  <p className="text-xs text-white font-lora">Drag to scroll</p>
+                  <p className="text-[0.75rem] sm:text-xs text-white font-lora">
+                    Drag to scroll
+                  </p>
                 </div>
               </div>
             </div>
@@ -489,7 +490,7 @@ export default function Home() {
                       }
                       transition={{
                         duration: 0.5,
-                        delay: 0.4,
+                        delay: 0.04,
                         ease: "easeOut",
                       }}
                       className="group relative w-[400px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
@@ -505,10 +506,10 @@ export default function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-6">
-                        <p className="text-sm font-lora uppercase tracking-widest gold-accent mb-2">
+                        <p className="text-xs sm:text-sm font-lora uppercase tracking-widest gold-accent mb-2">
                           WELLNESS
                         </p>
-                        <h3 className="text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
+                        <h3 className="text-xl sm:text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
                           Spa & Wellness
                         </h3>
                       </div>
@@ -523,7 +524,7 @@ export default function Home() {
                       }
                       transition={{
                         duration: 0.5,
-                        delay: 0.5,
+                        delay: 0.05,
                         ease: "easeOut",
                       }}
                       className="group relative w-[320px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
@@ -539,10 +540,10 @@ export default function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
-                        <p className="text-xs font-lora uppercase tracking-widest gold-accent mb-1">
+                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
                           CONCIERGE
                         </p>
-                        <h3 className="text-xl font-cinzel font-bold uppercase tracking-wider text-white">
+                        <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
                           Events
                         </h3>
                       </div>
@@ -557,7 +558,7 @@ export default function Home() {
                       }
                       transition={{
                         duration: 0.5,
-                        delay: 0.6,
+                        delay: 0.06,
                         ease: "easeOut",
                       }}
                       className="group relative w-[320px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
@@ -573,10 +574,10 @@ export default function Home() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
-                        <p className="text-xs font-lora uppercase tracking-widest gold-accent mb-1">
+                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
                           VIP
                         </p>
-                        <h3 className="text-xl font-cinzel font-bold uppercase tracking-wider text-white">
+                        <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
                           Special Offers
                         </h3>
                       </div>
@@ -596,13 +597,13 @@ export default function Home() {
             animate={
               galleryInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
             }
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-8 text-3xl font-cinzel font-bold uppercase tracking-widest text-white md:text-4xl">
+            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               Gallery
             </h2>
-            <p className="mb-16 text-lg font-lora text-gray-300">
+            <p className="mb-16 text-sm sm:text-base md:text-lg font-lora text-gray-300">
               Discover the beauty and luxury that awaits you through our curated
               collection of experiences
             </p>
@@ -615,7 +616,7 @@ export default function Home() {
               animate={
                 galleryInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
               }
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.06, delay: 0.02 }}
               className="flex overflow-x-auto scrollbar-hide space-x-4 px-0 pb-4 scroll-smooth"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
@@ -630,7 +631,7 @@ export default function Home() {
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`flex-shrink-0 px-6 py-2 text-sm font-lora uppercase tracking-wider rounded-full transition-all duration-300 whitespace-nowrap ${
+                  className={`flex-shrink-0 px-6 py-2 text-xs sm:text-sm font-lora uppercase tracking-wider rounded-full transition-all duration-300 whitespace-nowrap ${
                     selectedCategory === category
                       ? "gold-gradient text-black"
                       : "bg-transparent border border-gray-600 text-gray-300 hover:border-secondary hover:text-secondary"
@@ -666,15 +667,15 @@ export default function Home() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="gold-gradient text-black px-3 py-1 rounded-full text-xs font-lora uppercase tracking-wider">
+                <span className="gold-gradient text-black px-3 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
                   Accommodations
                 </span>
               </div>
               <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <h3 className="text-white font-cinzel font-bold text-lg mb-1">
+                <h3 className="text-white font-cinzel font-bold text-base sm:text-lg md:text-xl mb-1">
                   Luxury Suite
                 </h3>
-                <p className="text-white/80 text-sm font-lora">
+                <p className="text-white/80 text-xs sm:text-sm font-lora">
                   Experience ultimate comfort and elegance
                 </p>
               </div>
@@ -721,7 +722,7 @@ export default function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="gold-gradient text-black px-2 py-1 rounded-full text-xs font-lora uppercase tracking-wider">
+                  <span className="gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
                     {item.category}
                   </span>
                 </div>
@@ -750,15 +751,15 @@ export default function Home() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="gold-gradient text-black px-3 py-1 rounded-full text-xs font-lora uppercase tracking-wider">
+                <span className="gold-gradient text-black px-3 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
                   Wellness
                 </span>
               </div>
               <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <h3 className="text-white font-cinzel font-bold text-lg mb-1">
+                <h3 className="text-white font-cinzel font-bold text-base sm:text-lg md:text-xl mb-1">
                   Spa Retreat
                 </h3>
-                <p className="text-white/80 text-sm font-lora">
+                <p className="text-white/80 text-xs sm:text-sm font-lora">
                   Rejuvenate your mind, body, and soul
                 </p>
               </div>
@@ -786,12 +787,12 @@ export default function Home() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="gold-gradient text-black px-2 py-1 rounded-full text-xs font-lora uppercase tracking-wider">
+                <span className="gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
                   Travel
                 </span>
               </div>
               <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <h3 className="text-white font-cinzel font-bold text-sm mb-1">
+                <h3 className="text-white font-cinzel font-bold text-sm sm:text-base md:text-lg mb-1">
                   Curated Journeys
                 </h3>
               </div>
@@ -827,7 +828,7 @@ export default function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="gold-gradient text-black px-2 py-1 rounded-full text-xs font-lora uppercase tracking-wider">
+                  <span className="gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
                     Premium
                   </span>
                 </div>
@@ -845,34 +846,34 @@ export default function Home() {
             className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
           >
             <div className="luxury-card p-6 rounded-lg">
-              <h3 className="text-3xl font-cinzel font-bold gold-accent mb-2">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
                 500+
               </h3>
-              <p className="text-sm font-lora uppercase tracking-wider text-gray-300">
+              <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
                 Luxury Experiences
               </p>
             </div>
             <div className="luxury-card p-6 rounded-lg">
-              <h3 className="text-3xl font-cinzel font-bold gold-accent mb-2">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
                 50+
               </h3>
-              <p className="text-sm font-lora uppercase tracking-wider text-gray-300">
+              <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
                 Premium Locations
               </p>
             </div>
             <div className="luxury-card p-6 rounded-lg">
-              <h3 className="text-3xl font-cinzel font-bold gold-accent mb-2">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
                 1000+
               </h3>
-              <p className="text-sm font-lora uppercase tracking-wider text-gray-300">
+              <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
                 Happy Guests
               </p>
             </div>
             <div className="luxury-card p-6 rounded-lg">
-              <h3 className="text-3xl font-cinzel font-bold gold-accent mb-2">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
                 24/7
               </h3>
-              <p className="text-sm font-lora uppercase tracking-wider text-gray-300">
+              <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
                 Concierge Service
               </p>
             </div>
@@ -886,14 +887,14 @@ export default function Home() {
           >
             <Button
               asChild
-              className="gold-gradient px-8 py-4 mb-5 sm:mb-0 text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 mr-4 elegant-shadow"
+              className="gold-gradient px-8 py-4 mb-5 sm:mb-0 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 mr-4 elegant-shadow"
             >
               <Link href="/gallery">View Full Gallery</Link>
             </Button>
             <Button
               asChild
               variant="outline"
-              className="border-secondary px-8 py-4 text-sm font-lora uppercase tracking-widest text-secondary hover:bg-secondary hover:text-gray-400 hover:border-gray-400 elegant-shadow"
+              className="border-secondary px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary hover:bg-secondary hover:text-gray-400 hover:border-gray-400 elegant-shadow"
             >
               <Link href="/booking">Book Experience</Link>
             </Button>
@@ -906,11 +907,8 @@ export default function Home() {
           loading="lazy"
           src="/image17.png"
           alt="Book your experience"
-          // width={1920}
-          // height={1080}
           fill
           className="w-full h-full object-cover"
-          // priority
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -922,12 +920,12 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="mb-8 text-3xl font-cinzel font-bold uppercase tracking-widest text-white md:text-4xl">
+            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               Begin Your Journey
             </h2>
             <Button
               asChild
-              className="gold-gradient px-8 py-6 text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+              className="gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
             >
               <Link href="/booking">Book Now</Link>
             </Button>

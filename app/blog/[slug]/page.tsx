@@ -153,7 +153,7 @@ export default function BlogPostPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
       </div>
     );
   }
@@ -162,14 +162,16 @@ export default function BlogPostPage() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <h1 className="text-3xl font-bold mb-4">Blog Post Not Found</h1>
-          <p className="text-neutral-600 dark:text-neutral-400 mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-foreground">
+            Blog Post Not Found
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground mb-6">
             The blog post you're looking for doesn't exist or may have been
             moved.
           </p>
           <Button
             asChild
-            className="bg-teal-400 hover:bg-teal-500 text-neutral-900"
+            className="bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground"
           >
             <Link href="/blog">
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -186,8 +188,6 @@ export default function BlogPostPage() {
       <Head>
         <title>{`${post.title} | Sorted Concierge Blog`}</title>
         <meta name="description" content={post.excerpt} />
-
-        {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
         <meta
           property="og:url"
@@ -196,8 +196,6 @@ export default function BlogPostPage() {
         <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.excerpt} />
         <meta property="og:image" content={post.image} />
-
-        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:url"
@@ -206,8 +204,6 @@ export default function BlogPostPage() {
         <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={post.excerpt} />
         <meta name="twitter:image" content={post.image} />
-
-        {/* Article specific tags */}
         <meta
           property="article:published_time"
           content={new Date(post.date).toISOString()}
@@ -219,29 +215,30 @@ export default function BlogPostPage() {
         ))}
       </Head>
 
-      <div className="min-h-screen pb-16">
-        <div className="relative h-[50vh] md:h-[60vh] bg-neutral-900">
+      <div className="min-h-screen pb-12 md:pb-16">
+        <div className="relative h-[50vh] md:h-[60vh] bg-background">
           <Image
-            src={post.image || "/placeholder.svg"}
+            src={post.image}
             alt={post.title}
             fill
             className="object-cover opacity-70"
             priority
+            sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-transparent" />
-          <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-12">
+          <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+          <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-12">
             <div className="container mx-auto max-w-4xl">
               <Link
                 href="/blog"
-                className="flex items-center text-white mb-4 hover:text-secondary transition-colors"
+                className="flex items-center text-overlay mb-4 hover:text-secondary transition-colors text-sm sm:text-base"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Blog
               </Link>
-              <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-overlay mb-4">
                 {post.title}
               </h1>
-              <div className="flex flex-wrap items-center text-white/80 gap-4 md:gap-6">
+              <div className="flex flex-wrap items-center text-overlay/80 gap-4 md:gap-6 text-xs sm:text-sm">
                 <div className="flex items-center">
                   <Calendar className="mr-2 h-4 w-4" />
                   <span>{post.date}</span>
@@ -259,16 +256,16 @@ export default function BlogPostPage() {
           </div>
         </div>
 
-        <div className="container mx-auto max-w-4xl px-4 py-12">
+        <div className="container mx-auto max-w-4xl px-4 py-8 md:py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
               <div
-                className="prose prose-lg dark:prose-invert max-w-none"
+                className="prose prose-base sm:prose-lg dark:prose-invert max-w-none"
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
 
-              <div className="mt-12 border-t border-neutral-200 dark:border-neutral-800 pt-6">
-                <h3 className="text-lg font-semibold mb-4 flex items-center">
+              <div className="mt-8 md:mt-12 border-t border-border pt-6">
+                <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 flex items-center">
                   <Share2 className="mr-2 h-5 w-5" />
                   Share this article
                 </h3>
@@ -285,20 +282,21 @@ export default function BlogPostPage() {
                 </div>
               </div>
 
-              <div className="mt-12 border-t border-neutral-200 dark:border-neutral-800 pt-6">
+              <div className="mt-8 md:mt-12 border-t border-border pt-6">
                 <div className="flex items-start space-x-4">
                   <Image
-                    src={post.author.image || "/placeholder.svg"}
+                    src={post.author.image}
                     alt={post.author.name}
                     width={80}
                     height={80}
                     className="rounded-full"
+                    sizes="(max-width: 768px) 20vw, 80px"
                   />
                   <div>
-                    <h3 className="text-lg font-semibold">
+                    <h3 className="text-base sm:text-lg md:text-xl font-semibold">
                       {post.author.name}
                     </h3>
-                    <p className="text-neutral-600 dark:text-neutral-400 mt-1">
+                    <p className="text-sm sm:text-base text-muted-foreground mt-1">
                       {post.author.bio}
                     </p>
                   </div>
@@ -309,15 +307,19 @@ export default function BlogPostPage() {
             <div className="space-y-8">
               <Card>
                 <CardContent className="pt-6">
-                  <h3 className="text-lg font-semibold mb-4">
+                  <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">
                     Subscribe to our Newsletter
                   </h3>
-                  <p className="text-neutral-600 dark:text-neutral-400 mb-4">
+                  <p className="text-sm sm:text-base text-muted-foreground mb-4">
                     Get the latest updates and offers directly to your inbox.
                   </p>
                   <div className="space-y-4">
-                    <Input placeholder="Your email address" type="email" />
-                    <Button className="w-full bg-teal-400 hover:bg-teal-500 text-neutral-900">
+                    <Input
+                      placeholder="Your email address"
+                      type="email"
+                      className="text-sm sm:text-base"
+                    />
+                    <Button className="w-full bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground">
                       Subscribe
                     </Button>
                   </div>
@@ -325,7 +327,9 @@ export default function BlogPostPage() {
               </Card>
 
               <div>
-                <h3 className="text-lg font-semibold mb-4">Related Posts</h3>
+                <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">
+                  Related Posts
+                </h3>
                 <div className="space-y-4">
                   {post.relatedPosts.map((relatedPost) => (
                     <Link
@@ -336,14 +340,15 @@ export default function BlogPostPage() {
                       <div className="flex space-x-4">
                         <div className="relative w-20 h-20 flex-shrink-0">
                           <Image
-                            src={relatedPost.image || "/placeholder.svg"}
+                            src={relatedPost.image}
                             alt={relatedPost.title}
                             fill
                             className="object-cover rounded-md"
+                            sizes="(max-width: 768px) 20vw, 80px"
                           />
                         </div>
                         <div>
-                          <h4 className="font-medium group-hover:text-teal-600 transition-colors">
+                          <h4 className="text-sm sm:text-base font-medium group-hover:text-secondary transition-colors">
                             {relatedPost.title}
                           </h4>
                         </div>
