@@ -1,12 +1,10 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useScroll, useTransform, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Button } from "@/components/ui/button";
-import CurrencySelector from "@/components/currency-selector";
 import { apiClient, type Service } from "@/lib/api";
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronDown } from "lucide-react";
@@ -23,8 +21,11 @@ export default function Home() {
   const heroScale = useTransform(scrollY, [0, 500], [1, 1.05]);
 
   const [heroRef, heroInView] = useInView({ threshold: 0.3 });
-  const [experienceRef, experienceInView] = useInView({ threshold: 0.03 });
+  const [promiseRef, promiseInView] = useInView({ threshold: 0.03 });
+  const [whoWeServeRef, whoWeServeInView] = useInView({ threshold: 0.03 });
   const [servicesRef, servicesInView] = useInView({ threshold: 0.03 });
+  const [circleRef, circleInView] = useInView({ threshold: 0.03 });
+  const [testimonialsRef, testimonialsInView] = useInView({ threshold: 0.03 });
   const [galleryRef, galleryInView] = useInView({ threshold: 0.03 });
 
   useEffect(() => {
@@ -46,15 +47,14 @@ export default function Home() {
     };
     fetchServices();
 
-    const timer = setTimeout(() => setIsPreloaderVisible(false), 4000);
+    const timer = setTimeout(() => setIsPreloaderVisible(false), 2500);
     return () => clearTimeout(timer);
   }, [toast]);
 
   return (
     <>
-      {/* {isPreloaderVisible && (
+      {isPreloaderVisible && (
         <div className="preloader-container">
-          
           <motion.div
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
@@ -122,32 +122,31 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          
           <motion.div
             initial={{ x: "-100%" }}
             animate={{ x: "100%" }}
             transition={{
               duration: 1.2,
-              delay: 2.5,
+              delay: 1.5,
               ease: [0.76, 0, 0.24, 1],
             }}
             className="fixed inset-0 z-[59] bg-gradient-to-r from-black via-gray-900 to-black"
           />
 
-          
           <motion.div
             initial={{ x: "-100%" }}
             animate={{ x: "100%" }}
             transition={{
               duration: 0.8,
-              delay: 3,
+              delay: 2,
               ease: [0.76, 0, 0.24, 1],
             }}
             className="fixed inset-0 z-[58] bg-gradient-to-r from-black/60 to-transparent"
           />
         </div>
-      )} */}
+      )}
 
+      {/* Hero Section */}
       <section
         className="relative flex h-screen items-center justify-center bg-black"
         ref={heroRef}
@@ -156,7 +155,6 @@ export default function Home() {
           style={{ opacity: heroOpacity, scale: heroScale }}
           className="absolute inset-0 w-full h-screen"
         >
-          {/* Background Video */}
           <video
             className="hero-video"
             autoPlay
@@ -182,10 +180,7 @@ export default function Home() {
             }}
           />
 
-          {/* Additional gradient overlay for depth and readability */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50 z-3" />
-
-          {/* Subtle vignette effect */}
           <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/20 z-3" />
         </motion.div>
 
@@ -196,25 +191,28 @@ export default function Home() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="mx-auto max-w-3xl"
           >
-            <p className="mb-4 font-lora text-sm sm:text-base md:text-lg italic tracking-wider gold-accent">
-              SORTED CONCIERGE EXPERIENCE
-            </p>
-            <h1 className="mb-12 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cinzel font-bold uppercase tracking-widest text-white drop-shadow-lg">
-              A PREMIUM LUXURY ESCAPE
+            <h1 className="mb-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cinzel font-bold uppercase tracking-widest text-white drop-shadow-lg">
+              UNLOCK GLOBAL ACCESS
             </h1>
+            <p className="mb-12 font-lora text-sm sm:text-base md:text-lg tracking-wider text-gray-300">
+              Delivered with absolute discretion for those who demand the
+              exceptional. Sorted Concierge opens doors to a world of curated
+              luxury, where every detail is meticulously tailored to your unique
+              desires.
+            </p>
             <div className="mt-16 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
                 asChild
                 variant="outline"
                 className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow backdrop-blur-sm"
               >
-                <Link href="/about">Discover More</Link>
+                <Link href="/services">Explore Our Services</Link>
               </Button>
               <Button
                 asChild
                 className="gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
               >
-                <Link href="/booking">Book Now</Link>
+                <Link href="/consultation">Request a Consultation</Link>
               </Button>
             </div>
           </motion.div>
@@ -233,18 +231,19 @@ export default function Home() {
         </motion.div>
       </section>
 
-      <section className="bg-black py-32" ref={experienceRef}>
+      {/* The Sorted Promise */}
+      <section className="bg-black py-32" ref={promiseRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={
-              experienceInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
+              promiseInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
             }
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
             <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
-              Our Essence
+              The Sorted Promise
             </h2>
           </motion.div>
 
@@ -252,7 +251,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, x: -40 }}
               animate={
-                experienceInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }
+                promiseInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }
               }
               transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
             >
@@ -260,7 +259,7 @@ export default function Home() {
                 <Image
                   loading="lazy"
                   src="/tourist-carrying-luggage.jpg"
-                  alt="Premium experience"
+                  alt="Seamless travel experience"
                   width={600}
                   height={450}
                   className="object-cover w-full h-full"
@@ -272,22 +271,25 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, x: 40 }}
               animate={
-                experienceInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }
+                promiseInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }
               }
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
               className="flex flex-col justify-center"
             >
-              <h3 className="mb-8 text-xl sm:text-2xl md:text-3xl font-cinzel font-bold uppercase tracking-widest text-white">
-                Luxurious Simplicity
-              </h3>
               <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
-                Sorted Concierge blends Nigerian hospitality with world-class
-                service. Every detail is tailored to exceed expectations,
-                offering an authentic yet refined experience.
+                At Sorted Concierge, we understand your time is your most
+                valuable asset. That's why we go beyond simply meeting
+                expectations; we anticipate them, eliminate friction, and
+                orchestrate seamless experiences that empower you to move
+                through the world with unparalleled ease.
               </p>
               <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
-                From private excursions to bespoke dining, we curate exclusive
-                moments that celebrate Nigeria's vibrant culture and beauty.
+                Our promise is to provide more than just a service; it's to
+                deliver a lifestyle where the extraordinary becomes your
+                everyday standard. Whether securing a private jet for a
+                last-minute departure, curating a bespoke event, or sourcing the
+                seemingly unattainable, our team works tirelessly behind the
+                scenes to ensure your needs are sorted.
               </p>
               <Button
                 asChild
@@ -301,6 +303,43 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Who We Serve */}
+      <section className="bg-black py-32" ref={whoWeServeRef}>
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={
+              whoWeServeInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
+            }
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mx-auto max-w-3xl text-center"
+          >
+            <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+              Who We Serve
+            </h2>
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              We're more than a concierge. We're your lifestyle architect, your
+              trusted fixer, and your inside line to the extraordinary.
+            </p>
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              Whether you think of us as bespoke travel designers, luxury
+              lifestyle managers, or your executive team, Sorted is whatever you
+              need us to be. We serve private clients, families, and elite
+              global citizens who demand certainty, delivered with quiet
+              excellence.
+            </p>
+            <Button
+              asChild
+              variant="link"
+              className="px-0 text-xs sm:text-sm font-lora uppercase tracking-widest gold-accent hover:opacity-80 link-underline"
+            >
+              <Link href="/about">Learn More</Link>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* What We Do */}
       <section className="bg-black py-32" ref={servicesRef}>
         <div className="container mx-auto px-6">
           <motion.div
@@ -312,12 +351,11 @@ export default function Home() {
             className="mx-auto max-w-3xl text-center"
           >
             <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
-              A 360 DEGREE EXPERIENCE
+              What We Do
             </h2>
           </motion.div>
 
           <div className="max-w-full mx-auto overflow-hidden relative group">
-            {/* Top Row - Auto-scrolling Left with user scroll override */}
             <div className="mb-8 overflow-hidden relative">
               <motion.div
                 className="flex gap-6 w-max cursor-grab active:cursor-grabbing"
@@ -361,7 +399,7 @@ export default function Home() {
                       <Image
                         loading="lazy"
                         src="/romantic-bohemian-couple-bed.jpg"
-                        alt="Stay"
+                        alt="Global travel and aviation planning"
                         width={400}
                         height={300}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -370,10 +408,10 @@ export default function Home() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-6">
                         <p className="text-xs sm:text-sm font-lora uppercase tracking-widest gold-accent mb-2">
-                          RESERVATIONS
+                          TRAVEL
                         </p>
                         <h3 className="text-xl sm:text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
-                          Luxury Stays
+                          Global Travel
                         </h3>
                       </div>
                     </motion.div>
@@ -395,7 +433,7 @@ export default function Home() {
                       <Image
                         loading="lazy"
                         src="/medium-shot-people-eating.jpg"
-                        alt="Dine"
+                        alt="Private event production"
                         width={320}
                         height={300}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -404,10 +442,10 @@ export default function Home() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
                         <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
-                          EXPERIENCES
+                          EVENTS
                         </p>
                         <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
-                          Fine Dining
+                          Event Production
                         </h3>
                       </div>
                     </motion.div>
@@ -429,7 +467,7 @@ export default function Home() {
                       <Image
                         loading="lazy"
                         src="/image.png"
-                        alt="Adventure"
+                        alt="Access to rare experiences and cultural moments"
                         width={320}
                         height={300}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -438,10 +476,10 @@ export default function Home() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
                         <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
-                          ACTIVITIES
+                          EXPERIENCES
                         </p>
                         <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
-                          Adventures
+                          Rare Experiences
                         </h3>
                       </div>
                     </motion.div>
@@ -449,7 +487,6 @@ export default function Home() {
                 ))}
               </motion.div>
 
-              {/* Scroll indicator */}
               <div className="absolute top-1/2 right-4 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="bg-black/50 backdrop-blur-sm rounded-full p-2">
                   <p className="text-[0.75rem] sm:text-xs text-white font-lora">
@@ -459,7 +496,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Bottom Row - Auto-scrolling Right with user scroll override */}
             <div className="overflow-hidden relative">
               <motion.div
                 className="flex gap-6 w-max cursor-grab active:cursor-grabbing"
@@ -490,7 +526,7 @@ export default function Home() {
                       }
                       transition={{
                         duration: 0.5,
-                        delay: 0.04,
+                        delay: 0.4,
                         ease: "easeOut",
                       }}
                       className="group relative w-[400px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
@@ -498,7 +534,7 @@ export default function Home() {
                       <Image
                         loading="lazy"
                         src="/image2.png"
-                        alt="Rejuvenate"
+                        alt="Personal affairs and lifestyle management"
                         width={400}
                         height={300}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -507,10 +543,10 @@ export default function Home() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-6">
                         <p className="text-xs sm:text-sm font-lora uppercase tracking-widest gold-accent mb-2">
-                          WELLNESS
+                          LIFESTYLE
                         </p>
                         <h3 className="text-xl sm:text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
-                          Spa & Wellness
+                          Lifestyle Management
                         </h3>
                       </div>
                     </motion.div>
@@ -524,7 +560,7 @@ export default function Home() {
                       }
                       transition={{
                         duration: 0.5,
-                        delay: 0.05,
+                        delay: 0.5,
                         ease: "easeOut",
                       }}
                       className="group relative w-[320px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
@@ -532,7 +568,7 @@ export default function Home() {
                       <Image
                         loading="lazy"
                         src="/image1.png"
-                        alt="Celebrate"
+                        alt="Luxury transportation and secure mobility"
                         width={320}
                         height={300}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -541,10 +577,10 @@ export default function Home() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
                         <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
-                          CONCIERGE
+                          MOBILITY
                         </p>
                         <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
-                          Events
+                          Luxury Transport
                         </h3>
                       </div>
                     </motion.div>
@@ -558,7 +594,7 @@ export default function Home() {
                       }
                       transition={{
                         duration: 0.5,
-                        delay: 0.06,
+                        delay: 0.6,
                         ease: "easeOut",
                       }}
                       className="group relative w-[320px] h-[300px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
@@ -566,7 +602,7 @@ export default function Home() {
                       <Image
                         loading="lazy"
                         src="/image3.png"
-                        alt="Offers"
+                        alt="Crisis response and high-stakes logistics"
                         width={320}
                         height={300}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -575,10 +611,10 @@ export default function Home() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
                         <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
-                          VIP
+                          LOGISTICS
                         </p>
                         <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
-                          Special Offers
+                          Crisis Response
                         </h3>
                       </div>
                     </motion.div>
@@ -586,10 +622,101 @@ export default function Home() {
                 ))}
               </motion.div>
             </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={
+                servicesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+              }
+              transition={{ duration: 0.8, delay: 0.7 }}
+              className="mt-16 text-center"
+            >
+              <Button
+                asChild
+                className="gold-gradient px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+              >
+                <Link href="/services">See Our Signature Services</Link>
+              </Button>
+            </motion.div>
           </div>
         </div>
       </section>
 
+      {/* The Sorted Circle */}
+      <section className="bg-black py-32" ref={circleRef}>
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={
+              circleInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
+            }
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mx-auto max-w-3xl text-center"
+          >
+            <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+              The Sorted Circle
+            </h2>
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              We work with a small, high-trust circle of clients who value
+              privacy, polish, and the kind of service that never needs to be
+              explained.
+            </p>
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              With team members and partners across key global cities from New
+              York to Dubai, London to Lagos, we offer an uncommon blend of
+              cultural fluency and logistical mastery. This is concierge for
+              those who move differently.
+            </p>
+            <Button
+              asChild
+              className="gold-gradient px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+            >
+              <Link href="/membership">Apply for Membership</Link>
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="bg-black py-32" ref={testimonialsRef}>
+        <div className="container mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={
+              testimonialsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
+            }
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mx-auto max-w-3xl text-center"
+          >
+            <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+              What Our Clients Say
+            </h2>
+            <div className="grid gap-8 md:grid-cols-2">
+              <div className="luxury-card p-6 rounded-lg">
+                <p className="text-sm sm:text-base font-lora text-gray-300 italic">
+                  "Sorted Concierge turned a complex multi-city itinerary into a
+                  seamless experience. Their discretion and precision are
+                  unparalleled."
+                </p>
+                <p className="mt-4 text-xs sm:text-sm font-lora uppercase tracking-wider gold-accent">
+                  - Private Client, New York
+                </p>
+              </div>
+              <div className="luxury-card p-6 rounded-lg">
+                <p className="text-sm sm:text-base font-lora text-gray-300 italic">
+                  "From exclusive cultural events to last-minute travel
+                  solutions, Sorted delivers the extraordinary with effortless
+                  ease."
+                </p>
+                <p className="mt-4 text-xs sm:text-sm font-lora uppercase tracking-wider gold-accent">
+                  - Elite Traveler, Dubai
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Gallery */}
       <section className="bg-black py-32" ref={galleryRef}>
         <div className="container mx-auto px-6">
           <motion.div
@@ -601,15 +728,14 @@ export default function Home() {
             className="mx-auto max-w-3xl text-center"
           >
             <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
-              Gallery
+              Curated Moments
             </h2>
             <p className="mb-16 text-sm sm:text-base md:text-lg font-lora text-gray-300">
-              Discover the beauty and luxury that awaits you through our curated
-              collection of experiences
+              Explore a world of rare experiences and cultural moments,
+              meticulously crafted for those who demand the exceptional.
             </p>
           </motion.div>
 
-          {/* Gallery Categories */}
           <div className="mb-12 overflow-hidden">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -622,11 +748,11 @@ export default function Home() {
             >
               {[
                 "All",
-                "Accommodations",
-                "Dining",
-                "Adventures",
-                "Wellness",
+                "Travel",
                 "Events",
+                "Lifestyle",
+                "Experiences",
+                "Logistics",
               ].map((category, index) => (
                 <button
                   key={category}
@@ -643,9 +769,7 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* Enhanced Gallery Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 auto-rows-[200px]">
-            {/* Large featured image */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={
@@ -659,7 +783,7 @@ export default function Home() {
               <Image
                 loading="lazy"
                 src="/romantic-bohemian-couple-bed.jpg"
-                alt="Luxury accommodation"
+                alt="Luxury travel experience"
                 width={600}
                 height={600}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -668,33 +792,40 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <span className="gold-gradient text-black px-3 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
-                  Accommodations
+                  Travel
                 </span>
               </div>
               <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <h3 className="text-white font-cinzel font-bold text-base sm:text-lg md:text-xl mb-1">
-                  Luxury Suite
+                  Luxury Travel
                 </h3>
                 <p className="text-white/80 text-xs sm:text-sm font-lora">
-                  Experience ultimate comfort and elegance
+                  Seamless global journeys
                 </p>
               </div>
             </motion.div>
 
-            {/* Medium images with enhanced styling */}
             {[
               {
                 src: "/medium-shot-people-eating.jpg",
-                category: "Dining",
-                title: "Fine Dining",
+                category: "Events",
+                title: "Private Event Production",
               },
-              { src: "/image.png", category: "Adventure", title: "Adventures" },
+              {
+                src: "/image.png",
+                category: "Experiences",
+                title: "Rare Cultural Moments",
+              },
               {
                 src: "/image1.png",
-                category: "Events",
-                title: "Special Events",
+                category: "Lifestyle",
+                title: "Lifestyle Management",
               },
-              { src: "/image3.png", category: "VIP", title: "VIP Experiences" },
+              {
+                src: "/image3.png",
+                category: "Logistics",
+                title: "High-Stakes Logistics",
+              },
             ].map((item, index) => (
               <motion.div
                 key={index}
@@ -713,7 +844,7 @@ export default function Home() {
               >
                 <Image
                   loading="lazy"
-                  src={item.src || "/placeholder.svg"}
+                  src={item.src}
                   alt={item.title}
                   width={300}
                   height={200}
@@ -729,7 +860,6 @@ export default function Home() {
               </motion.div>
             ))}
 
-            {/* Tall image */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={
@@ -743,7 +873,7 @@ export default function Home() {
               <Image
                 loading="lazy"
                 src="/image2.png"
-                alt="Spa and wellness"
+                alt="Personal affairs and lifestyle management"
                 width={600}
                 height={600}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -752,20 +882,19 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <span className="gold-gradient text-black px-3 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
-                  Wellness
+                  Lifestyle
                 </span>
               </div>
               <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <h3 className="text-white font-cinzel font-bold text-base sm:text-lg md:text-xl mb-1">
-                  Spa Retreat
+                  Lifestyle Management
                 </h3>
                 <p className="text-white/80 text-xs sm:text-sm font-lora">
-                  Rejuvenate your mind, body, and soul
+                  Tailored personal affairs
                 </p>
               </div>
             </motion.div>
 
-            {/* Wide image */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={
@@ -779,7 +908,7 @@ export default function Home() {
               <Image
                 loading="lazy"
                 src="/tourist-carrying-luggage.jpg"
-                alt="Travel experiences"
+                alt="Luxury transportation services"
                 width={600}
                 height={200}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -788,17 +917,16 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <span className="gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
-                  Travel
+                  Mobility
                 </span>
               </div>
               <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <h3 className="text-white font-cinzel font-bold text-sm sm:text-base md:text-lg mb-1">
-                  Curated Journeys
+                  Secure Mobility
                 </h3>
               </div>
             </motion.div>
 
-            {/* Additional small images */}
             {[...Array(4)].map((_, index) => (
               <motion.div
                 key={`extra-${index}`}
@@ -820,7 +948,7 @@ export default function Home() {
                   src={`/placeholder.svg?height=200&width=300&text=Experience ${
                     index + 1
                   }`}
-                  alt={`Experience ${index + 1}`}
+                  alt={`Curated experience ${index + 1}`}
                   width={300}
                   height={200}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -836,7 +964,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Gallery Stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={
@@ -850,7 +977,7 @@ export default function Home() {
                 500+
               </h3>
               <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
-                Luxury Experiences
+                Curated Experiences
               </p>
             </div>
             <div className="luxury-card p-6 rounded-lg">
@@ -858,7 +985,7 @@ export default function Home() {
                 50+
               </h3>
               <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
-                Premium Locations
+                Global Cities
               </p>
             </div>
             <div className="luxury-card p-6 rounded-lg">
@@ -866,7 +993,7 @@ export default function Home() {
                 1000+
               </h3>
               <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
-                Happy Guests
+                Satisfied Clients
               </p>
             </div>
             <div className="luxury-card p-6 rounded-lg">
@@ -874,7 +1001,7 @@ export default function Home() {
                 24/7
               </h3>
               <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
-                Concierge Service
+                Concierge Support
               </p>
             </div>
           </motion.div>
@@ -896,17 +1023,18 @@ export default function Home() {
               variant="outline"
               className="border-secondary px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary hover:bg-secondary hover:text-gray-400 hover:border-gray-400 elegant-shadow"
             >
-              <Link href="/booking">Book Experience</Link>
+              <Link href="/consultation">Request a Consultation</Link>
             </Button>
           </motion.div>
         </div>
       </section>
 
+      {/* Begin Your Journey */}
       <section className="relative aspect-[21/9] w-full sm:py-0 py-32">
         <Image
           loading="lazy"
           src="/image17.png"
-          alt="Book your experience"
+          alt="Curated luxury experience"
           fill
           className="w-full h-full object-cover"
           sizes="100vw"
@@ -921,13 +1049,13 @@ export default function Home() {
             className="text-center"
           >
             <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
-              Begin Your Journey
+              Your World, Sorted
             </h2>
             <Button
               asChild
               className="gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
             >
-              <Link href="/booking">Book Now</Link>
+              <Link href="/consultation">Request a Consultation</Link>
             </Button>
           </motion.div>
         </div>
