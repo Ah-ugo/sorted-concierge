@@ -628,7 +628,7 @@ export default function AboutPage() {
                 variant="outline"
                 className="border-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest bg-primary text-primary-foreground hover:bg-secondary hover:text-secondary-foreground elegant-shadow"
               >
-                <Link href="/membership">Apply for Membership</Link>
+                <Link href="/booking">Apply for Membership</Link>
               </Button>
               <Button
                 asChild

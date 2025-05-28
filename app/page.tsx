@@ -1023,7 +1023,7 @@ export default function Home() {
               variant="outline"
               className="border-secondary px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary hover:bg-secondary hover:text-gray-400 hover:border-gray-400 elegant-shadow"
             >
-              <Link href="/consultation">Request a Consultation</Link>
+              <Link href="/contact">Request a Consultation</Link>
             </Button>
           </motion.div>
         </div>
@@ -1055,7 +1055,7 @@ export default function Home() {
               asChild
               className="gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
             >
-              <Link href="/consultation">Request a Consultation</Link>
+              <Link href="/contact">Request a Consultation</Link>
             </Button>
           </motion.div>
         </div>
