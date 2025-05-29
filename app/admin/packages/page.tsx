@@ -1,9 +1,5 @@
 "use client";
 
-import { Textarea } from "@/components/ui/textarea";
-
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-
 import type React from "react";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +32,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -49,7 +46,11 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import {
   apiClient,
   type Package,
@@ -57,7 +58,6 @@ import {
   type PackageUpdate,
 } from "@/lib/api";
 import { toast } from "@/components/ui/use-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function PackagesPage() {
   const [packages, setPackages] = useState<Package[]>([]);
@@ -67,7 +67,11 @@ export default function PackagesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Form state for new package
+  const [cardRef, cardInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
   const [newPackage, setNewPackage] = useState<PackageCreate>({
     name: "",
     description: "",
@@ -83,7 +87,6 @@ export default function PackagesPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
 
-  // Edit form state
   const [editPackage, setEditPackage] = useState<PackageUpdate>({});
   const [editFeaturesInput, setEditFeaturesInput] = useState("");
 
@@ -105,6 +108,7 @@ export default function PackagesPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to fetch packages",
+        className: "font-lora",
       });
     } finally {
       setIsLoading(false);
@@ -112,7 +116,6 @@ export default function PackagesPage() {
   };
 
   useEffect(() => {
-    // Apply filters
     let result = packages;
 
     if (searchTerm) {
@@ -142,6 +145,7 @@ export default function PackagesPage() {
         variant: "destructive",
         title: "Error",
         description: "Please fill all required fields",
+        className: "font-lora",
       });
       return;
     }
@@ -172,6 +176,7 @@ export default function PackagesPage() {
       toast({
         title: "Success",
         description: "Package created successfully",
+        className: "font-lora",
       });
     } catch (error: any) {
       console.error("Error creating package:", error);
@@ -179,6 +184,7 @@ export default function PackagesPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to create package",
+        className: "font-lora",
       });
     }
   };
@@ -196,6 +202,7 @@ export default function PackagesPage() {
       toast({
         title: "Success",
         description: "Package deleted successfully",
+        className: "font-lora",
       });
     } catch (error: any) {
       console.error("Error deleting package:", error);
@@ -203,6 +210,7 @@ export default function PackagesPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to delete package",
+        className: "font-lora",
       });
     }
   };
@@ -251,6 +259,7 @@ export default function PackagesPage() {
       toast({
         title: "Success",
         description: "Package updated successfully",
+        className: "font-lora",
       });
     } catch (error: any) {
       console.error("Error updating package:", error);
@@ -258,168 +267,238 @@ export default function PackagesPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to update package",
+        className: "font-lora",
       });
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold tracking-tight">Packages</h1>
+    <div className="space-y-6 bg-background p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <h1 className="text-2xl sm:text-3xl font-cinzel font-bold uppercase tracking-widest text-secondary">
+          Membership Packages
+        </h1>
         <Button
           size="sm"
-          className="flex items-center gap-1"
+          className="flex items-center gap-1 gold-gradient text-black hover:opacity-90 font-lora"
           onClick={() => setIsModalOpen(true)}
         >
           <Plus className="h-4 w-4" />
           <span>Add Package</span>
         </Button>
-      </div>
+      </motion.div>
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Manage Packages</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <Input
-                type="search"
-                placeholder="Search by name or ID..."
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+      <motion.div
+        ref={cardRef}
+        initial={{ opacity: 0, y: 40 }}
+        animate={cardInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+        transition={{ duration: 0.8 }}
+      >
+        <Card className="bg-card elegant-shadow border-gold-accent/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Manage Membership Packages
+              <motion.div
+                className="h-0.5 bg-gradient-to-r from-transparent via-gold-accent to-transparent mt-2"
+                initial={{ width: 0 }}
+                animate={cardInView ? { width: "100px" } : { width: 0 }}
+                transition={{ duration: 1, delay: 0.5 }}
               />
-            </div>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Filter by type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {packageTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gold-accent" />
+                <Input
+                  type="search"
+                  placeholder="Search by name or ID..."
+                  className="pl-8 bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger className="w-full sm:w-[180px] bg-primary/10 border-gold-accent/20 text-foreground font-lora">
+                  <SelectValue placeholder="Filter by type" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-gold-accent/20">
+                  <SelectItem value="all" className="font-lora">
+                    All Types
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {isLoading ? (
-            <div className="flex justify-center items-center py-8">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+                  {packageTypes.map((type) => (
+                    <SelectItem key={type} value={type} className="font-lora">
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          ) : (
-            <div className="overflow-x-auto rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Duration</TableHead>
-                    <TableHead>Features</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPackages.length > 0 ? (
-                    filteredPackages.map((pkg) => (
-                      <TableRow key={pkg.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <div>
-                              <div className="font-medium">{pkg.name}</div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
-                                {pkg.id}
+
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gold-accent border-t-transparent"></div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-md border border-gold-accent/20">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-gold-accent/20">
+                      <TableHead className="font-cinzel uppercase tracking-wider text-secondary">
+                        Name
+                      </TableHead>
+                      <TableHead className="font-cinzel uppercase tracking-wider text-secondary">
+                        Type
+                      </TableHead>
+                      <TableHead className="font-cinzel uppercase tracking-wider text-secondary">
+                        Price
+                      </TableHead>
+                      <TableHead className="font-cinzel uppercase tracking-wider text-secondary">
+                        Duration
+                      </TableHead>
+                      <TableHead className="font-cinzel uppercase tracking-wider text-secondary">
+                        Features
+                      </TableHead>
+                      <TableHead className="font-cinzel uppercase tracking-wider text-secondary">
+                        Status
+                      </TableHead>
+                      <TableHead className="text-right font-cinzel uppercase tracking-wider text-secondary">
+                        Actions
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredPackages.length > 0 ? (
+                      filteredPackages.map((pkg, index) => (
+                        <motion.tr
+                          key={pkg.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={
+                            cardInView
+                              ? { opacity: 1, y: 0 }
+                              : { opacity: 0, y: 20 }
+                          }
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
+                          className="border-b border-gold-accent/20 hover:bg-primary/10"
+                        >
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <div>
+                                <div className="font-lora text-foreground">
+                                  {pkg.name}
+                                </div>
+                                <div className="text-xs font-lora text-muted-foreground">
+                                  {pkg.id}
+                                </div>
                               </div>
+                              {pkg.isPopular && (
+                                <Star className="h-4 w-4 text-gold-accent fill-current" />
+                              )}
                             </div>
-                            {pkg.isPopular && (
-                              <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{pkg.type}</Badge>
-                        </TableCell>
-                        <TableCell>₦{pkg.price.toLocaleString()}</TableCell>
-                        <TableCell>{pkg.duration}</TableCell>
-                        <TableCell>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {pkg.features.length} features
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {pkg.isPopular && (
-                            <Badge className="bg-yellow-100 text-yellow-800">
-                              Popular
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className="font-lora border-gold-accent/20 text-foreground"
+                            >
+                              {pkg.type}
                             </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
+                          </TableCell>
+                          <TableCell className="font-lora text-foreground">
+                            ₦{pkg.price.toLocaleString()}
+                          </TableCell>
+                          <TableCell className="font-lora text-muted-foreground">
+                            {pkg.duration}
+                          </TableCell>
+                          <TableCell className="font-lora text-muted-foreground">
+                            {pkg.features.length} features
+                          </TableCell>
+                          <TableCell>
+                            {pkg.isPopular && (
+                              <Badge className="bg-gold-accent/20 text-gold-accent font-lora">
+                                Popular
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-gold-accent hover:bg-gold-accent/10"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Open menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                align="end"
+                                className="bg-card border-gold-accent/20"
                               >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Open menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => handleViewPackage(pkg)}
-                              >
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleEditPackage(pkg)}
-                              >
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit Package
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-red-600 dark:text-red-400"
-                                onClick={() =>
-                                  handleDeletePackage(pkg.id, pkg.name)
-                                }
-                              >
-                                <Trash className="mr-2 h-4 w-4" />
-                                Delete Package
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                                <DropdownMenuLabel className="font-lora text-secondary">
+                                  Actions
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator className="bg-gold-accent/20" />
+                                <DropdownMenuItem
+                                  className="font-lora"
+                                  onClick={() => handleViewPackage(pkg)}
+                                >
+                                  <Eye className="mr-2 h-4 w-4 text-gold-accent" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="font-lora"
+                                  onClick={() => handleEditPackage(pkg)}
+                                >
+                                  <Edit className="mr-2 h-4 w-4 text-gold-accent" />
+                                  Edit Package
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator className="bg-gold-accent/20" />
+                                <DropdownMenuItem
+                                  className="font-lora text-red-600 dark:text-red-400"
+                                  onClick={() =>
+                                    handleDeletePackage(pkg.id, pkg.name)
+                                  }
+                                >
+                                  <Trash className="mr-2 h-4 w-4" />
+                                  Delete Package
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </motion.tr>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={7}
+                          className="h-24 text-center font-lora text-muted-foreground italic"
+                        >
+                          No packages found.
                         </TableCell>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="h-24 text-center">
-                        No packages found.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* View Package Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-card border-gold-accent/20">
           <DialogHeader>
-            <DialogTitle>Package Details</DialogTitle>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Package Details
+            </DialogTitle>
           </DialogHeader>
           {selectedPackage && (
             <ScrollArea className="max-h-[70vh] pr-4">
@@ -427,50 +506,59 @@ export default function PackagesPage() {
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h2 className="text-xl font-semibold">
+                      <h2 className="text-xl font-lora text-foreground">
                         {selectedPackage.name}
                       </h2>
                       {selectedPackage.isPopular && (
-                        <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                        <Star className="h-5 w-5 text-gold-accent fill-current" />
                       )}
                     </div>
-                    <Badge variant="outline">{selectedPackage.type}</Badge>
+                    <Badge
+                      variant="outline"
+                      className="font-lora border-gold-accent/20 text-foreground"
+                    >
+                      {selectedPackage.type}
+                    </Badge>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold">
+                    <p className="text-2xl font-lora text-foreground">
                       ₦{selectedPackage.price.toLocaleString()}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm font-lora text-muted-foreground">
                       {selectedPackage.duration}
                     </p>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="font-medium mb-2">Description</h3>
-                  <p className="text-gray-600 dark:text-gray-300">
+                  <h3 className="font-lora text-foreground mb-2">
+                    Description
+                  </h3>
+                  <p className="font-lora text-muted-foreground">
                     {selectedPackage.description}
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="font-medium mb-2">Features</h3>
+                  <h3 className="font-lora text-foreground mb-2">Features</h3>
                   <ul className="space-y-1">
                     {selectedPackage.features.map((feature, index) => (
                       <li
                         key={index}
-                        className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2"
+                        className="text-sm font-lora text-muted-foreground flex items-center gap-2"
                       >
-                        <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                        <span className="w-1.5 h-1.5 bg-gold-accent rounded-full"></span>
                         {feature}
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="border-t pt-4">
-                  <h3 className="font-medium mb-2">Package Information</h3>
-                  <div className="text-sm text-gray-600 space-y-1">
+                <div className="border-t border-gold-accent/20 pt-4">
+                  <h3 className="font-lora text-foreground mb-2">
+                    Package Information
+                  </h3>
+                  <div className="text-sm font-lora text-muted-foreground space-y-1">
                     <p>Package ID: {selectedPackage.id}</p>
                     <p>
                       Created:{" "}
@@ -486,143 +574,30 @@ export default function PackagesPage() {
             </ScrollArea>
           )}
           <DialogFooter>
-            <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
+            <Button
+              onClick={() => setIsViewModalOpen(false)}
+              className="gold-gradient text-black hover:opacity-90 font-lora"
+            >
+              Close
+            </Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Package Modal */}
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Package</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleUpdatePackage} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="editName">Package Name</Label>
-                <Input
-                  id="editName"
-                  value={editPackage.name || ""}
-                  onChange={(e) =>
-                    setEditPackage((prev) => ({
-                      ...prev,
-                      name: e.target.value,
-                    }))
-                  }
-                  placeholder="Enter package name"
-                />
-              </div>
-              <div>
-                <Label htmlFor="editType">Type</Label>
-                <Select
-                  value={editPackage.type || ""}
-                  onValueChange={(value) =>
-                    setEditPackage((prev) => ({ ...prev, type: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {packageTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="editDescription">Description</Label>
-              <Textarea
-                id="editDescription"
-                value={editPackage.description || ""}
-                onChange={(e) =>
-                  setEditPackage((prev) => ({
-                    ...prev,
-                    description: e.target.value,
-                  }))
-                }
-                placeholder="Enter package description"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="editPrice">Price (₦)</Label>
-                <Input
-                  id="editPrice"
-                  type="number"
-                  value={editPackage.price || ""}
-                  onChange={(e) =>
-                    setEditPackage((prev) => ({
-                      ...prev,
-                      price: Number(e.target.value),
-                    }))
-                  }
-                  placeholder="Enter price"
-                />
-              </div>
-              <div>
-                <Label htmlFor="editDuration">Duration</Label>
-                <Input
-                  id="editDuration"
-                  value={editPackage.duration || ""}
-                  onChange={(e) =>
-                    setEditPackage((prev) => ({
-                      ...prev,
-                      duration: e.target.value,
-                    }))
-                  }
-                  placeholder="e.g., 1 month, 6 months"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="editFeatures">Features (one per line)</Label>
-              <Textarea
-                id="editFeatures"
-                value={editFeaturesInput}
-                onChange={(e) => setEditFeaturesInput(e.target.value)}
-                placeholder="Enter features, one per line"
-                rows={5}
-              />
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="editIsPopular"
-                checked={editPackage.isPopular ?? false}
-                onCheckedChange={(checked) =>
-                  setEditPackage((prev) => ({ ...prev, isPopular: checked }))
-                }
-              />
-              <Label htmlFor="editIsPopular">Mark as Popular</Label>
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsEditModalOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button type="submit">Update Package</Button>
-            </DialogFooter>
-          </form>
         </DialogContent>
       </Dialog>
 
       {/* Create Package Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] bg-card border-gold-accent/20">
           <DialogHeader>
-            <DialogTitle>Create New Package</DialogTitle>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Create New Package
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreatePackage} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="name">Package Name</Label>
+                <Label htmlFor="name" className="font-lora text-foreground">
+                  Package Name
+                </Label>
                 <Input
                   id="name"
                   value={newPackage.name}
@@ -630,23 +605,26 @@ export default function PackagesPage() {
                     setNewPackage((prev) => ({ ...prev, name: e.target.value }))
                   }
                   placeholder="Enter package name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="type">Type</Label>
+                <Label htmlFor="type" className="font-lora text-foreground">
+                  Type
+                </Label>
                 <Select
                   value={newPackage.type}
                   onValueChange={(value) =>
                     setNewPackage((prev) => ({ ...prev, type: value }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-primary/10 border-gold-accent/20 text-foreground font-lora">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-card border-gold-accent/20">
                     {packageTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
+                      <SelectItem key={type} value={type} className="font-lora">
                         {type}
                       </SelectItem>
                     ))}
@@ -655,7 +633,12 @@ export default function PackagesPage() {
               </div>
             </div>
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label
+                htmlFor="description"
+                className="font-lora text-foreground"
+              >
+                Description
+              </Label>
               <Textarea
                 id="description"
                 value={newPackage.description}
@@ -666,12 +649,15 @@ export default function PackagesPage() {
                   }))
                 }
                 placeholder="Enter package description"
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 required
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="price">Price (₦)</Label>
+                <Label htmlFor="price" className="font-lora text-foreground">
+                  Price (₦)
+                </Label>
                 <Input
                   id="price"
                   type="number"
@@ -683,11 +669,14 @@ export default function PackagesPage() {
                     }))
                   }
                   placeholder="Enter price"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="duration">Duration</Label>
+                <Label htmlFor="duration" className="font-lora text-foreground">
+                  Duration
+                </Label>
                 <Input
                   id="duration"
                   value={newPackage.duration}
@@ -698,17 +687,21 @@ export default function PackagesPage() {
                     }))
                   }
                   placeholder="e.g., 1 month, 6 months"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                   required
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="features">Features (one per line)</Label>
+              <Label htmlFor="features" className="font-lora text-foreground">
+                Features (one per line)
+              </Label>
               <Textarea
                 id="features"
                 value={featuresInput}
                 onChange={(e) => setFeaturesInput(e.target.value)}
                 placeholder="Enter features, one per line"
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 rows={5}
               />
             </div>
@@ -720,17 +713,189 @@ export default function PackagesPage() {
                   setNewPackage((prev) => ({ ...prev, isPopular: checked }))
                 }
               />
-              <Label htmlFor="isPopular">Mark as Popular</Label>
+              <Label htmlFor="isPopular" className="font-lora text-foreground">
+                Mark as Popular
+              </Label>
             </div>
             <DialogFooter>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsModalOpen(false)}
+                className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
               >
                 Cancel
               </Button>
-              <Button type="submit">Create Package</Button>
+              <Button
+                type="submit"
+                className="gold-gradient text-black hover:opacity-90 font-lora"
+              >
+                Create Package
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Package Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] bg-card border-gold-accent/20">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Edit Package
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleUpdatePackage} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="editName" className="font-lora text-foreground">
+                  Package Name
+                </Label>
+                <Input
+                  id="editName"
+                  value={editPackage.name || ""}
+                  onChange={(e) =>
+                    setEditPackage((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
+                  placeholder="Enter package name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editType" className="font-lora text-foreground">
+                  Type
+                </Label>
+                <Select
+                  value={editPackage.type || ""}
+                  onValueChange={(value) =>
+                    setEditPackage((prev) => ({ ...prev, type: value }))
+                  }
+                >
+                  <SelectTrigger className="bg-primary/10 border-gold-accent/20 text-foreground font-lora">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-card border-gold-accent/20">
+                    {packageTypes.map((type) => (
+                      <SelectItem key={type} value={type} className="font-lora">
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label
+                htmlFor="editDescription"
+                className="font-lora text-foreground"
+              >
+                Description
+              </Label>
+              <Textarea
+                id="editDescription"
+                value={editPackage.description || ""}
+                onChange={(e) =>
+                  setEditPackage((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                placeholder="Enter package description"
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label
+                  htmlFor="editPrice"
+                  className="font-lora text-foreground"
+                >
+                  Price (₦)
+                </Label>
+                <Input
+                  id="editPrice"
+                  type="number"
+                  value={editPackage.price || ""}
+                  onChange={(e) =>
+                    setEditPackage((prev) => ({
+                      ...prev,
+                      price: Number(e.target.value),
+                    }))
+                  }
+                  placeholder="Enter price"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor="editDuration"
+                  className="font-lora text-foreground"
+                >
+                  Duration
+                </Label>
+                <Input
+                  id="editDuration"
+                  value={editPackage.duration || ""}
+                  onChange={(e) =>
+                    setEditPackage((prev) => ({
+                      ...prev,
+                      duration: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g., 1 month, 6 months"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                />
+              </div>
+            </div>
+            <div>
+              <Label
+                htmlFor="editFeatures"
+                className="font-lora text-foreground"
+              >
+                Features (one per line)
+              </Label>
+              <Textarea
+                id="editFeatures"
+                value={editFeaturesInput}
+                onChange={(e) => setEditFeaturesInput(e.target.value)}
+                placeholder="Enter features, one per line"
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                rows={5}
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="editIsPopular"
+                checked={editPackage.isPopular ?? false}
+                onCheckedChange={(checked) =>
+                  setEditPackage((prev) => ({ ...prev, isPopular: checked }))
+                }
+              />
+              <Label
+                htmlFor="editIsPopular"
+                className="font-lora text-foreground"
+              >
+                Mark as Popular
+              </Label>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditModalOpen(false)}
+                className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="gold-gradient text-black hover:opacity-90 font-lora"
+              >
+                Update Package
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>

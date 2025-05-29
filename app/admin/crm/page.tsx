@@ -47,6 +47,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import {
   apiClient,
   type CRMClient,
@@ -63,16 +65,15 @@ export default function CRMPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Add these after existing state:
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<CRMClient | null>(null);
-
-  // Edit form state
   const [editClient, setEditClient] = useState<CRMClientUpdate>({});
+  const [cardRef, cardInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
 
-  // Form state for new client
   const [newClient, setNewClient] = useState<CRMClientCreate>({
     clientName: "",
     contactInfo: { email: "", phone: "" },
@@ -101,6 +102,7 @@ export default function CRMPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to fetch CRM clients",
+        className: "font-lora",
       });
     } finally {
       setIsLoading(false);
@@ -108,7 +110,6 @@ export default function CRMPage() {
   };
 
   useEffect(() => {
-    // Apply filters
     let result = clients;
 
     if (searchTerm) {
@@ -140,6 +141,7 @@ export default function CRMPage() {
         variant: "destructive",
         title: "Error",
         description: "Please fill all required fields",
+        className: "font-lora",
       });
       return;
     }
@@ -161,6 +163,7 @@ export default function CRMPage() {
       toast({
         title: "Success",
         description: "Client created successfully",
+        className: "font-lora",
       });
     } catch (error: any) {
       console.error("Error creating client:", error);
@@ -168,6 +171,7 @@ export default function CRMPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to create client",
+        className: "font-lora",
       });
     }
   };
@@ -182,6 +186,7 @@ export default function CRMPage() {
       toast({
         title: "Success",
         description: "Client deleted successfully",
+        className: "font-lora",
       });
     } catch (error: any) {
       console.error("Error deleting client:", error);
@@ -189,6 +194,7 @@ export default function CRMPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to delete client",
+        className: "font-lora",
       });
     }
   };
@@ -196,17 +202,17 @@ export default function CRMPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "New":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
+        return "bg-blue-600/20 text-blue-500 border-blue-500/30";
       case "In Progress":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+        return "bg-yellow-600/20 text-yellow-500 border-yellow-500/30";
       case "Completed":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+        return "bg-green-600/20 text-green-500 border-green-500/30";
       case "On Hold":
-        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300";
+        return "bg-orange-600/20 text-orange-500 border-orange-500/30";
       case "Cancelled":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
+        return "bg-red-600/20 text-red-500 border-red-500/30";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
+        return "bg-gray-600/20 text-gray-500 border-gray-500/30";
     }
   };
 
@@ -249,6 +255,7 @@ export default function CRMPage() {
       toast({
         title: "Success",
         description: "Client updated successfully",
+        className: "font-lora",
       });
     } catch (error: any) {
       console.error("Error updating client:", error);
@@ -256,189 +263,264 @@ export default function CRMPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to update client",
+        className: "font-lora",
       });
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold tracking-tight">CRM Clients</h1>
+    <div className="space-y-6 bg-background p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <h1 className="text-2xl sm:text-3xl font-cinzel font-bold uppercase tracking-widest text-secondary">
+          CRM Clients
+        </h1>
         <Button
           size="sm"
-          className="flex items-center gap-1"
+          className="flex items-center gap-1 gold-gradient text-black hover:opacity-90 font-lora"
           onClick={() => setIsModalOpen(true)}
         >
           <Plus className="h-4 w-4" />
           <span>Add Client</span>
         </Button>
-      </div>
+      </motion.div>
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Manage CRM Clients</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <Input
-                type="search"
-                placeholder="Search by name, service, or ID..."
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+      <motion.div
+        ref={cardRef}
+        initial={{ opacity: 0, y: 40 }}
+        animate={cardInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+        transition={{ duration: 0.8 }}
+      >
+        <Card className="bg-card elegant-shadow border-gold-accent/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Manage CRM Clients
+              <motion.div
+                className="h-0.5 bg-gradient-to-r from-transparent via-gold-accent to-transparent mt-2"
+                initial={{ width: 0 }}
+                animate={cardInView ? { width: "100px" } : { width: 0 }}
+                transition={{ duration: 1, delay: 0.5 }}
               />
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                {statuses.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gold-accent" />
+                <Input
+                  type="search"
+                  placeholder="Search by name, service, or ID..."
+                  className="pl-8 bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-[180px] bg-primary/10 border-gold-accent/20 text-foreground font-lora">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-gold-accent/20">
+                  <SelectItem value="all" className="font-lora">
+                    All Statuses
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {isLoading ? (
-            <div className="flex justify-center items-center py-8">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+                  {statuses.map((status) => (
+                    <SelectItem
+                      key={status}
+                      value={status}
+                      className="font-lora"
+                    >
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          ) : (
-            <div className="overflow-x-auto rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Client</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>Service</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Assigned Vendor</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredClients.length > 0 ? (
-                    filteredClients.map((client) => (
-                      <TableRow key={client.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-gray-500" />
-                            <div>
-                              <div className="font-medium">
-                                {client.clientName}
-                              </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
-                                {client.id}
+
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gold-accent border-t-transparent"></div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-md border border-gold-accent/20">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-card hover:bg-card">
+                      <TableHead className="font-lora text-foreground">
+                        Client
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Contact
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Service
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Status
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Assigned Vendor
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Due Date
+                      </TableHead>
+                      <TableHead className="text-right font-lora text-foreground">
+                        Actions
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredClients.length > 0 ? (
+                      filteredClients.map((client, index) => (
+                        <motion.tr
+                          key={client.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={
+                            cardInView
+                              ? { opacity: 1, y: 0 }
+                              : { opacity: 0, y: 20 }
+                          }
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
+                          className="hover:bg-gold-accent/5"
+                        >
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-gold-accent" />
+                              <div>
+                                <div className="font-lora text-foreground">
+                                  {client.clientName}
+                                </div>
+                                <div className="text-xs font-lora text-muted-foreground">
+                                  {client.id}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            <div>{client.contactInfo.email}</div>
-                            {client.contactInfo.phone && (
-                              <div className="text-gray-500">
-                                {client.contactInfo.phone}
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>{client.serviceBooked}</TableCell>
-                        <TableCell>
-                          <Badge className={getStatusColor(client.status)}>
-                            {client.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {client.assignedVendor || "Unassigned"}
-                        </TableCell>
-                        <TableCell>
-                          {client.dueDate
-                            ? new Date(client.dueDate).toLocaleDateString()
-                            : "No due date"}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
+                          </TableCell>
+                          <TableCell className="font-lora text-foreground">
+                            <div className="text-sm">
+                              <div>{client.contactInfo.email}</div>
+                              {client.contactInfo.phone && (
+                                <div className="text-muted-foreground">
+                                  {client.contactInfo.phone}
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-lora text-foreground">
+                            {client.serviceBooked}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={`font-lora ${getStatusColor(
+                                client.status
+                              )}`}
+                            >
+                              {client.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="font-lora text-foreground">
+                            {client.assignedVendor || "Unassigned"}
+                          </TableCell>
+                          <TableCell className="font-lora text-foreground">
+                            {client.dueDate
+                              ? new Date(client.dueDate).toLocaleDateString()
+                              : "No due date"}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-gold-accent hover:bg-gold-accent/10"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Open menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                align="end"
+                                className="bg-card border-gold-accent/20"
                               >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Open menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => handleViewClient(client)}
-                              >
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleEditClient(client)}
-                              >
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit Client
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-red-600 dark:text-red-400"
-                                onClick={() =>
-                                  handleDeleteClient(
-                                    client.id,
-                                    client.clientName
-                                  )
-                                }
-                              >
-                                <Trash className="mr-2 h-4 w-4" />
-                                Delete Client
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                                <DropdownMenuLabel className="font-lora text-secondary">
+                                  Actions
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator className="bg-gold-accent/20" />
+                                <DropdownMenuItem
+                                  className="font-lora"
+                                  onClick={() => handleViewClient(client)}
+                                >
+                                  <Eye className="mr-2 h-4 w-4 text-gold-accent" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="font-lora"
+                                  onClick={() => handleEditClient(client)}
+                                >
+                                  <Edit className="mr-2 h-4 w-4 text-gold-accent" />
+                                  Edit Client
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator className="bg-gold-accent/20" />
+                                <DropdownMenuItem
+                                  className="font-lora text-red-500"
+                                  onClick={() =>
+                                    handleDeleteClient(
+                                      client.id,
+                                      client.clientName
+                                    )
+                                  }
+                                >
+                                  <Trash className="mr-2 h-4 w-4 text-red-500" />
+                                  Delete Client
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </motion.tr>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={7}
+                          className="h-24 text-center font-lora text-muted-foreground italic"
+                        >
+                          No clients found.
                         </TableCell>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="h-24 text-center">
-                        No clients found.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* View Client Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-card border-gold-accent/20">
           <DialogHeader>
-            <DialogTitle>Client Details</DialogTitle>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Client Details
+            </DialogTitle>
           </DialogHeader>
           {selectedClient && (
             <ScrollArea className="max-h-[70vh] pr-4">
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                  <User className="h-12 w-12 text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-full p-2" />
+                  <User className="h-12 w-12 text-gold-accent bg-primary/10 rounded-full p-2" />
                   <div>
-                    <h2 className="text-xl font-semibold">
+                    <h2 className="text-xl font-lora text-foreground">
                       {selectedClient.clientName}
                     </h2>
-                    <Badge className={getStatusColor(selectedClient.status)}>
+                    <Badge
+                      className={`font-lora ${getStatusColor(
+                        selectedClient.status
+                      )}`}
+                    >
                       {selectedClient.status}
                     </Badge>
                   </div>
@@ -447,8 +529,10 @@ export default function CRMPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-4">
                     <div>
-                      <h3 className="font-medium mb-1">Contact Information</h3>
-                      <div className="text-sm text-gray-600 space-y-1">
+                      <h3 className="font-lora text-foreground mb-1">
+                        Contact Information
+                      </h3>
+                      <div className="text-sm font-lora text-muted-foreground space-y-1">
                         <p>Email: {selectedClient.contactInfo.email}</p>
                         {selectedClient.contactInfo.phone && (
                           <p>Phone: {selectedClient.contactInfo.phone}</p>
@@ -456,22 +540,28 @@ export default function CRMPage() {
                       </div>
                     </div>
                     <div>
-                      <h3 className="font-medium mb-1">Service Booked</h3>
-                      <p className="text-sm text-gray-600">
+                      <h3 className="font-lora text-foreground mb-1">
+                        Service Booked
+                      </h3>
+                      <p className="text-sm font-lora text-muted-foreground">
                         {selectedClient.serviceBooked}
                       </p>
                     </div>
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <h3 className="font-medium mb-1">Assigned Vendor</h3>
-                      <p className="text-sm text-gray-600">
+                      <h3 className="font-lora text-foreground mb-1">
+                        Assigned Vendor
+                      </h3>
+                      <p className="text-sm font-lora text-muted-foreground">
                         {selectedClient.assignedVendor || "Unassigned"}
                       </p>
                     </div>
                     <div>
-                      <h3 className="font-medium mb-1">Due Date</h3>
-                      <p className="text-sm text-gray-600">
+                      <h3 className="font-lora text-foreground mb-1">
+                        Due Date
+                      </h3>
+                      <p className="text-sm font-lora text-muted-foreground">
                         {selectedClient.dueDate
                           ? new Date(
                               selectedClient.dueDate
@@ -484,16 +574,18 @@ export default function CRMPage() {
 
                 {selectedClient.notes && (
                   <div>
-                    <h3 className="font-medium mb-2">Notes</h3>
-                    <p className="text-sm text-gray-600 bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                    <h3 className="font-lora text-foreground mb-2">Notes</h3>
+                    <p className="text-sm font-lora text-muted-foreground bg-primary/10 p-3 rounded-md">
                       {selectedClient.notes}
                     </p>
                   </div>
                 )}
 
-                <div className="border-t pt-4">
-                  <h3 className="font-medium mb-2">Client Information</h3>
-                  <div className="text-sm text-gray-600 space-y-1">
+                <div className="border-t border-gold-accent/20 pt-4">
+                  <h3 className="font-lora text-foreground mb-2">
+                    Client Information
+                  </h3>
+                  <div className="text-sm font-lora text-muted-foreground space-y-1">
                     <p>Client ID: {selectedClient.id}</p>
                     <p>
                       Created:{" "}
@@ -509,21 +601,33 @@ export default function CRMPage() {
             </ScrollArea>
           )}
           <DialogFooter>
-            <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
+            <Button
+              onClick={() => setIsViewModalOpen(false)}
+              className="gold-gradient text-black hover:opacity-90 font-lora"
+            >
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Edit Client Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] bg-card border-gold-accent/20">
           <DialogHeader>
-            <DialogTitle>Edit CRM Client</DialogTitle>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Edit CRM Client
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpdateClient} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="editClientName">Client Name</Label>
+                <Label
+                  htmlFor="editClientName"
+                  className="font-lora text-foreground"
+                >
+                  Client Name
+                </Label>
                 <Input
                   id="editClientName"
                   value={editClient.clientName || ""}
@@ -534,10 +638,16 @@ export default function CRMPage() {
                     }))
                   }
                   placeholder="Enter client name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
               <div>
-                <Label htmlFor="editServiceBooked">Service Booked</Label>
+                <Label
+                  htmlFor="editServiceBooked"
+                  className="font-lora text-foreground"
+                >
+                  Service Booked
+                </Label>
                 <Input
                   id="editServiceBooked"
                   value={editClient.serviceBooked || ""}
@@ -548,12 +658,18 @@ export default function CRMPage() {
                     }))
                   }
                   placeholder="Enter service name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="editEmail">Email</Label>
+                <Label
+                  htmlFor="editEmail"
+                  className="font-lora text-foreground"
+                >
+                  Email
+                </Label>
                 <Input
                   id="editEmail"
                   type="email"
@@ -568,10 +684,16 @@ export default function CRMPage() {
                     }))
                   }
                   placeholder="Enter email"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
               <div>
-                <Label htmlFor="editPhone">Phone</Label>
+                <Label
+                  htmlFor="editPhone"
+                  className="font-lora text-foreground"
+                >
+                  Phone
+                </Label>
                 <Input
                   id="editPhone"
                   value={editClient.contactInfo?.phone || ""}
@@ -585,24 +707,34 @@ export default function CRMPage() {
                     }))
                   }
                   placeholder="Enter phone number"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="editStatus">Status</Label>
+                <Label
+                  htmlFor="editStatus"
+                  className="font-lora text-foreground"
+                >
+                  Status
+                </Label>
                 <Select
                   value={editClient.status || ""}
                   onValueChange={(value) =>
                     setEditClient((prev) => ({ ...prev, status: value }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-primary/10 border-gold-accent/20 text-foreground font-lora">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-card border-gold-accent/20">
                     {statuses.map((status) => (
-                      <SelectItem key={status} value={status}>
+                      <SelectItem
+                        key={status}
+                        value={status}
+                        className="font-lora"
+                      >
                         {status}
                       </SelectItem>
                     ))}
@@ -610,7 +742,12 @@ export default function CRMPage() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="editAssignedVendor">Assigned Vendor</Label>
+                <Label
+                  htmlFor="editAssignedVendor"
+                  className="font-lora text-foreground"
+                >
+                  Assigned Vendor
+                </Label>
                 <Input
                   id="editAssignedVendor"
                   value={editClient.assignedVendor || ""}
@@ -621,11 +758,17 @@ export default function CRMPage() {
                     }))
                   }
                   placeholder="Enter vendor name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="editDueDate">Due Date</Label>
+              <Label
+                htmlFor="editDueDate"
+                className="font-lora text-foreground"
+              >
+                Due Date
+              </Label>
               <Input
                 id="editDueDate"
                 type="date"
@@ -636,10 +779,13 @@ export default function CRMPage() {
                     dueDate: e.target.value,
                   }))
                 }
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
               />
             </div>
             <div>
-              <Label htmlFor="editNotes">Notes</Label>
+              <Label htmlFor="editNotes" className="font-lora text-foreground">
+                Notes
+              </Label>
               <Textarea
                 id="editNotes"
                 value={editClient.notes || ""}
@@ -648,6 +794,7 @@ export default function CRMPage() {
                 }
                 placeholder="Enter any additional notes"
                 rows={3}
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
               />
             </div>
             <DialogFooter>
@@ -655,10 +802,16 @@ export default function CRMPage() {
                 type="button"
                 variant="outline"
                 onClick={() => setIsEditModalOpen(false)}
+                className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
               >
                 Cancel
               </Button>
-              <Button type="submit">Update Client</Button>
+              <Button
+                type="submit"
+                className="gold-gradient text-black hover:opacity-90 font-lora"
+              >
+                Update Client
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -666,14 +819,21 @@ export default function CRMPage() {
 
       {/* Create Client Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] bg-card border-gold-accent/20">
           <DialogHeader>
-            <DialogTitle>Add New CRM Client</DialogTitle>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Add New CRM Client
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateClient} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="clientName">Client Name</Label>
+                <Label
+                  htmlFor="clientName"
+                  className="font-lora text-foreground"
+                >
+                  Client Name
+                </Label>
                 <Input
                   id="clientName"
                   value={newClient.clientName}
@@ -684,11 +844,17 @@ export default function CRMPage() {
                     }))
                   }
                   placeholder="Enter client name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="serviceBooked">Service Booked</Label>
+                <Label
+                  htmlFor="serviceBooked"
+                  className="font-lora text-foreground"
+                >
+                  Service Booked
+                </Label>
                 <Input
                   id="serviceBooked"
                   value={newClient.serviceBooked}
@@ -699,13 +865,16 @@ export default function CRMPage() {
                     }))
                   }
                   placeholder="Enter service name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                   required
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="font-lora text-foreground">
+                  Email
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -720,11 +889,14 @@ export default function CRMPage() {
                     }))
                   }
                   placeholder="Enter email"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone" className="font-lora text-foreground">
+                  Phone
+                </Label>
                 <Input
                   id="phone"
                   value={newClient.contactInfo.phone}
@@ -738,24 +910,31 @@ export default function CRMPage() {
                     }))
                   }
                   placeholder="Enter phone number"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="status" className="font-lora text-foreground">
+                  Status
+                </Label>
                 <Select
                   value={newClient.status}
                   onValueChange={(value) =>
                     setNewClient((prev) => ({ ...prev, status: value }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-primary/10 border-gold-accent/20 text-foreground font-lora">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-card border-gold-accent/20">
                     {statuses.map((status) => (
-                      <SelectItem key={status} value={status}>
+                      <SelectItem
+                        key={status}
+                        value={status}
+                        className="font-lora"
+                      >
                         {status}
                       </SelectItem>
                     ))}
@@ -763,7 +942,12 @@ export default function CRMPage() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="assignedVendor">Assigned Vendor</Label>
+                <Label
+                  htmlFor="assignedVendor"
+                  className="font-lora text-foreground"
+                >
+                  Assigned Vendor
+                </Label>
                 <Input
                   id="assignedVendor"
                   value={newClient.assignedVendor}
@@ -774,11 +958,14 @@ export default function CRMPage() {
                     }))
                   }
                   placeholder="Enter vendor name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="dueDate">Due Date</Label>
+              <Label htmlFor="dueDate" className="font-lora text-foreground">
+                Due Date
+              </Label>
               <Input
                 id="dueDate"
                 type="date"
@@ -786,10 +973,13 @@ export default function CRMPage() {
                 onChange={(e) =>
                   setNewClient((prev) => ({ ...prev, dueDate: e.target.value }))
                 }
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
               />
             </div>
             <div>
-              <Label htmlFor="notes">Notes</Label>
+              <Label htmlFor="notes" className="font-lora text-foreground">
+                Notes
+              </Label>
               <Textarea
                 id="notes"
                 value={newClient.notes}
@@ -798,6 +988,7 @@ export default function CRMPage() {
                 }
                 placeholder="Enter any additional notes"
                 rows={3}
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
               />
             </div>
             <DialogFooter>
@@ -805,10 +996,16 @@ export default function CRMPage() {
                 type="button"
                 variant="outline"
                 onClick={() => setIsModalOpen(false)}
+                className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
               >
                 Cancel
               </Button>
-              <Button type="submit">Add Client</Button>
+              <Button
+                type="submit"
+                className="gold-gradient text-black hover:opacity-90 font-lora"
+              >
+                Add Client
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>

@@ -42,6 +42,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import {
   apiClient,
   type Blog,
@@ -60,8 +62,11 @@ export default function BlogsPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [cardRef, cardInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
 
-  // Form state for new blog
   const [newBlog, setNewBlog] = useState<BlogCreate>({
     title: "",
     slug: "",
@@ -75,7 +80,6 @@ export default function BlogsPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
 
-  // Edit form state
   const [editBlog, setEditBlog] = useState<BlogUpdate>({});
   const [editTagsInput, setEditTagsInput] = useState("");
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
@@ -97,6 +101,7 @@ export default function BlogsPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to fetch blogs",
+        className: "font-lora",
       });
     } finally {
       setIsLoading(false);
@@ -104,7 +109,6 @@ export default function BlogsPage() {
   };
 
   useEffect(() => {
-    // Apply search filter
     let result = blogs;
 
     if (searchTerm) {
@@ -144,6 +148,7 @@ export default function BlogsPage() {
       toast({
         title: "Success",
         description: "Image uploaded successfully",
+        className: "font-lora",
       });
     } catch (error: any) {
       console.error("Error uploading image:", error);
@@ -151,6 +156,7 @@ export default function BlogsPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to upload image",
+        className: "font-lora",
       });
     } finally {
       setIsUploading(false);
@@ -168,6 +174,7 @@ export default function BlogsPage() {
           variant: "destructive",
           title: "Error",
           description: "Please select an image file",
+          className: "font-lora",
         });
         return;
       }
@@ -188,6 +195,7 @@ export default function BlogsPage() {
         variant: "destructive",
         title: "Error",
         description: "Please fill all required fields",
+        className: "font-lora",
       });
       return;
     }
@@ -212,6 +220,7 @@ export default function BlogsPage() {
       toast({
         title: "Success",
         description: "Blog post created successfully",
+        className: "font-lora",
       });
     } catch (error: any) {
       console.error("Error creating blog:", error);
@@ -219,6 +228,7 @@ export default function BlogsPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to create blog post",
+        className: "font-lora",
       });
     }
   };
@@ -248,6 +258,7 @@ export default function BlogsPage() {
       toast({
         title: "Success",
         description: "Blog post updated successfully",
+        className: "font-lora",
       });
     } catch (error: any) {
       console.error("Error updating blog:", error);
@@ -255,6 +266,7 @@ export default function BlogsPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to update blog post",
+        className: "font-lora",
       });
     }
   };
@@ -269,6 +281,7 @@ export default function BlogsPage() {
       toast({
         title: "Success",
         description: "Blog post deleted successfully",
+        className: "font-lora",
       });
     } catch (error: any) {
       console.error("Error deleting blog:", error);
@@ -276,6 +289,7 @@ export default function BlogsPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to delete blog post",
+        className: "font-lora",
       });
     }
   };
@@ -328,163 +342,221 @@ export default function BlogsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold tracking-tight">Blog Posts</h1>
+    <div className="space-y-6 bg-background p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <h1 className="text-2xl sm:text-3xl font-cinzel font-bold uppercase tracking-widest text-secondary">
+          Blog Management
+        </h1>
         <Button
           size="sm"
-          className="flex items-center gap-1"
+          className="flex items-center gap-1 gold-gradient text-black hover:opacity-90 font-lora"
           onClick={() => setIsCreateModalOpen(true)}
         >
           <Plus className="h-4 w-4" />
           <span>Add Blog Post</span>
         </Button>
-      </div>
+      </motion.div>
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Manage Blog Posts</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <Input
-                type="search"
-                placeholder="Search by title, slug, or tags..."
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+      <motion.div
+        ref={cardRef}
+        initial={{ opacity: 0, y: 40 }}
+        animate={cardInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.8 }}
+      >
+        <Card className="bg-card elegant-shadow border-gold-accent/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Manage Blog Posts
+              <motion.div
+                className="h-0.5 bg-gradient-to-r from-transparent via-gold-accent to-transparent mt-2"
+                initial={{ width: 0 }}
+                animate={cardInView ? { width: "100px" } : {}}
+                transition={{ duration: 1, delay: 0.5 }}
               />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gold-accent" />
+                <Input
+                  type="search"
+                  placeholder="Search by title, slug, or tags..."
+                  className="pl-8 bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
 
-          {isLoading ? (
-            <div className="flex justify-center items-center py-8">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-            </div>
-          ) : (
-            <div className="overflow-x-auto rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Author</TableHead>
-                    <TableHead>Tags</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredBlogs.length > 0 ? (
-                    filteredBlogs.map((blog) => (
-                      <TableRow key={blog.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-gray-500" />
-                            <div>
-                              <div className="font-medium">{blog.title}</div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
-                                /{blog.slug}
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gold-accent border-t-transparent" />
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-md border border-gold-accent/20">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-card hover:bg-card">
+                      <TableHead className="font-lora text-foreground">
+                        Title
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Author
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Tags
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Created
+                      </TableHead>
+                      <TableHead className="text-right font-lora text-foreground">
+                        Actions
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredBlogs.length > 0 ? (
+                      filteredBlogs.map((blog, index) => (
+                        <motion.tr
+                          key={blog.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={cardInView ? { opacity: 1, y: 0 } : {}}
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
+                          className="hover:bg-gold-accent/5"
+                        >
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-4 w-4 text-gold-accent" />
+                              <div>
+                                <div className="font-lora text-foreground">
+                                  {blog.title}
+                                </div>
+                                <div className="text-xs font-lora text-muted-foreground">
+                                  /{blog.slug}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            <div>{blog.author.name}</div>
-                            <div className="text-gray-500">
-                              {blog.author.email}
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm font-lora">
+                              <div className="text-foreground">
+                                {blog.author.name}
+                              </div>
+                              <div className="text-muted-foreground">
+                                {blog.author.email}
+                              </div>
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {blog.tags.slice(0, 3).map((tag) => (
-                              <Badge
-                                key={tag}
-                                variant="secondary"
-                                className="text-xs"
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {blog.tags.slice(0, 3).map((tag) => (
+                                <Badge
+                                  key={tag}
+                                  variant="secondary"
+                                  className="text-xs font-lora bg-gray-600/20 text-gray-500 border-gray-500/30"
+                                >
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {blog.tags.length > 3 && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs font-lora border-gold-accent/30 text-gold-accent"
+                                >
+                                  +{blog.tags.length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-lora text-foreground">
+                            {new Date(blog.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-gold-accent hover:bg-gold-accent/10"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Open menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                align="end"
+                                className="bg-card border-gold-accent/20"
                               >
-                                {tag}
-                              </Badge>
-                            ))}
-                            {blog.tags.length > 3 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{blog.tags.length - 3}
-                              </Badge>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {new Date(blog.createdAt).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Open menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => handleViewBlog(blog)}
-                              >
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Post
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleEditBlog(blog)}
-                              >
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit Post
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-red-600 dark:text-red-400"
-                                onClick={() =>
-                                  handleDeleteBlog(blog.id, blog.title)
-                                }
-                              >
-                                <Trash className="mr-2 h-4 w-4" />
-                                Delete Post
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                                <DropdownMenuLabel className="font-lora text-secondary">
+                                  Actions
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator className="bg-gold-accent/20" />
+                                <DropdownMenuItem
+                                  className="font-lora"
+                                  onClick={() => handleViewBlog(blog)}
+                                >
+                                  <Eye className="mr-2 h-4 w-4 text-gold-accent" />
+                                  View Post
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="font-lora"
+                                  onClick={() => handleEditBlog(blog)}
+                                >
+                                  <Edit className="mr-2 h-4 w-4 text-gold-accent" />
+                                  Edit Post
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator className="bg-gold-accent/20" />
+                                <DropdownMenuItem
+                                  className="font-lora text-red-500"
+                                  onClick={() =>
+                                    handleDeleteBlog(blog.id, blog.title)
+                                  }
+                                >
+                                  <Trash className="mr-2 h-4 w-4 text-red-500" />
+                                  Delete Post
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </motion.tr>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={5}
+                          className="h-24 text-center font-lora text-muted-foreground italic"
+                        >
+                          No blog posts found.
                         </TableCell>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={5} className="h-24 text-center">
-                        No blog posts found.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
-      {/* Create Blog Modal */}
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl bg-card border-gold-accent/20">
           <DialogHeader>
-            <DialogTitle>Create New Blog Post</DialogTitle>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Create New Blog Post
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateBlog} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title" className="font-lora text-foreground">
+                  Title
+                </Label>
                 <Input
                   id="title"
                   value={newBlog.title}
@@ -497,11 +569,14 @@ export default function BlogsPage() {
                     }));
                   }}
                   placeholder="Enter blog title"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="slug">Slug</Label>
+                <Label htmlFor="slug" className="font-lora text-foreground">
+                  Slug
+                </Label>
                 <Input
                   id="slug"
                   value={newBlog.slug}
@@ -509,13 +584,15 @@ export default function BlogsPage() {
                     setNewBlog((prev) => ({ ...prev, slug: e.target.value }))
                   }
                   placeholder="auto-generated-from-title"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
             </div>
 
-            {/* Cover Image Upload */}
             <div>
-              <Label htmlFor="coverImage">Cover Image</Label>
+              <Label htmlFor="coverImage" className="font-lora text-foreground">
+                Cover Image
+              </Label>
               <div className="space-y-2">
                 <Input
                   id="coverImage"
@@ -523,25 +600,26 @@ export default function BlogsPage() {
                   accept="image/*"
                   onChange={(e) => handleFileSelect(e)}
                   disabled={isUploading}
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
                 {isUploading && (
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                  <div className="flex items-center gap-2 text-sm font-lora text-muted-foreground">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gold-accent border-t-transparent" />
                     Uploading image...
                   </div>
                 )}
                 {imagePreview && (
                   <div className="relative inline-block">
                     <img
-                      src={imagePreview || "/placeholder.svg"}
+                      src={imagePreview}
                       alt="Cover preview"
-                      className="h-32 w-48 object-cover rounded-md border"
+                      className="h-32 w-48 object-cover rounded-md border border-gold-accent/20"
                     />
                     <Button
                       type="button"
                       variant="destructive"
                       size="icon"
-                      className="absolute -top-2 -right-2 h-6 w-6"
+                      className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 hover:bg-red-600"
                       onClick={() => removeImage()}
                     >
                       <X className="h-4 w-4" />
@@ -552,7 +630,9 @@ export default function BlogsPage() {
             </div>
 
             <div>
-              <Label htmlFor="excerpt">Excerpt</Label>
+              <Label htmlFor="excerpt" className="font-lora text-foreground">
+                Excerpt
+              </Label>
               <Textarea
                 id="excerpt"
                 value={newBlog.excerpt}
@@ -561,11 +641,14 @@ export default function BlogsPage() {
                 }
                 placeholder="Brief description of the blog post"
                 rows={2}
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 required
               />
             </div>
             <div>
-              <Label htmlFor="content">Content</Label>
+              <Label htmlFor="content" className="font-lora text-foreground">
+                Content
+              </Label>
               <Textarea
                 id="content"
                 value={newBlog.content}
@@ -574,12 +657,18 @@ export default function BlogsPage() {
                 }
                 placeholder="Write your blog content here..."
                 rows={10}
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 required
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="authorName">Author Name</Label>
+                <Label
+                  htmlFor="authorName"
+                  className="font-lora text-foreground"
+                >
+                  Author Name
+                </Label>
                 <Input
                   id="authorName"
                   value={newBlog.author.name}
@@ -590,10 +679,16 @@ export default function BlogsPage() {
                     }))
                   }
                   placeholder="Author name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
               <div>
-                <Label htmlFor="authorEmail">Author Email</Label>
+                <Label
+                  htmlFor="authorEmail"
+                  className="font-lora text-foreground"
+                >
+                  Author Email
+                </Label>
                 <Input
                   id="authorEmail"
                   type="email"
@@ -605,16 +700,20 @@ export default function BlogsPage() {
                     }))
                   }
                   placeholder="author@example.com"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="tags">Tags (comma-separated)</Label>
+              <Label htmlFor="tags" className="font-lora text-foreground">
+                Tags (comma-separated)
+              </Label>
               <Input
                 id="tags"
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
                 placeholder="technology, business, lifestyle"
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
               />
             </div>
             <DialogFooter>
@@ -622,10 +721,15 @@ export default function BlogsPage() {
                 type="button"
                 variant="outline"
                 onClick={() => setIsCreateModalOpen(false)}
+                className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isUploading}>
+              <Button
+                type="submit"
+                disabled={isUploading}
+                className="gold-gradient text-black hover:opacity-90 font-lora"
+              >
                 Create Blog Post
               </Button>
             </DialogFooter>
@@ -633,55 +737,72 @@ export default function BlogsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* View Blog Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh]">
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-card border-gold-accent/20">
           <DialogHeader>
-            <DialogTitle>View Blog Post</DialogTitle>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              View Blog Post
+            </DialogTitle>
           </DialogHeader>
           {selectedBlog && (
             <ScrollArea className="max-h-[70vh] pr-4">
               <div className="space-y-4">
                 {selectedBlog.coverImage && (
                   <img
-                    src={selectedBlog.coverImage || "/placeholder.svg"}
+                    src={selectedBlog.coverImage}
                     alt={selectedBlog.title}
-                    className="w-full h-48 object-cover rounded-md"
+                    className="w-full h-48 object-cover rounded-md border border-gold-accent/20"
                   />
                 )}
                 <div>
-                  <h2 className="text-2xl font-bold">{selectedBlog.title}</h2>
-                  <p className="text-sm text-gray-500">
+                  <h2 className="text-2xl font-cinzel font-bold text-foreground">
+                    {selectedBlog.title}
+                  </h2>
+                  <p className="text-sm font-lora text-muted-foreground">
                     Slug: /{selectedBlog.slug}
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Excerpt</h3>
-                  <p className="text-gray-700 dark:text-gray-300">
+                  <h3 className="font-lora font-semibold text-foreground mb-2">
+                    Excerpt
+                  </h3>
+                  <p className="text-foreground font-lora">
                     {selectedBlog.excerpt}
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Content</h3>
+                  <h3 className="font-lora font-semibold text-foreground mb-2">
+                    Content
+                  </h3>
                   <div className="prose max-w-none">
-                    <p className="whitespace-pre-wrap">
+                    <p className="whitespace-pre-wrap text-foreground font-lora">
                       {selectedBlog.content}
                     </p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <h3 className="font-semibold mb-2">Author</h3>
-                    <p>{selectedBlog.author.name}</p>
-                    <p className="text-sm text-gray-500">
+                    <h3 className="font-lora font-semibold text-foreground mb-2">
+                      Author
+                    </h3>
+                    <p className="font-lora text-foreground">
+                      {selectedBlog.author.name}
+                    </p>
+                    <p className="text-sm font-lora text-muted-foreground">
                       {selectedBlog.author.email}
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-2">Tags</h3>
+                    <h3 className="font-lora font-semibold text-foreground mb-2">
+                      Tags
+                    </h3>
                     <div className="flex flex-wrap gap-1">
                       {selectedBlog.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary">
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="font-lora bg-gray-600/20 text-gray-500 border-gray-500/30"
+                        >
                           {tag}
                         </Badge>
                       ))}
@@ -689,34 +810,49 @@ export default function BlogsPage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-2">Metadata</h3>
-                  <p className="text-sm text-gray-500">
+                  <h3 className="font-lora font-semibold text-foreground mb-2">
+                    Metadata
+                  </h3>
+                  <p className="text-sm font-lora text-muted-foreground">
                     Created: {new Date(selectedBlog.createdAt).toLocaleString()}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm font-lora text-muted-foreground">
                     Updated: {new Date(selectedBlog.updatedAt).toLocaleString()}
                   </p>
-                  <p className="text-sm text-gray-500">ID: {selectedBlog.id}</p>
+                  <p className="text-sm font-lora text-muted-foreground">
+                    ID: {selectedBlog.id}
+                  </p>
                 </div>
               </div>
             </ScrollArea>
           )}
           <DialogFooter>
-            <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
+            <Button
+              onClick={() => setIsViewModalOpen(false)}
+              className="gold-gradient text-black hover:opacity-90 font-lora"
+            >
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Edit Blog Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl bg-card border-gold-accent/20">
           <DialogHeader>
-            <DialogTitle>Edit Blog Post</DialogTitle>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Edit Blog Post
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpdateBlog} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="editTitle">Title</Label>
+                <Label
+                  htmlFor="editTitle"
+                  className="font-lora text-foreground"
+                >
+                  Title
+                </Label>
                 <Input
                   id="editTitle"
                   value={editBlog.title || ""}
@@ -729,10 +865,13 @@ export default function BlogsPage() {
                     }));
                   }}
                   placeholder="Enter blog title"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
               <div>
-                <Label htmlFor="editSlug">Slug</Label>
+                <Label htmlFor="editSlug" className="font-lora text-foreground">
+                  Slug
+                </Label>
                 <Input
                   id="editSlug"
                   value={editBlog.slug || ""}
@@ -740,13 +879,18 @@ export default function BlogsPage() {
                     setEditBlog((prev) => ({ ...prev, slug: e.target.value }))
                   }
                   placeholder="auto-generated-from-title"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
             </div>
 
-            {/* Cover Image Upload */}
             <div>
-              <Label htmlFor="editCoverImage">Cover Image</Label>
+              <Label
+                htmlFor="editCoverImage"
+                className="font-lora text-foreground"
+              >
+                Cover Image
+              </Label>
               <div className="space-y-2">
                 <Input
                   id="editCoverImage"
@@ -754,25 +898,26 @@ export default function BlogsPage() {
                   accept="image/*"
                   onChange={(e) => handleFileSelect(e, true)}
                   disabled={isUploading}
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
                 {isUploading && (
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                  <div className="flex items-center gap-2 text-sm font-lora text-muted-foreground">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gold-accent border-t-transparent" />
                     Uploading image...
                   </div>
                 )}
                 {editImagePreview && (
                   <div className="relative inline-block">
                     <img
-                      src={editImagePreview || "/placeholder.svg"}
+                      src={editImagePreview}
                       alt="Cover preview"
-                      className="h-32 w-48 object-cover rounded-md border"
+                      className="h-32 w-48 object-cover rounded-md border border-gold-accent/20"
                     />
                     <Button
                       type="button"
                       variant="destructive"
                       size="icon"
-                      className="absolute -top-2 -right-2 h-6 w-6"
+                      className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 hover:bg-red-600"
                       onClick={() => removeImage(true)}
                     >
                       <X className="h-4 w-4" />
@@ -783,7 +928,12 @@ export default function BlogsPage() {
             </div>
 
             <div>
-              <Label htmlFor="editExcerpt">Excerpt</Label>
+              <Label
+                htmlFor="editExcerpt"
+                className="font-lora text-foreground"
+              >
+                Excerpt
+              </Label>
               <Textarea
                 id="editExcerpt"
                 value={editBlog.excerpt || ""}
@@ -792,10 +942,16 @@ export default function BlogsPage() {
                 }
                 placeholder="Brief description of the blog post"
                 rows={2}
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
               />
             </div>
             <div>
-              <Label htmlFor="editContent">Content</Label>
+              <Label
+                htmlFor="editContent"
+                className="font-lora text-foreground"
+              >
+                Content
+              </Label>
               <Textarea
                 id="editContent"
                 value={editBlog.content || ""}
@@ -804,11 +960,17 @@ export default function BlogsPage() {
                 }
                 placeholder="Write your blog content here..."
                 rows={10}
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="editAuthorName">Author Name</Label>
+                <Label
+                  htmlFor="editAuthorName"
+                  className="font-lora text-foreground"
+                >
+                  Author Name
+                </Label>
                 <Input
                   id="editAuthorName"
                   value={editBlog.author?.name || ""}
@@ -819,10 +981,16 @@ export default function BlogsPage() {
                     }))
                   }
                   placeholder="Author name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
               <div>
-                <Label htmlFor="editAuthorEmail">Author Email</Label>
+                <Label
+                  htmlFor="editAuthorEmail"
+                  className="font-lora text-foreground"
+                >
+                  Author Email
+                </Label>
                 <Input
                   id="editAuthorEmail"
                   type="email"
@@ -834,16 +1002,20 @@ export default function BlogsPage() {
                     }))
                   }
                   placeholder="author@example.com"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="editTags">Tags (comma-separated)</Label>
+              <Label htmlFor="editTags" className="font-lora text-foreground">
+                Tags (comma-separated)
+              </Label>
               <Input
                 id="editTags"
                 value={editTagsInput}
                 onChange={(e) => setEditTagsInput(e.target.value)}
                 placeholder="technology, business, lifestyle"
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
               />
             </div>
             <DialogFooter>
@@ -851,10 +1023,15 @@ export default function BlogsPage() {
                 type="button"
                 variant="outline"
                 onClick={() => setIsEditModalOpen(false)}
+                className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isUploading}>
+              <Button
+                type="submit"
+                disabled={isUploading}
+                className="gold-gradient text-black hover:opacity-90 font-lora"
+              >
                 Update Blog Post
               </Button>
             </DialogFooter>

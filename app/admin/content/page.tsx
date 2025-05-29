@@ -47,6 +47,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 import {
   apiClient,
   type Content,
@@ -57,55 +59,49 @@ import { toast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function ContentPage() {
-  const [content, setContent] = useState<Content[]>([]);
-  const [filteredContent, setFilteredContent] = useState<Content[]>([]);
+  const [contents, setContents] = useState<Content[]>([]);
+  const [filteredContents, setFilteredContents] = useState<Content[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [pageFilter, setPageFilter] = useState("all");
-  const [typeFilter, setTypeFilter] = useState("all");
+  const [contentTypeFilter, setContentTypeFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Add after existing state:
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedContent, setSelectedContent] = useState<Content | null>(null);
-
-  // Edit form state
   const [editContent, setEditContent] = useState<ContentUpdate>({});
-  const [editTextInput, setEditTextInput] = useState("");
-  const [editMetadataInput, setEditMetadataInput] = useState("");
+  const [cardRef, cardInView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+  const [newContentFile, setNewContentFile] = useState<File | null>(null);
+  const [editContentFile, setEditContentFile] = useState<File | null>(null);
 
-  // Form state for new content
   const [newContent, setNewContent] = useState<ContentCreate>({
     page: "",
     section: "",
     content_type: "text",
     text: {},
-    image_url: "",
-    metadata: {},
   });
-  const [textInput, setTextInput] = useState("");
-  const [metadataInput, setMetadataInput] = useState("");
 
-  const pages = ["Home", "About", "Services", "Contact", "Blog", "Gallery"];
-  const contentTypes = ["text", "image", "video", "link", "json"];
+  const contentTypes = ["text", "image", "html", "json"];
 
   useEffect(() => {
-    fetchContent();
+    fetchContents();
   }, []);
 
-  const fetchContent = async () => {
+  const fetchContents = async () => {
     setIsLoading(true);
     try {
-      const contentData = await apiClient.getContent();
-      setContent(contentData);
-      setFilteredContent(contentData);
+      const contentsData = await apiClient.getContent();
+      setContents(contentsData);
+      setFilteredContents(contentsData);
     } catch (error: any) {
-      console.error("Error fetching content:", error);
+      console.error("Error fetching contents:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to fetch content",
+        description: error.message || "Failed to fetch contents",
+        className: "font-lora",
       });
     } finally {
       setIsLoading(false);
@@ -113,28 +109,123 @@ export default function ContentPage() {
   };
 
   useEffect(() => {
-    // Apply filters
-    let result = content;
+    let result = contents;
 
     if (searchTerm) {
       result = result.filter(
-        (item) =>
-          item.page.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.section.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.id.toLowerCase().includes(searchTerm.toLowerCase())
+        (content) =>
+          content.page.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          content.section.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          content.id.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    if (pageFilter !== "all") {
-      result = result.filter((item) => item.page === pageFilter);
+    if (contentTypeFilter !== "all") {
+      result = result.filter(
+        (content) => content.content_type === contentTypeFilter
+      );
     }
 
-    if (typeFilter !== "all") {
-      result = result.filter((item) => item.content_type === typeFilter);
+    setFilteredContents(result);
+  }, [searchTerm, contentTypeFilter, contents]);
+
+  const handleCreateContent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newContent.page || !newContent.section || !newContent.content_type) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please fill all required fields",
+        className: "font-lora",
+      });
+      return;
     }
 
-    setFilteredContent(result);
-  }, [searchTerm, pageFilter, typeFilter, content]);
+    try {
+      const createData: any = {
+        page: newContent.page,
+        section: newContent.section,
+        content_type: newContent.content_type,
+      };
+      if (newContent.text && Object.keys(newContent.text).length > 0) {
+        createData.text = JSON.stringify(newContent.text);
+      }
+      if (newContentFile) {
+        createData.file = newContentFile;
+      }
+
+      const createdContent = await apiClient.createContent(createData);
+      setContents((prev) => [createdContent, ...prev]);
+      setFilteredContents((prev) => [createdContent, ...prev]);
+      setIsModalOpen(false);
+      setNewContent({
+        page: "",
+        section: "",
+        content_type: "text",
+        text: {},
+      });
+      setNewContentFile(null);
+      toast({
+        title: "Success",
+        description: "Content created successfully",
+        className: "font-lora",
+      });
+    } catch (error: any) {
+      console.error("Error creating content:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to create content",
+        className: "font-lora",
+      });
+    }
+  };
+
+  const handleDeleteContent = async (
+    contentId: string,
+    contentPage: string
+  ) => {
+    if (
+      !confirm(
+        `Are you sure you want to delete content for page "${contentPage}"?`
+      )
+    )
+      return;
+
+    try {
+      await apiClient.deleteContent(contentId);
+      setContents((prev) => prev.filter((c) => c.id !== contentId));
+      setFilteredContents((prev) => prev.filter((c) => c.id !== contentId));
+      toast({
+        title: "Success",
+        description: "Content deleted successfully",
+        className: "font-lora",
+      });
+    } catch (error: any) {
+      console.error("Error deleting content:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to delete content",
+        className: "font-lora",
+      });
+    }
+  };
+
+  const getContentTypeColor = (contentType: string) => {
+    switch (contentType) {
+      case "text":
+        return "bg-gray-600/20 text-gray-500 border-gray-500/30";
+      case "image":
+        return "bg-blue-600/20 text-blue-500 border-blue-500/30";
+      case "html":
+        return "bg-green-600/20 text-green-500 border-green-500/30";
+      case "json":
+        return "bg-yellow-600/20 text-yellow-500 border-yellow-500/30";
+      default:
+        return "bg-gray-600/20 text-gray-500 border-gray-500/30";
+    }
+  };
 
   const handleViewContent = (content: Content) => {
     setSelectedContent(content);
@@ -147,18 +238,10 @@ export default function ContentPage() {
       page: content.page,
       section: content.section,
       content_type: content.content_type,
+      text: content.text,
       image_url: content.image_url,
+      metadata: content.metadata,
     });
-    setEditTextInput(
-      typeof content.text === "string"
-        ? content.text
-        : JSON.stringify(content.text, null, 2)
-    );
-    setEditMetadataInput(
-      typeof content.metadata === "string"
-        ? content.metadata
-        : JSON.stringify(content.metadata, null, 2)
-    );
     setIsEditModalOpen(true);
   };
 
@@ -167,41 +250,24 @@ export default function ContentPage() {
     if (!selectedContent) return;
 
     try {
-      let text = {};
-      let metadata = {};
-
-      if (editTextInput) {
-        try {
-          text = JSON.parse(editTextInput);
-        } catch {
-          text = { content: editTextInput };
-        }
-      }
-
-      if (editMetadataInput) {
-        try {
-          metadata = JSON.parse(editMetadataInput);
-        } catch {
-          metadata = { data: editMetadataInput };
-        }
-      }
-
-      const updatedContent = await apiClient.updateContent(selectedContent.id, {
-        ...editContent,
-        text,
-        metadata,
-      });
-      setContent((prev) =>
+      const updatedContent = await apiClient.updateContent(
+        selectedContent.id,
+        editContent,
+        editContentFile || undefined
+      );
+      setContents((prev) =>
         prev.map((c) => (c.id === selectedContent.id ? updatedContent : c))
       );
-      setFilteredContent((prev) =>
+      setFilteredContents((prev) =>
         prev.map((c) => (c.id === selectedContent.id ? updatedContent : c))
       );
       setIsEditModalOpen(false);
       setSelectedContent(null);
+      setEditContentFile(null);
       toast({
         title: "Success",
         description: "Content updated successfully",
+        className: "font-lora",
       });
     } catch (error: any) {
       console.error("Error updating content:", error);
@@ -209,401 +275,364 @@ export default function ContentPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to update content",
-      });
-    }
-  };
-
-  const handleCreateContent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newContent.page || !newContent.section || !newContent.content_type) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please fill all required fields",
-      });
-      return;
-    }
-
-    try {
-      let text = {};
-      let metadata = {};
-
-      if (textInput) {
-        try {
-          text = JSON.parse(textInput);
-        } catch {
-          text = { content: textInput };
-        }
-      }
-
-      if (metadataInput) {
-        try {
-          metadata = JSON.parse(metadataInput);
-        } catch {
-          metadata = { data: metadataInput };
-        }
-      }
-
-      const createdContent = await apiClient.createContent({
-        page: newContent.page,
-        section: newContent.section,
-        content_type: newContent.content_type,
-        text: JSON.stringify(text),
-        image_url: newContent.image_url,
-        metadata: JSON.stringify(metadata),
-      });
-
-      setContent((prev) => [createdContent, ...prev]);
-      setFilteredContent((prev) => [createdContent, ...prev]);
-      setIsModalOpen(false);
-      setNewContent({
-        page: "",
-        section: "",
-        content_type: "text",
-        text: {},
-        image_url: "",
-        metadata: {},
-      });
-      setTextInput("");
-      setMetadataInput("");
-      toast({
-        title: "Success",
-        description: "Content created successfully",
-      });
-    } catch (error: any) {
-      console.error("Error creating content:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "Failed to create content",
-      });
-    }
-  };
-
-  const handleDeleteContent = async (
-    contentId: string,
-    contentPage: string,
-    contentSection: string
-  ) => {
-    if (
-      !confirm(
-        `Are you sure you want to delete content from "${contentPage} - ${contentSection}"?`
-      )
-    )
-      return;
-
-    try {
-      await apiClient.deleteContent(contentId);
-      setContent((prev) => prev.filter((c) => c.id !== contentId));
-      setFilteredContent((prev) => prev.filter((c) => c.id !== contentId));
-      toast({
-        title: "Success",
-        description: "Content deleted successfully",
-      });
-    } catch (error: any) {
-      console.error("Error deleting content:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "Failed to delete content",
+        className: "font-lora",
       });
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-bold tracking-tight">
+    <div className="space-y-6 bg-background p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <h1 className="text-2xl sm:text-3xl font-cinzel font-bold uppercase tracking-widest text-secondary">
           Content Management
         </h1>
         <Button
           size="sm"
-          className="flex items-center gap-1"
+          className="flex items-center gap-1 gold-gradient text-black hover:opacity-90 font-lora"
           onClick={() => setIsModalOpen(true)}
         >
           <Plus className="h-4 w-4" />
           <span>Add Content</span>
         </Button>
-      </div>
+      </motion.div>
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle>Manage Website Content</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <Input
-                type="search"
-                placeholder="Search by page, section, or ID..."
-                className="pl-8"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+      <motion.div
+        ref={cardRef}
+        initial={{ opacity: 0, y: 40 }}
+        animate={cardInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.8 }}
+      >
+        <Card className="bg-card elegant-shadow border-gold-accent/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Manage Content
+              <motion.div
+                className="h-0.5 bg-gradient-to-r from-transparent via-gold-accent to-transparent mt-2"
+                initial={{ width: 0 }}
+                animate={cardInView ? { width: "100px" } : {}}
+                transition={{ duration: 1, delay: 0.5 }}
               />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex-1 relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gold-accent" />
+                <Input
+                  type="search"
+                  placeholder="Search by page, section, or ID..."
+                  className="pl-8 bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <Select
+                value={contentTypeFilter}
+                onValueChange={setContentTypeFilter}
+              >
+                <SelectTrigger className="w-full sm:w-[180px] bg-primary/10 border-gold-accent/20 text-foreground font-lora">
+                  <SelectValue placeholder="Filter by content type" />
+                </SelectTrigger>
+                <SelectContent className="bg-card border-gold-accent/20">
+                  <SelectItem value="all" className="font-lora">
+                    All Types
+                  </SelectItem>
+                  {contentTypes.map((type) => (
+                    <SelectItem key={type} value={type} className="font-lora">
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <Select value={pageFilter} onValueChange={setPageFilter}>
-              <SelectTrigger className="w-full sm:w-[150px]">
-                <SelectValue placeholder="Filter by page" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Pages</SelectItem>
-                {pages.map((page) => (
-                  <SelectItem key={page} value={page}>
-                    {page}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full sm:w-[150px]">
-                <SelectValue placeholder="Filter by type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {contentTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
-          {isLoading ? (
-            <div className="flex justify-center items-center py-8">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-            </div>
-          ) : (
-            <div className="overflow-x-auto rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Page</TableHead>
-                    <TableHead>Section</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Content Preview</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredContent.length > 0 ? (
-                    filteredContent.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-gray-500" />
-                            <div>
-                              <div className="font-medium">{item.page}</div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
-                                {item.id}
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gold-accent border-t-transparent" />
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-md border border-gold-accent/20">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-card hover:bg-card">
+                      <TableHead className="font-lora text-foreground">
+                        Page
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Section
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Content Type
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Created By
+                      </TableHead>
+                      <TableHead className="font-lora text-foreground">
+                        Created At
+                      </TableHead>
+                      <TableHead className="text-right font-lora text-foreground">
+                        Actions
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredContents.length > 0 ? (
+                      filteredContents.map((content, index) => (
+                        <motion.tr
+                          key={content.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={cardInView ? { opacity: 1, y: 0 } : {}}
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
+                          className="hover:bg-gold-accent/5"
+                        >
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-4 w-4 text-gold-accent" />
+                              <div className="font-lora text-foreground">
+                                {content.page}
                               </div>
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>{item.section}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{item.content_type}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="max-w-xs truncate text-sm">
-                            {item.content_type === "text" && item.text
-                              ? typeof item.text === "string"
-                                ? item.text
-                                : JSON.stringify(item.text).substring(0, 50) +
-                                  "..."
-                              : item.content_type === "image" && item.image_url
-                              ? item.image_url
-                              : "No preview available"}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {new Date(item.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
+                          </TableCell>
+                          <TableCell className="font-lora text-foreground">
+                            {content.section}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={`font-lora ${getContentTypeColor(
+                                content.content_type
+                              )}`}
+                            >
+                              {content.content_type}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="font-lora text-foreground">
+                            {content.created_by}
+                          </TableCell>
+                          <TableCell className="font-lora text-foreground">
+                            {new Date(content.created_at).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-gold-accent hover:bg-gold-accent/10"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Open menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                align="end"
+                                className="bg-card border-gold-accent/20"
                               >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Open menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => handleViewContent(item)}
-                              >
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Content
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleEditContent(item)}
-                              >
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit Content
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-red-600 dark:text-red-400"
-                                onClick={() =>
-                                  handleDeleteContent(
-                                    item.id,
-                                    item.page,
-                                    item.section
-                                  )
-                                }
-                              >
-                                <Trash className="mr-2 h-4 w-4" />
-                                Delete Content
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                                <DropdownMenuLabel className="font-lora text-secondary">
+                                  Actions
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator className="bg-gold-accent/20" />
+                                <DropdownMenuItem
+                                  className="font-lora"
+                                  onClick={() => handleViewContent(content)}
+                                >
+                                  <Eye className="mr-2 h-4 w-4 text-gold-accent" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="font-lora"
+                                  onClick={() => handleEditContent(content)}
+                                >
+                                  <Edit className="mr-2 h-4 w-4 text-gold-accent" />
+                                  Edit Content
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator className="bg-gold-accent/20" />
+                                <DropdownMenuItem
+                                  className="font-lora text-red-500"
+                                  onClick={() =>
+                                    handleDeleteContent(
+                                      content.id,
+                                      content.page
+                                    )
+                                  }
+                                >
+                                  <Trash className="mr-2 h-4 w-4 text-red-500" />
+                                  Delete Content
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </motion.tr>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={6}
+                          className="h-24 text-center font-lora text-muted-foreground italic"
+                        >
+                          No content found.
                         </TableCell>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={6} className="h-24 text-center">
-                        No content found.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
-      {/* View Content Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-2xl bg-card border-gold-accent/20">
           <DialogHeader>
-            <DialogTitle>Content Details</DialogTitle>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Content Details
+            </DialogTitle>
           </DialogHeader>
           {selectedContent && (
             <ScrollArea className="max-h-[70vh] pr-4">
               <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-4">
+                  <FileText className="h-12 w-12 text-gold-accent bg-primary/10 rounded-full p-2" />
                   <div>
-                    <h3 className="font-medium mb-1">Page</h3>
-                    <p className="text-sm text-gray-600">
+                    <h2 className="text-xl font-lora text-foreground">
                       {selectedContent.page}
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Section</h3>
-                    <p className="text-sm text-gray-600">
-                      {selectedContent.section}
-                    </p>
+                    </h2>
+                    <Badge
+                      className={`font-lora ${getContentTypeColor(
+                        selectedContent.content_type
+                      )}`}
+                    >
+                      {selectedContent.content_type}
+                    </Badge>
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="font-medium mb-1">Content Type</h3>
-                  <Badge variant="outline">
-                    {selectedContent.content_type}
-                  </Badge>
-                </div>
-
-                {selectedContent.content_type === "text" &&
-                  selectedContent.text && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-4">
                     <div>
-                      <h3 className="font-medium mb-2">Text Content</h3>
-                      <pre className="text-sm text-gray-600 bg-gray-50 dark:bg-gray-800 p-3 rounded-md overflow-auto">
-                        {typeof selectedContent.text === "string"
-                          ? selectedContent.text
-                          : JSON.stringify(selectedContent.text, null, 2)}
+                      <h3 className="font-lora text-foreground mb-1">
+                        Section
+                      </h3>
+                      <p className="text-sm font-lora text-muted-foreground">
+                        {selectedContent.section}
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-lora text-foreground mb-1">
+                        Created By
+                      </h3>
+                      <p className="text-sm font-lora text-muted-foreground">
+                        {selectedContent.created_by}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-lora text-foreground mb-1">
+                        Created At
+                      </h3>
+                      <p className="text-sm font-lora text-muted-foreground">
+                        {new Date(
+                          selectedContent.created_at
+                        ).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-lora text-foreground mb-1">
+                        Updated At
+                      </h3>
+                      <p className="text-sm font-lora text-muted-foreground">
+                        {new Date(
+                          selectedContent.updated_at
+                        ).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {selectedContent.text &&
+                  Object.keys(selectedContent.text).length > 0 && (
+                    <div>
+                      <h3 className="font-lora text-foreground mb-2">
+                        Text Content
+                      </h3>
+                      <pre className="text-sm font-lora text-muted-foreground bg-primary/10 p-3 rounded-md overflow-auto">
+                        {JSON.stringify(selectedContent.text, null, 2)}
                       </pre>
                     </div>
                   )}
 
-                {selectedContent.content_type === "image" &&
-                  selectedContent.image_url && (
-                    <div>
-                      <h3 className="font-medium mb-2">Image</h3>
-                      <img
-                        src={selectedContent.image_url || "/placeholder.svg"}
-                        alt="Content image"
-                        className="max-w-full max-h-64 object-contain rounded-md border"
-                      />
-                      <p className="text-sm text-gray-500 mt-1">
-                        {selectedContent.image_url}
-                      </p>
-                    </div>
-                  )}
-
-                {selectedContent.metadata && (
+                {selectedContent.image_url && (
                   <div>
-                    <h3 className="font-medium mb-2">Metadata</h3>
-                    <pre className="text-sm text-gray-600 bg-gray-50 dark:bg-gray-800 p-3 rounded-md overflow-auto">
-                      {typeof selectedContent.metadata === "string"
-                        ? selectedContent.metadata
-                        : JSON.stringify(selectedContent.metadata, null, 2)}
-                    </pre>
+                    <h3 className="font-lora text-foreground mb-2">Image</h3>
+                    <img
+                      src={selectedContent.image_url}
+                      alt="Content"
+                      className="max-w-full h-auto rounded-md border border-gold-accent/20"
+                    />
                   </div>
                 )}
 
-                <div className="border-t pt-4">
-                  <h3 className="font-medium mb-2">Content Information</h3>
-                  <div className="text-sm text-gray-600 space-y-1">
-                    <p>Content ID: {selectedContent.id}</p>
-                    <p>Created By: {selectedContent.created_by}</p>
-                    <p>
-                      Created:{" "}
-                      {new Date(selectedContent.created_at).toLocaleString()}
-                    </p>
-                    <p>
-                      Last Updated:{" "}
-                      {new Date(selectedContent.updated_at).toLocaleString()}
-                    </p>
+                {selectedContent.metadata && (
+                  <div>
+                    <h3 className="font-lora text-foreground mb-2">Metadata</h3>
+                    <pre className="text-sm font-lora text-muted-foreground bg-primary/10 p-3 rounded-md overflow-auto">
+                      {JSON.stringify(selectedContent.metadata, null, 2)}
+                    </pre>
                   </div>
-                </div>
+                )}
               </div>
             </ScrollArea>
           )}
           <DialogFooter>
-            <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
+            <Button
+              onClick={() => setIsViewModalOpen(false)}
+              className="gold-gradient text-black hover:opacity-90 font-lora"
+            >
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Edit Content Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] bg-card border-gold-accent/20">
           <DialogHeader>
-            <DialogTitle>Edit Content</DialogTitle>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Edit Content
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpdateContent} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="editPage">Page</Label>
-                <Select
+                <Label htmlFor="editPage" className="font-lora text-foreground">
+                  Page
+                </Label>
+                <Input
+                  id="editPage"
                   value={editContent.page || ""}
-                  onValueChange={(value) =>
-                    setEditContent((prev) => ({ ...prev, page: value }))
+                  onChange={(e) =>
+                    setEditContent((prev) => ({
+                      ...prev,
+                      page: e.target.value,
+                    }))
                   }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select page" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {pages.map((page) => (
-                      <SelectItem key={page} value={page}>
-                        {page}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder="Enter page name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                />
               </div>
               <div>
-                <Label htmlFor="editSection">Section</Label>
+                <Label
+                  htmlFor="editSection"
+                  className="font-lora text-foreground"
+                >
+                  Section
+                </Label>
                 <Input
                   id="editSection"
                   value={editContent.section || ""}
@@ -613,112 +642,152 @@ export default function ContentPage() {
                       section: e.target.value,
                     }))
                   }
-                  placeholder="e.g., hero, about, features"
+                  placeholder="Enter section name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="editContentType">Content Type</Label>
+              <Label
+                htmlFor="editContentType"
+                className="font-lora text-foreground"
+              >
+                Content Type
+              </Label>
               <Select
                 value={editContent.content_type || ""}
                 onValueChange={(value) =>
                   setEditContent((prev) => ({ ...prev, content_type: value }))
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-primary/10 border-gold-accent/20 text-foreground font-lora">
                   <SelectValue placeholder="Select content type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-card border-gold-accent/20">
                   {contentTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
+                    <SelectItem key={type} value={type} className="font-lora">
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            {editContent.content_type === "text" && (
-              <div>
-                <Label htmlFor="editText">Text Content (JSON format)</Label>
-                <Textarea
-                  id="editText"
-                  value={editTextInput}
-                  onChange={(e) => setEditTextInput(e.target.value)}
-                  placeholder='{"title": "Welcome", "description": "Our services..."}'
-                  rows={4}
-                />
-              </div>
-            )}
-            {editContent.content_type === "image" && (
-              <div>
-                <Label htmlFor="editImageUrl">Image URL</Label>
-                <Input
-                  id="editImageUrl"
-                  value={editContent.image_url || ""}
-                  onChange={(e) =>
-                    setEditContent((prev) => ({
-                      ...prev,
-                      image_url: e.target.value,
-                    }))
-                  }
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
-            )}
             <div>
-              <Label htmlFor="editMetadata">Metadata (JSON format)</Label>
+              <Label htmlFor="editText" className="font-lora text-foreground">
+                Text Content (JSON)
+              </Label>
+              <Textarea
+                id="editText"
+                value={
+                  editContent.text
+                    ? JSON.stringify(editContent.text, null, 2)
+                    : "{}"
+                }
+                onChange={(e) => {
+                  try {
+                    const parsed = JSON.parse(e.target.value);
+                    setEditContent((prev) => ({ ...prev, text: parsed }));
+                  } catch {
+                    // Ignore invalid JSON for now
+                  }
+                }}
+                placeholder='Enter text content as JSON (e.g., {"key": "value"})'
+                rows={4}
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+              />
+            </div>
+            <div>
+              <Label htmlFor="editImage" className="font-lora text-foreground">
+                Image File
+              </Label>
+              <Input
+                id="editImage"
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  setEditContentFile(e.target.files?.[0] || null)
+                }
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+              />
+            </div>
+            <div>
+              <Label
+                htmlFor="editMetadata"
+                className="font-lora text-foreground"
+              >
+                Metadata (JSON)
+              </Label>
               <Textarea
                 id="editMetadata"
-                value={editMetadataInput}
-                onChange={(e) => setEditMetadataInput(e.target.value)}
-                placeholder='{"order": 1, "visible": true}'
-                rows={3}
+                value={
+                  editContent.metadata
+                    ? JSON.stringify(editContent.metadata, null, 2)
+                    : "{}"
+                }
+                onChange={(e) => {
+                  try {
+                    const parsed = JSON.parse(e.target.value);
+                    setEditContent((prev) => ({ ...prev, metadata: parsed }));
+                  } catch {
+                    // Ignore invalid JSON for now
+                  }
+                }}
+                placeholder='Enter metadata as JSON (e.g., {"key": "value"})'
+                rows={4}
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
               />
             </div>
             <DialogFooter>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsEditModalOpen(false)}
+                onClick={() => {
+                  setIsEditModalOpen(false);
+                  setEditContentFile(null);
+                }}
+                className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
               >
                 Cancel
               </Button>
-              <Button type="submit">Update Content</Button>
+              <Button
+                type="submit"
+                className="gold-gradient text-black hover:opacity-90 font-lora"
+              >
+                Update Content
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* Create Content Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] bg-card border-gold-accent/20">
           <DialogHeader>
-            <DialogTitle>Add New Content</DialogTitle>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Add New Content
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateContent} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="page">Page</Label>
-                <Select
+                <Label htmlFor="page" className="font-lora text-foreground">
+                  Page
+                </Label>
+                <Input
+                  id="page"
                   value={newContent.page}
-                  onValueChange={(value) =>
-                    setNewContent((prev) => ({ ...prev, page: value }))
+                  onChange={(e) =>
+                    setNewContent((prev) => ({ ...prev, page: e.target.value }))
                   }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select page" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {pages.map((page) => (
-                      <SelectItem key={page} value={page}>
-                        {page}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder="Enter page name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  required
+                />
               </div>
               <div>
-                <Label htmlFor="section">Section</Label>
+                <Label htmlFor="section" className="font-lora text-foreground">
+                  Section
+                </Label>
                 <Input
                   id="section"
                   value={newContent.section}
@@ -728,78 +797,91 @@ export default function ContentPage() {
                       section: e.target.value,
                     }))
                   }
-                  placeholder="e.g., hero, about, features"
+                  placeholder="Enter section name"
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                   required
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="content_type">Content Type</Label>
+              <Label
+                htmlFor="contentType"
+                className="font-lora text-foreground"
+              >
+                Content Type
+              </Label>
               <Select
                 value={newContent.content_type}
                 onValueChange={(value) =>
                   setNewContent((prev) => ({ ...prev, content_type: value }))
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-primary/10 border-gold-accent/20 text-foreground font-lora">
                   <SelectValue placeholder="Select content type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-card border-gold-accent/20">
                   {contentTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
+                    <SelectItem key={type} value={type} className="font-lora">
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            {newContent.content_type === "text" && (
-              <div>
-                <Label htmlFor="text">Text Content (JSON format)</Label>
-                <Textarea
-                  id="text"
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  placeholder='{"title": "Welcome", "description": "Our services..."}'
-                  rows={4}
-                />
-              </div>
-            )}
-            {newContent.content_type === "image" && (
-              <div>
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input
-                  id="image_url"
-                  value={newContent.image_url}
-                  onChange={(e) =>
-                    setNewContent((prev) => ({
-                      ...prev,
-                      image_url: e.target.value,
-                    }))
-                  }
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
-            )}
             <div>
-              <Label htmlFor="metadata">Metadata (JSON format)</Label>
+              <Label htmlFor="text" className="font-lora text-foreground">
+                Text Content (JSON)
+              </Label>
               <Textarea
-                id="metadata"
-                value={metadataInput}
-                onChange={(e) => setMetadataInput(e.target.value)}
-                placeholder='{"order": 1, "visible": true}'
-                rows={3}
+                id="text"
+                value={
+                  newContent.text
+                    ? JSON.stringify(newContent.text, null, 2)
+                    : "{}"
+                }
+                onChange={(e) => {
+                  try {
+                    const parsed = JSON.parse(e.target.value);
+                    setNewContent((prev) => ({ ...prev, text: parsed }));
+                  } catch {
+                    // Ignore invalid JSON for now
+                  }
+                }}
+                placeholder='Enter text content as JSON (e.g., {"key": "value"})'
+                rows={4}
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+              />
+            </div>
+            <div>
+              <Label htmlFor="image" className="font-lora text-foreground">
+                Image File
+              </Label>
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNewContentFile(e.target.files?.[0] || null)}
+                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
               />
             </div>
             <DialogFooter>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setNewContentFile(null);
+                }}
+                className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
               >
                 Cancel
               </Button>
-              <Button type="submit">Add Content</Button>
+              <Button
+                type="submit"
+                className="gold-gradient text-black hover:opacity-90 font-lora"
+              >
+                Add Content
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
