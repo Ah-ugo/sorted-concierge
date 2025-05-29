@@ -70,24 +70,39 @@ export default function AdminSidebar() {
       label: "Services",
     },
     {
-      href: "/admin/analytics",
+      href: "/admin/packages",
       icon: <BarChart3 className="h-4 w-4" />,
-      label: "Analytics",
+      label: "Packages",
     },
     {
-      href: "/admin/messages",
+      href: "/admin/subscriptions",
       icon: <MessageSquare className="h-4 w-4" />,
-      label: "Messages",
+      label: "Subscriptions",
     },
     {
-      href: "/admin/alerts",
+      href: "/admin/crm",
       icon: <Bell className="h-4 w-4" />,
-      label: "Alerts",
+      label: "CRM Clients",
     },
     {
-      href: "/admin/settings",
+      href: "/admin/blogs",
       icon: <Settings className="h-4 w-4" />,
-      label: "Settings",
+      label: "Blog Posts",
+    },
+    {
+      href: "/admin/gallery",
+      icon: <Settings className="h-4 w-4" />,
+      label: "Gallery",
+    },
+    {
+      href: "/admin/content",
+      icon: <Settings className="h-4 w-4" />,
+      label: "Content",
+    },
+    {
+      href: "/admin/emergency-alerts",
+      icon: <Settings className="h-4 w-4" />,
+      label: "Emergency Alerts",
     },
   ];
 

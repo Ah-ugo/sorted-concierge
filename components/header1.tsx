@@ -189,7 +189,7 @@ export default function Header() {
                   <Phone className="h-4 w-4" /> +234 123 456 7890
                 </p>
                 <p className="flex items-center gap-2 text-sm font-lora text-foreground">
-                  <Mail className="h-4 w-4" /> info@naijaconcierge.com
+                  <Mail className="h-4 w-4" /> info@sortedconcierge.com
                 </p>
                 <p className="flex items-center gap-2 text-sm font-lora text-foreground">
                   <MapPin className="h-4 w-4" /> Lagos, Nigeria

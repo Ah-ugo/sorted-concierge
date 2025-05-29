@@ -130,7 +130,7 @@ export default function Footer() {
               <li className="flex items-start">
                 <Mail className="h-5 w-5 text-secondary mr-2 mt-0.5" />
                 <span className="text-neutral-400">
-                  info@naijaconcierge.com
+                  info@sortedconcierge.com
                 </span>
               </li>
             </ul>

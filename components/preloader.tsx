@@ -56,7 +56,8 @@ export default function Preloader() {
               }}
               className="text-5xl md:text-6xl font-cinzel font-bold gold-accent tracking-widest"
             >
-              SORTED
+              {/* SORTED */}
+              SC
             </motion.h1>
           </motion.div>
 
@@ -69,14 +70,14 @@ export default function Preloader() {
           />
 
           {/* Subtitle */}
-          <motion.p
+          {/* <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2 }}
             className="text-sm md:text-base font-lora uppercase tracking-[0.3em] text-gray-300"
           >
             Concierge Experience
-          </motion.p>
+          </motion.p> */}
 
           {/* Loading indicator */}
           <motion.div

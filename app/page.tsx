@@ -53,7 +53,7 @@ export default function Home() {
 
   return (
     <>
-      {isPreloaderVisible && (
+      {/* {isPreloaderVisible && (
         <div className="preloader-container">
           <motion.div
             initial={{ x: "-100%" }}
@@ -144,7 +144,7 @@ export default function Home() {
             className="fixed inset-0 z-[58] bg-gradient-to-r from-black/60 to-transparent"
           />
         </div>
-      )}
+      )} */}
 
       {/* Hero Section */}
       <section
@@ -192,13 +192,14 @@ export default function Home() {
             className="mx-auto max-w-3xl"
           >
             <h1 className="mb-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cinzel font-bold uppercase tracking-widest text-white drop-shadow-lg">
-              UNLOCK GLOBAL ACCESS
+              {/* UNLOCK GLOBAL ACCESS */}
+              LUXURY HANDLED
             </h1>
             <p className="mb-12 font-lora text-sm sm:text-base md:text-lg tracking-wider text-gray-300">
-              Delivered with absolute discretion for those who demand the
-              exceptional. Sorted Concierge opens doors to a world of curated
+              With absolute discretion for those who demand the exceptional
+              {/* . Sorted Concierge opens doors to a world of curated
               luxury, where every detail is meticulously tailored to your unique
-              desires.
+              desires. */}
             </p>
             <div className="mt-16 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button

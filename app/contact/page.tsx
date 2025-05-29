@@ -191,10 +191,10 @@ export default function ContactPage() {
                       Email Address
                     </h3>
                     <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                      info@naijaconcierge.com
+                      info@sortedconcierge.com
                     </p>
                     <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                      support@naijaconcierge.com
+                      support@sortedconcierge.com
                     </p>
                   </div>
                 </div>

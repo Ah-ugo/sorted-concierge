@@ -1,10 +1,8 @@
-// api.ts
-import axios, { AxiosResponse } from "axios";
-import { ObjectId } from "bson";
+import axios from "axios";
 
 // Base URL for the API
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "https://naija-concierge-api.onrender.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://naija-concierge-api.onrender.com";
 
 // Configure axios instance
 const api = axios.create({
@@ -16,17 +14,17 @@ const api = axios.create({
 
 // Interceptor to add auth token
 api.interceptors.request.use(
-  (config: any) => {
+  (config) => {
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error: any) => Promise.reject(error)
+  (error) => Promise.reject(error)
 );
 
-// Type definitions matching Pydantic models
+// Type definitions matching your FastAPI models
 export interface UserBase {
   email: string;
   firstName: string;
@@ -334,18 +332,58 @@ export interface AdminStats {
   packageGrowth: number;
 }
 
-// Error handling
-// export class APIError extends Error {
-//   constructor(
-//     public status: number,
-//     public message: string,
-//     public details?: any
-//   ) {
-//     super(message);
-//     this.name = "APIError";
-//   }
-// }
+export interface GalleryImageBase {
+  title: string;
+  description?: string;
+  category: string;
+  tags: string[];
+}
 
+export interface GalleryImageCreate extends GalleryImageBase {}
+
+export interface GalleryImageUpdate {
+  title?: string;
+  description?: string;
+  category?: string;
+  tags?: string[];
+}
+
+export interface GalleryImage extends GalleryImageBase {
+  id: string;
+  image_url: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ContentBase {
+  page: string;
+  section: string;
+  content_type: string;
+  text?: { [key: string]: string };
+  image_url?: string;
+  metadata?: any;
+}
+
+export interface ContentCreate extends ContentBase {}
+
+export interface ContentUpdate {
+  page?: string;
+  section?: string;
+  content_type?: string;
+  text?: { [key: string]: string };
+  image_url?: string;
+  metadata?: any;
+}
+
+export interface Content extends ContentBase {
+  id: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Error handling
 export class APIError extends Error {
   constructor(
     public status: number,
@@ -377,37 +415,14 @@ export const apiClient = {
     }
   },
 
-  // async login(credentials: {
-  //   username: string;
-  //   password: string;
-  // }): Promise<Token> {
-  //   try {
-  //     const response = await api.post(
-  //       "/auth/token",
-  //       new URLSearchParams(credentials)
-  //     );
-  //     return response.data;
-  //   } catch (error: any) {
-  //     throw new APIError(
-  //       error.response?.status || 500,
-  //       error.response?.data?.detail || "Login failed"
-  //     );
-  //   }
-  // },
-
-  async login(credentials: { username: string; password: string }): Promise<{
-    access_token: string;
-    token_type: string;
-    user: User;
-  }> {
+  async login(credentials: {
+    username: string;
+    password: string;
+  }): Promise<Token> {
     try {
       const formData = new URLSearchParams();
-      formData.append("grant_type", "password");
       formData.append("username", credentials.username);
       formData.append("password", credentials.password);
-      formData.append("scope", "");
-      formData.append("client_id", "");
-      formData.append("client_secret", "");
 
       const response = await api.post("/auth/token", formData, {
         headers: {
@@ -419,16 +434,6 @@ export const apiClient = {
       return response.data;
     } catch (error: any) {
       if (error.response) {
-        // Handle 422 validation errors specifically
-        if (error.response.status === 422) {
-          const details = error.response.data?.detail || "Invalid credentials";
-          throw new APIError(
-            422,
-            typeof details === "string" ? details : "Validation failed",
-            error.response.data
-          );
-        }
-
         throw new APIError(
           error.response.status,
           error.response.data?.detail || error.message || "Login failed",
@@ -1141,6 +1146,267 @@ export const apiClient = {
       throw new APIError(
         error.response?.status || 500,
         error.response?.data?.detail || "Failed to fetch chart data"
+      );
+    }
+  },
+
+  // Gallery
+  async getGallery(
+    params: {
+      skip?: number;
+      limit?: number;
+      category?: string;
+      tag?: string;
+    } = {}
+  ): Promise<GalleryImage[]> {
+    try {
+      const response = await api.get("/gallery", { params });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch gallery images"
+      );
+    }
+  },
+
+  async getGalleryImage(imageId: string): Promise<GalleryImage> {
+    try {
+      const response = await api.get(`/gallery/${imageId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch gallery image"
+      );
+    }
+  },
+
+  async createGalleryImage(data: {
+    title: string;
+    description?: string;
+    category: string;
+    tags: string;
+    file: File;
+  }): Promise<GalleryImage> {
+    const formData = new FormData();
+    formData.append("title", data.title);
+    if (data.description) formData.append("description", data.description);
+    formData.append("category", data.category);
+    formData.append("tags", data.tags);
+    formData.append("file", data.file);
+
+    try {
+      const response = await api.post("/gallery", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to create gallery image"
+      );
+    }
+  },
+
+  async updateGalleryImage(
+    imageId: string,
+    update: GalleryImageUpdate
+  ): Promise<GalleryImage> {
+    try {
+      const response = await api.put(`/gallery/${imageId}`, update);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to update gallery image"
+      );
+    }
+  },
+
+  async updateGalleryImageFile(
+    imageId: string,
+    file: File
+  ): Promise<{ image_url: string }> {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const response = await api.post(`/gallery/${imageId}/image`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to update gallery image file"
+      );
+    }
+  },
+
+  async deleteGalleryImage(imageId: string): Promise<{ message: string }> {
+    try {
+      const response = await api.delete(`/gallery/${imageId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to delete gallery image"
+      );
+    }
+  },
+
+  // Content Management
+  async getContent(
+    params: {
+      skip?: number;
+      limit?: number;
+      page?: string;
+      section?: string;
+    } = {}
+  ): Promise<Content[]> {
+    try {
+      const response = await api.get("/content", { params });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch content"
+      );
+    }
+  },
+
+  async getContentById(contentId: string): Promise<Content> {
+    try {
+      const response = await api.get(`/content/${contentId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch content"
+      );
+    }
+  },
+
+  async createContent(data: {
+    page: string;
+    section: string;
+    content_type: string;
+    text?: string; // JSON string
+    image_url?: string;
+    metadata?: string; // JSON string
+    file?: File;
+  }): Promise<Content> {
+    const formData = new FormData();
+    formData.append("page", data.page);
+    formData.append("section", data.section);
+    formData.append("content_type", data.content_type);
+
+    if (data.text) formData.append("text", data.text);
+    if (data.image_url) formData.append("image_url", data.image_url);
+    if (data.metadata) formData.append("metadata", data.metadata);
+    if (data.file) formData.append("file", data.file);
+
+    try {
+      const response = await api.post("/content", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to create content"
+      );
+    }
+  },
+
+  async updateContent(
+    contentId: string,
+    update: ContentUpdate,
+    file?: File
+  ): Promise<Content> {
+    if (file) {
+      const formData = new FormData();
+
+      // Add all update fields to formData
+      Object.entries(update).forEach(([key, value]) => {
+        if (value !== undefined) {
+          if (typeof value === "object") {
+            formData.append(key, JSON.stringify(value));
+          } else {
+            formData.append(key, String(value));
+          }
+        }
+      });
+
+      formData.append("file", file);
+
+      try {
+        const response = await api.put(`/content/${contentId}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        return response.data;
+      } catch (error: any) {
+        throw new APIError(
+          error.response?.status || 500,
+          error.response?.data?.detail || "Failed to update content"
+        );
+      }
+    } else {
+      try {
+        const response = await api.put(`/content/${contentId}`, update);
+        return response.data;
+      } catch (error: any) {
+        throw new APIError(
+          error.response?.status || 500,
+          error.response?.data?.detail || "Failed to update content"
+        );
+      }
+    }
+  },
+
+  async deleteContent(contentId: string): Promise<{ message: string }> {
+    try {
+      const response = await api.delete(`/content/${contentId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to delete content"
+      );
+    }
+  },
+
+  // Newsletter
+  async subscribeToNewsletter(email: string): Promise<{ message: string }> {
+    const formData = new FormData();
+    formData.append("email", email);
+
+    try {
+      const response = await api.post("/newsletter/subscribe", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to subscribe to newsletter"
+      );
+    }
+  },
+
+  async unsubscribeFromNewsletter(email: string): Promise<{ message: string }> {
+    const formData = new FormData();
+    formData.append("email", email);
+
+    try {
+      const response = await api.post("/newsletter/unsubscribe", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to unsubscribe from newsletter"
       );
     }
   },

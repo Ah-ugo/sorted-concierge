@@ -20,6 +20,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (userData: UserCreate) => Promise<boolean>;
@@ -27,19 +28,6 @@ interface AuthContextType {
   updateUser: (userData: UserUpdate) => Promise<boolean>;
   uploadProfileImage: (file: File) => Promise<string | null>;
 }
-
-// interface AuthContextType {
-//   user: User | null;
-//   token: string | null;
-//   isAuthenticated: boolean;
-//   isAdmin: boolean;
-//   isLoading: boolean;
-//   login: (email: string, password: string) => Promise<boolean>;
-//   register: (userData: UserCreate) => Promise<boolean>;
-//   logout: () => void;
-//   updateUser: (userData: UserUpdate) => Promise<boolean>;
-//   uploadProfileImage: (file: File) => Promise<string | null>;
-// }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -87,8 +75,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response?.access_token) {
         setToken(response.access_token);
         setUser(response.user);
-        console.log(response.user);
         localStorage.setItem("token", response.access_token);
+
+        // Route based on user role - redirect to admin dashboard if admin
+        if (response.user.role === "admin") {
+          window.location.href = "/admin/dashboard";
+        } else {
+          window.location.href = "/";
+        }
+
         return true;
       }
       return false;
@@ -97,7 +92,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Handle APIError specifically
       if (error instanceof APIError) {
-        // You can access error.status, error.message, error.details here
         console.error(
           `Login failed with status ${error.status}:`,
           error.message
@@ -117,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     }
   };
+
   const register = async (userData: UserCreate) => {
     setIsLoading(true);
     try {
@@ -125,6 +120,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(response.access_token);
         setUser(response.user);
         localStorage.setItem("token", response.access_token);
+
+        // Route based on user role (though new registrations are typically regular users)
+        if (response.user.role === "admin") {
+          window.location.href = "/admin/dashboard";
+        } else {
+          window.location.href = "/";
+        }
+
         return true;
       }
       return false;
@@ -140,6 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setToken(null);
     localStorage.removeItem("token");
+    window.location.href = "/login";
   };
 
   const updateUser = async (userData: UserUpdate) => {
@@ -186,6 +190,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         token,
         isAuthenticated: !!user,
+        isAdmin: user?.role === "admin",
         isLoading,
         login,
         register,
