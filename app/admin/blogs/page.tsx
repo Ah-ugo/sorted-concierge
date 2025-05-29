@@ -21,6 +21,7 @@ import {
   Edit,
   Trash,
   FileText,
+  X,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -40,7 +41,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { apiClient, type Blog, type BlogCreate } from "@/lib/api";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  apiClient,
+  type Blog,
+  type BlogCreate,
+  type BlogUpdate,
+} from "@/lib/api";
 import { toast } from "@/components/ui/use-toast";
 
 export default function BlogsPage() {
@@ -48,7 +55,11 @@ export default function BlogsPage() {
   const [filteredBlogs, setFilteredBlogs] = useState<Blog[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Form state for new blog
   const [newBlog, setNewBlog] = useState<BlogCreate>({
@@ -56,10 +67,19 @@ export default function BlogsPage() {
     slug: "",
     content: "",
     excerpt: "",
+    coverImage: "",
     author: { name: "", email: "" },
     tags: [],
   });
   const [tagsInput, setTagsInput] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
+
+  // Edit form state
+  const [editBlog, setEditBlog] = useState<BlogUpdate>({});
+  const [editTagsInput, setEditTagsInput] = useState("");
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const [editImagePreview, setEditImagePreview] = useState<string>("");
 
   useEffect(() => {
     fetchBlogs();
@@ -110,6 +130,57 @@ export default function BlogsPage() {
       .trim();
   };
 
+  const handleImageUpload = async (file: File, isEdit = false) => {
+    setIsUploading(true);
+    try {
+      const response = await apiClient.uploadBlogImage(file);
+      if (isEdit) {
+        setEditBlog((prev) => ({ ...prev, coverImage: response.imageUrl }));
+        setEditImagePreview(response.imageUrl);
+      } else {
+        setNewBlog((prev) => ({ ...prev, coverImage: response.imageUrl }));
+        setImagePreview(response.imageUrl);
+      }
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully",
+      });
+    } catch (error: any) {
+      console.error("Error uploading image:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to upload image",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleFileSelect = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    isEdit = false
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Please select an image file",
+        });
+        return;
+      }
+
+      if (isEdit) {
+        setEditImageFile(file);
+      } else {
+        setImageFile(file);
+      }
+      handleImageUpload(file, isEdit);
+    }
+  };
+
   const handleCreateBlog = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newBlog.title || !newBlog.content || !newBlog.excerpt) {
@@ -136,16 +207,8 @@ export default function BlogsPage() {
       });
       setBlogs((prev) => [createdBlog, ...prev]);
       setFilteredBlogs((prev) => [createdBlog, ...prev]);
-      setIsModalOpen(false);
-      setNewBlog({
-        title: "",
-        slug: "",
-        content: "",
-        excerpt: "",
-        author: { name: "", email: "" },
-        tags: [],
-      });
-      setTagsInput("");
+      setIsCreateModalOpen(false);
+      resetCreateForm();
       toast({
         title: "Success",
         description: "Blog post created successfully",
@@ -156,6 +219,42 @@ export default function BlogsPage() {
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to create blog post",
+      });
+    }
+  };
+
+  const handleUpdateBlog = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedBlog) return;
+
+    const tags = editTagsInput
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
+
+    try {
+      const updatedBlog = await apiClient.updateBlog(selectedBlog.id, {
+        ...editBlog,
+        tags: tags.length > 0 ? tags : undefined,
+      });
+      setBlogs((prev) =>
+        prev.map((b) => (b.id === selectedBlog.id ? updatedBlog : b))
+      );
+      setFilteredBlogs((prev) =>
+        prev.map((b) => (b.id === selectedBlog.id ? updatedBlog : b))
+      );
+      setIsEditModalOpen(false);
+      setSelectedBlog(null);
+      toast({
+        title: "Success",
+        description: "Blog post updated successfully",
+      });
+    } catch (error: any) {
+      console.error("Error updating blog:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to update blog post",
       });
     }
   };
@@ -181,6 +280,53 @@ export default function BlogsPage() {
     }
   };
 
+  const handleViewBlog = (blog: Blog) => {
+    setSelectedBlog(blog);
+    setIsViewModalOpen(true);
+  };
+
+  const handleEditBlog = (blog: Blog) => {
+    setSelectedBlog(blog);
+    setEditBlog({
+      title: blog.title,
+      slug: blog.slug,
+      content: blog.content,
+      excerpt: blog.excerpt,
+      coverImage: blog.coverImage,
+      author: blog.author,
+    });
+    setEditTagsInput(blog.tags.join(", "));
+    setEditImagePreview(blog.coverImage || "");
+    setIsEditModalOpen(true);
+  };
+
+  const resetCreateForm = () => {
+    setNewBlog({
+      title: "",
+      slug: "",
+      content: "",
+      excerpt: "",
+      coverImage: "",
+      author: { name: "", email: "" },
+      tags: [],
+    });
+    setTagsInput("");
+    setImageFile(null);
+    setImagePreview("");
+  };
+
+  const removeImage = (isEdit = false) => {
+    if (isEdit) {
+      setEditBlog((prev) => ({ ...prev, coverImage: "" }));
+      setEditImagePreview("");
+      setEditImageFile(null);
+    } else {
+      setNewBlog((prev) => ({ ...prev, coverImage: "" }));
+      setImagePreview("");
+      setImageFile(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -188,7 +334,7 @@ export default function BlogsPage() {
         <Button
           size="sm"
           className="flex items-center gap-1"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsCreateModalOpen(true)}
         >
           <Plus className="h-4 w-4" />
           <span>Add Blog Post</span>
@@ -288,11 +434,15 @@ export default function BlogsPage() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleViewBlog(blog)}
+                              >
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Post
                               </DropdownMenuItem>
-                              <DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleEditBlog(blog)}
+                              >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Post
                               </DropdownMenuItem>
@@ -326,7 +476,7 @@ export default function BlogsPage() {
       </Card>
 
       {/* Create Blog Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create New Blog Post</DialogTitle>
@@ -362,6 +512,45 @@ export default function BlogsPage() {
                 />
               </div>
             </div>
+
+            {/* Cover Image Upload */}
+            <div>
+              <Label htmlFor="coverImage">Cover Image</Label>
+              <div className="space-y-2">
+                <Input
+                  id="coverImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileSelect(e)}
+                  disabled={isUploading}
+                />
+                {isUploading && (
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                    Uploading image...
+                  </div>
+                )}
+                {imagePreview && (
+                  <div className="relative inline-block">
+                    <img
+                      src={imagePreview || "/placeholder.svg"}
+                      alt="Cover preview"
+                      className="h-32 w-48 object-cover rounded-md border"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute -top-2 -right-2 h-6 w-6"
+                      onClick={() => removeImage()}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div>
               <Label htmlFor="excerpt">Excerpt</Label>
               <Textarea
@@ -432,11 +621,242 @@ export default function BlogsPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => setIsCreateModalOpen(false)}
               >
                 Cancel
               </Button>
-              <Button type="submit">Create Blog Post</Button>
+              <Button type="submit" disabled={isUploading}>
+                Create Blog Post
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Blog Modal */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle>View Blog Post</DialogTitle>
+          </DialogHeader>
+          {selectedBlog && (
+            <ScrollArea className="max-h-[70vh] pr-4">
+              <div className="space-y-4">
+                {selectedBlog.coverImage && (
+                  <img
+                    src={selectedBlog.coverImage || "/placeholder.svg"}
+                    alt={selectedBlog.title}
+                    className="w-full h-48 object-cover rounded-md"
+                  />
+                )}
+                <div>
+                  <h2 className="text-2xl font-bold">{selectedBlog.title}</h2>
+                  <p className="text-sm text-gray-500">
+                    Slug: /{selectedBlog.slug}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-2">Excerpt</h3>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    {selectedBlog.excerpt}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-2">Content</h3>
+                  <div className="prose max-w-none">
+                    <p className="whitespace-pre-wrap">
+                      {selectedBlog.content}
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="font-semibold mb-2">Author</h3>
+                    <p>{selectedBlog.author.name}</p>
+                    <p className="text-sm text-gray-500">
+                      {selectedBlog.author.email}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-2">Tags</h3>
+                    <div className="flex flex-wrap gap-1">
+                      {selectedBlog.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-2">Metadata</h3>
+                  <p className="text-sm text-gray-500">
+                    Created: {new Date(selectedBlog.createdAt).toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Updated: {new Date(selectedBlog.updatedAt).toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-500">ID: {selectedBlog.id}</p>
+                </div>
+              </div>
+            </ScrollArea>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Blog Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Blog Post</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleUpdateBlog} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="editTitle">Title</Label>
+                <Input
+                  id="editTitle"
+                  value={editBlog.title || ""}
+                  onChange={(e) => {
+                    const title = e.target.value;
+                    setEditBlog((prev) => ({
+                      ...prev,
+                      title,
+                      slug: generateSlug(title),
+                    }));
+                  }}
+                  placeholder="Enter blog title"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editSlug">Slug</Label>
+                <Input
+                  id="editSlug"
+                  value={editBlog.slug || ""}
+                  onChange={(e) =>
+                    setEditBlog((prev) => ({ ...prev, slug: e.target.value }))
+                  }
+                  placeholder="auto-generated-from-title"
+                />
+              </div>
+            </div>
+
+            {/* Cover Image Upload */}
+            <div>
+              <Label htmlFor="editCoverImage">Cover Image</Label>
+              <div className="space-y-2">
+                <Input
+                  id="editCoverImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileSelect(e, true)}
+                  disabled={isUploading}
+                />
+                {isUploading && (
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                    Uploading image...
+                  </div>
+                )}
+                {editImagePreview && (
+                  <div className="relative inline-block">
+                    <img
+                      src={editImagePreview || "/placeholder.svg"}
+                      alt="Cover preview"
+                      className="h-32 w-48 object-cover rounded-md border"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute -top-2 -right-2 h-6 w-6"
+                      onClick={() => removeImage(true)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="editExcerpt">Excerpt</Label>
+              <Textarea
+                id="editExcerpt"
+                value={editBlog.excerpt || ""}
+                onChange={(e) =>
+                  setEditBlog((prev) => ({ ...prev, excerpt: e.target.value }))
+                }
+                placeholder="Brief description of the blog post"
+                rows={2}
+              />
+            </div>
+            <div>
+              <Label htmlFor="editContent">Content</Label>
+              <Textarea
+                id="editContent"
+                value={editBlog.content || ""}
+                onChange={(e) =>
+                  setEditBlog((prev) => ({ ...prev, content: e.target.value }))
+                }
+                placeholder="Write your blog content here..."
+                rows={10}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="editAuthorName">Author Name</Label>
+                <Input
+                  id="editAuthorName"
+                  value={editBlog.author?.name || ""}
+                  onChange={(e) =>
+                    setEditBlog((prev) => ({
+                      ...prev,
+                      author: { ...prev.author, name: e.target.value },
+                    }))
+                  }
+                  placeholder="Author name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editAuthorEmail">Author Email</Label>
+                <Input
+                  id="editAuthorEmail"
+                  type="email"
+                  value={editBlog.author?.email || ""}
+                  onChange={(e) =>
+                    setEditBlog((prev) => ({
+                      ...prev,
+                      author: { ...prev.author, email: e.target.value },
+                    }))
+                  }
+                  placeholder="author@example.com"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="editTags">Tags (comma-separated)</Label>
+              <Input
+                id="editTags"
+                value={editTagsInput}
+                onChange={(e) => setEditTagsInput(e.target.value)}
+                placeholder="technology, business, lifestyle"
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isUploading}>
+                Update Blog Post
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>

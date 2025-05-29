@@ -54,9 +54,14 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import Link from "next/link";
-import { apiClient, type Service, type ServiceCreate } from "@/lib/api";
+import {
+  apiClient,
+  type Service,
+  type ServiceCreate,
+  type ServiceUpdate,
+} from "@/lib/api";
 import { toast } from "@/components/ui/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
@@ -78,6 +83,62 @@ export default function ServicesPage() {
     duration: "",
     isAvailable: true,
   });
+
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+
+  // Edit form state
+  const [editService, setEditService] = useState<ServiceUpdate>({});
+
+  const handleViewService = (service: Service) => {
+    setSelectedService(service);
+    setIsViewModalOpen(true);
+  };
+
+  const handleEditService = (service: Service) => {
+    setSelectedService(service);
+    setEditService({
+      name: service.name,
+      description: service.description,
+      category: service.category,
+      price: service.price,
+      duration: service.duration,
+      isAvailable: service.isAvailable,
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedService) return;
+
+    try {
+      const updatedService = await apiClient.updateService(
+        selectedService.id,
+        editService
+      );
+      setServices((prev) =>
+        prev.map((s) => (s.id === selectedService.id ? updatedService : s))
+      );
+      setFilteredServices((prev) =>
+        prev.map((s) => (s.id === selectedService.id ? updatedService : s))
+      );
+      setIsEditModalOpen(false);
+      setSelectedService(null);
+      toast({
+        title: "Success",
+        description: "Service updated successfully",
+      });
+    } catch (error: any) {
+      console.error("Error updating service:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to update service",
+      });
+    }
+  };
 
   const categories = [
     "Transportation",
@@ -354,19 +415,17 @@ export default function ServicesPage() {
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild>
-                                  <Link href={`/admin/services/${service.id}`}>
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    View Details
-                                  </Link>
+                                <DropdownMenuItem
+                                  onClick={() => handleViewService(service)}
+                                >
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  View Details
                                 </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                  <Link
-                                    href={`/admin/services/${service.id}/edit`}
-                                  >
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    Edit Service
-                                  </Link>
+                                <DropdownMenuItem
+                                  onClick={() => handleEditService(service)}
+                                >
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Edit Service
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
@@ -566,6 +625,185 @@ export default function ServicesPage() {
                 Cancel
               </Button>
               <Button type="submit">Create Service</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Service Modal */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Service Details</DialogTitle>
+          </DialogHeader>
+          {selectedService && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <h2 className="text-xl font-semibold">
+                    {selectedService.name}
+                  </h2>
+                  <Badge variant="outline">{selectedService.category}</Badge>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold">
+                    ₦{selectedService.price.toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {selectedService.duration}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-medium mb-2">Description</h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {selectedService.description}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-medium mb-1">Status</h3>
+                  <Badge
+                    className={
+                      selectedService.isAvailable
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }
+                  >
+                    {selectedService.isAvailable ? "Available" : "Unavailable"}
+                  </Badge>
+                </div>
+                <div>
+                  <h3 className="font-medium mb-1">Service ID</h3>
+                  <p className="text-sm text-gray-600">{selectedService.id}</p>
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h3 className="font-medium mb-2">Service Information</h3>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p>
+                    Created:{" "}
+                    {new Date(selectedService.createdAt).toLocaleString()}
+                  </p>
+                  <p>
+                    Last Updated:{" "}
+                    {new Date(selectedService.updatedAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Service Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Service</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleUpdateService} className="space-y-4">
+            <div>
+              <Label htmlFor="editName">Service Name</Label>
+              <Input
+                id="editName"
+                value={editService.name || ""}
+                onChange={(e) =>
+                  setEditService((prev) => ({ ...prev, name: e.target.value }))
+                }
+                placeholder="Enter service name"
+              />
+            </div>
+            <div>
+              <Label htmlFor="editDescription">Description</Label>
+              <Textarea
+                id="editDescription"
+                value={editService.description || ""}
+                onChange={(e) =>
+                  setEditService((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                placeholder="Enter service description"
+              />
+            </div>
+            <div>
+              <Label htmlFor="editCategory">Category</Label>
+              <Select
+                value={editService.category || ""}
+                onValueChange={(value) =>
+                  setEditService((prev) => ({ ...prev, category: value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="editPrice">Price (₦)</Label>
+                <Input
+                  id="editPrice"
+                  type="number"
+                  value={editService.price || ""}
+                  onChange={(e) =>
+                    setEditService((prev) => ({
+                      ...prev,
+                      price: Number(e.target.value),
+                    }))
+                  }
+                  placeholder="Enter price"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editDuration">Duration</Label>
+                <Input
+                  id="editDuration"
+                  value={editService.duration || ""}
+                  onChange={(e) =>
+                    setEditService((prev) => ({
+                      ...prev,
+                      duration: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g., 2 hours, Half day"
+                />
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="editIsAvailable"
+                checked={editService.isAvailable ?? false}
+                onCheckedChange={(checked) =>
+                  setEditService((prev) => ({ ...prev, isAvailable: checked }))
+                }
+              />
+              <Label htmlFor="editIsAvailable">Available</Label>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Update Service</Button>
             </DialogFooter>
           </form>
         </DialogContent>

@@ -1,5 +1,9 @@
 "use client";
 
+import { Textarea } from "@/components/ui/textarea";
+
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+
 import type React from "react";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,7 +36,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -44,12 +47,17 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { apiClient, type Package, type PackageCreate } from "@/lib/api";
+import {
+  apiClient,
+  type Package,
+  type PackageCreate,
+  type PackageUpdate,
+} from "@/lib/api";
 import { toast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function PackagesPage() {
   const [packages, setPackages] = useState<Package[]>([]);
@@ -70,6 +78,14 @@ export default function PackagesPage() {
     isPopular: false,
   });
   const [featuresInput, setFeaturesInput] = useState("");
+
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
+
+  // Edit form state
+  const [editPackage, setEditPackage] = useState<PackageUpdate>({});
+  const [editFeaturesInput, setEditFeaturesInput] = useState("");
 
   const packageTypes = ["Basic", "Premium", "Enterprise", "Custom"];
 
@@ -191,6 +207,61 @@ export default function PackagesPage() {
     }
   };
 
+  const handleViewPackage = (pkg: Package) => {
+    setSelectedPackage(pkg);
+    setIsViewModalOpen(true);
+  };
+
+  const handleEditPackage = (pkg: Package) => {
+    setSelectedPackage(pkg);
+    setEditPackage({
+      name: pkg.name,
+      description: pkg.description,
+      price: pkg.price,
+      duration: pkg.duration,
+      type: pkg.type,
+      isPopular: pkg.isPopular,
+    });
+    setEditFeaturesInput(pkg.features.join("\n"));
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdatePackage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPackage) return;
+
+    const features = editFeaturesInput
+      .split("\n")
+      .map((f) => f.trim())
+      .filter((f) => f.length > 0);
+
+    try {
+      const updatedPackage = await apiClient.updatePackage(selectedPackage.id, {
+        ...editPackage,
+        features,
+      });
+      setPackages((prev) =>
+        prev.map((p) => (p.id === selectedPackage.id ? updatedPackage : p))
+      );
+      setFilteredPackages((prev) =>
+        prev.map((p) => (p.id === selectedPackage.id ? updatedPackage : p))
+      );
+      setIsEditModalOpen(false);
+      setSelectedPackage(null);
+      toast({
+        title: "Success",
+        description: "Package updated successfully",
+      });
+    } catch (error: any) {
+      console.error("Error updating package:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to update package",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -303,11 +374,15 @@ export default function PackagesPage() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleViewPackage(pkg)}
+                              >
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Details
                               </DropdownMenuItem>
-                              <DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleEditPackage(pkg)}
+                              >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Package
                               </DropdownMenuItem>
@@ -339,6 +414,204 @@ export default function PackagesPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* View Package Modal */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Package Details</DialogTitle>
+          </DialogHeader>
+          {selectedPackage && (
+            <ScrollArea className="max-h-[70vh] pr-4">
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-xl font-semibold">
+                        {selectedPackage.name}
+                      </h2>
+                      {selectedPackage.isPopular && (
+                        <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                      )}
+                    </div>
+                    <Badge variant="outline">{selectedPackage.type}</Badge>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold">
+                      ₦{selectedPackage.price.toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {selectedPackage.duration}
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-2">Description</h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {selectedPackage.description}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-2">Features</h3>
+                  <ul className="space-y-1">
+                    {selectedPackage.features.map((feature, index) => (
+                      <li
+                        key={index}
+                        className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2"
+                      >
+                        <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="font-medium mb-2">Package Information</h3>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    <p>Package ID: {selectedPackage.id}</p>
+                    <p>
+                      Created:{" "}
+                      {new Date(selectedPackage.createdAt).toLocaleString()}
+                    </p>
+                    <p>
+                      Last Updated:{" "}
+                      {new Date(selectedPackage.updatedAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </ScrollArea>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Package Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Package</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleUpdatePackage} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="editName">Package Name</Label>
+                <Input
+                  id="editName"
+                  value={editPackage.name || ""}
+                  onChange={(e) =>
+                    setEditPackage((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
+                  placeholder="Enter package name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editType">Type</Label>
+                <Select
+                  value={editPackage.type || ""}
+                  onValueChange={(value) =>
+                    setEditPackage((prev) => ({ ...prev, type: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {packageTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="editDescription">Description</Label>
+              <Textarea
+                id="editDescription"
+                value={editPackage.description || ""}
+                onChange={(e) =>
+                  setEditPackage((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                placeholder="Enter package description"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="editPrice">Price (₦)</Label>
+                <Input
+                  id="editPrice"
+                  type="number"
+                  value={editPackage.price || ""}
+                  onChange={(e) =>
+                    setEditPackage((prev) => ({
+                      ...prev,
+                      price: Number(e.target.value),
+                    }))
+                  }
+                  placeholder="Enter price"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editDuration">Duration</Label>
+                <Input
+                  id="editDuration"
+                  value={editPackage.duration || ""}
+                  onChange={(e) =>
+                    setEditPackage((prev) => ({
+                      ...prev,
+                      duration: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g., 1 month, 6 months"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="editFeatures">Features (one per line)</Label>
+              <Textarea
+                id="editFeatures"
+                value={editFeaturesInput}
+                onChange={(e) => setEditFeaturesInput(e.target.value)}
+                placeholder="Enter features, one per line"
+                rows={5}
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="editIsPopular"
+                checked={editPackage.isPopular ?? false}
+                onCheckedChange={(checked) =>
+                  setEditPackage((prev) => ({ ...prev, isPopular: checked }))
+                }
+              />
+              <Label htmlFor="editIsPopular">Mark as Popular</Label>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Update Package</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Create Package Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>

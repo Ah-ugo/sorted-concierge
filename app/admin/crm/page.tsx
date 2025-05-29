@@ -47,8 +47,14 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { apiClient, type CRMClient, type CRMClientCreate } from "@/lib/api";
+import {
+  apiClient,
+  type CRMClient,
+  type CRMClientCreate,
+  type CRMClientUpdate,
+} from "@/lib/api";
 import { toast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function CRMPage() {
   const [clients, setClients] = useState<CRMClient[]>([]);
@@ -57,6 +63,14 @@ export default function CRMPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Add these after existing state:
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<CRMClient | null>(null);
+
+  // Edit form state
+  const [editClient, setEditClient] = useState<CRMClientUpdate>({});
 
   // Form state for new client
   const [newClient, setNewClient] = useState<CRMClientCreate>({
@@ -196,6 +210,56 @@ export default function CRMPage() {
     }
   };
 
+  const handleViewClient = (client: CRMClient) => {
+    setSelectedClient(client);
+    setIsViewModalOpen(true);
+  };
+
+  const handleEditClient = (client: CRMClient) => {
+    setSelectedClient(client);
+    setEditClient({
+      clientName: client.clientName,
+      contactInfo: client.contactInfo,
+      serviceBooked: client.serviceBooked,
+      status: client.status,
+      assignedVendor: client.assignedVendor,
+      notes: client.notes,
+      dueDate: client.dueDate ? client.dueDate.split("T")[0] : "",
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateClient = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedClient) return;
+
+    try {
+      const updatedClient = await apiClient.updateCRMClient(
+        selectedClient.id,
+        editClient
+      );
+      setClients((prev) =>
+        prev.map((c) => (c.id === selectedClient.id ? updatedClient : c))
+      );
+      setFilteredClients((prev) =>
+        prev.map((c) => (c.id === selectedClient.id ? updatedClient : c))
+      );
+      setIsEditModalOpen(false);
+      setSelectedClient(null);
+      toast({
+        title: "Success",
+        description: "Client updated successfully",
+      });
+    } catch (error: any) {
+      console.error("Error updating client:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to update client",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -315,11 +379,15 @@ export default function CRMPage() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleViewClient(client)}
+                              >
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Details
                               </DropdownMenuItem>
-                              <DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleEditClient(client)}
+                              >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Client
                               </DropdownMenuItem>
@@ -354,6 +422,247 @@ export default function CRMPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* View Client Modal */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Client Details</DialogTitle>
+          </DialogHeader>
+          {selectedClient && (
+            <ScrollArea className="max-h-[70vh] pr-4">
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <User className="h-12 w-12 text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-full p-2" />
+                  <div>
+                    <h2 className="text-xl font-semibold">
+                      {selectedClient.clientName}
+                    </h2>
+                    <Badge className={getStatusColor(selectedClient.status)}>
+                      {selectedClient.status}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-medium mb-1">Contact Information</h3>
+                      <div className="text-sm text-gray-600 space-y-1">
+                        <p>Email: {selectedClient.contactInfo.email}</p>
+                        {selectedClient.contactInfo.phone && (
+                          <p>Phone: {selectedClient.contactInfo.phone}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-medium mb-1">Service Booked</h3>
+                      <p className="text-sm text-gray-600">
+                        {selectedClient.serviceBooked}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-medium mb-1">Assigned Vendor</h3>
+                      <p className="text-sm text-gray-600">
+                        {selectedClient.assignedVendor || "Unassigned"}
+                      </p>
+                    </div>
+                    <div>
+                      <h3 className="font-medium mb-1">Due Date</h3>
+                      <p className="text-sm text-gray-600">
+                        {selectedClient.dueDate
+                          ? new Date(
+                              selectedClient.dueDate
+                            ).toLocaleDateString()
+                          : "No due date"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {selectedClient.notes && (
+                  <div>
+                    <h3 className="font-medium mb-2">Notes</h3>
+                    <p className="text-sm text-gray-600 bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                      {selectedClient.notes}
+                    </p>
+                  </div>
+                )}
+
+                <div className="border-t pt-4">
+                  <h3 className="font-medium mb-2">Client Information</h3>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    <p>Client ID: {selectedClient.id}</p>
+                    <p>
+                      Created:{" "}
+                      {new Date(selectedClient.createdAt).toLocaleString()}
+                    </p>
+                    <p>
+                      Last Updated:{" "}
+                      {new Date(selectedClient.updatedAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </ScrollArea>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setIsViewModalOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Client Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit CRM Client</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleUpdateClient} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="editClientName">Client Name</Label>
+                <Input
+                  id="editClientName"
+                  value={editClient.clientName || ""}
+                  onChange={(e) =>
+                    setEditClient((prev) => ({
+                      ...prev,
+                      clientName: e.target.value,
+                    }))
+                  }
+                  placeholder="Enter client name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editServiceBooked">Service Booked</Label>
+                <Input
+                  id="editServiceBooked"
+                  value={editClient.serviceBooked || ""}
+                  onChange={(e) =>
+                    setEditClient((prev) => ({
+                      ...prev,
+                      serviceBooked: e.target.value,
+                    }))
+                  }
+                  placeholder="Enter service name"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="editEmail">Email</Label>
+                <Input
+                  id="editEmail"
+                  type="email"
+                  value={editClient.contactInfo?.email || ""}
+                  onChange={(e) =>
+                    setEditClient((prev) => ({
+                      ...prev,
+                      contactInfo: {
+                        ...prev.contactInfo,
+                        email: e.target.value,
+                      },
+                    }))
+                  }
+                  placeholder="Enter email"
+                />
+              </div>
+              <div>
+                <Label htmlFor="editPhone">Phone</Label>
+                <Input
+                  id="editPhone"
+                  value={editClient.contactInfo?.phone || ""}
+                  onChange={(e) =>
+                    setEditClient((prev) => ({
+                      ...prev,
+                      contactInfo: {
+                        ...prev.contactInfo,
+                        phone: e.target.value,
+                      },
+                    }))
+                  }
+                  placeholder="Enter phone number"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="editStatus">Status</Label>
+                <Select
+                  value={editClient.status || ""}
+                  onValueChange={(value) =>
+                    setEditClient((prev) => ({ ...prev, status: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statuses.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="editAssignedVendor">Assigned Vendor</Label>
+                <Input
+                  id="editAssignedVendor"
+                  value={editClient.assignedVendor || ""}
+                  onChange={(e) =>
+                    setEditClient((prev) => ({
+                      ...prev,
+                      assignedVendor: e.target.value,
+                    }))
+                  }
+                  placeholder="Enter vendor name"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="editDueDate">Due Date</Label>
+              <Input
+                id="editDueDate"
+                type="date"
+                value={editClient.dueDate || ""}
+                onChange={(e) =>
+                  setEditClient((prev) => ({
+                    ...prev,
+                    dueDate: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="editNotes">Notes</Label>
+              <Textarea
+                id="editNotes"
+                value={editClient.notes || ""}
+                onChange={(e) =>
+                  setEditClient((prev) => ({ ...prev, notes: e.target.value }))
+                }
+                placeholder="Enter any additional notes"
+                rows={3}
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Update Client</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Create Client Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
