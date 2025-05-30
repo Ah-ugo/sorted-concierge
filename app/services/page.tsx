@@ -280,7 +280,8 @@ export default function ServicesPage() {
             className="w-full h-full object-cover"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
+          <div className="absolute inset-0 bg-black/70" />
+          {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" /> */}
         </motion.div>
 
         <div className="container relative z-10 mx-auto my-16 md:my-32 px-6 text-center">
@@ -302,7 +303,7 @@ export default function ServicesPage() {
             </p>
             <Button
               asChild
-              className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:from-secondary/80 hover:to-primary/80"
+              className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:text-secondary hover:from-secondary/80 hover:to-primary/80"
             >
               <Link href="/booking">Get Started</Link>
             </Button>

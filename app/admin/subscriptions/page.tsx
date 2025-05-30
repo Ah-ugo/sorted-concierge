@@ -49,12 +49,11 @@ export default function SubscriptionsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
-
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [cardRef, cardInView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
-
   const statuses = Object.values(SubscriptionStatus);
 
   useEffect(() => {
@@ -68,7 +67,6 @@ export default function SubscriptionsPage() {
       setSubscriptions(subscriptionsData);
       setFilteredSubscriptions(subscriptionsData);
     } catch (error: any) {
-      console.error("Error fetching subscriptions:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -82,7 +80,6 @@ export default function SubscriptionsPage() {
 
   useEffect(() => {
     let result = subscriptions;
-
     if (searchTerm) {
       result = result.filter(
         (subscription) =>
@@ -90,19 +87,17 @@ export default function SubscriptionsPage() {
           subscription.userId.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
     if (statusFilter !== "all") {
       result = result.filter(
         (subscription) => subscription.status === statusFilter
       );
     }
-
     setFilteredSubscriptions(result);
   }, [searchTerm, statusFilter, subscriptions]);
 
   const handleDeleteSubscription = async (subscriptionId: string) => {
     if (!confirm("Are you sure you want to delete this subscription?")) return;
-
+    setIsActionLoading(true);
     try {
       await apiClient.deleteSubscription(subscriptionId);
       setSubscriptions((prev) => prev.filter((s) => s.id !== subscriptionId));
@@ -115,13 +110,14 @@ export default function SubscriptionsPage() {
         className: "font-lora",
       });
     } catch (error: any) {
-      console.error("Error deleting subscription:", error);
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to delete subscription",
         className: "font-lora",
       });
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
@@ -308,6 +304,7 @@ export default function SubscriptionsPage() {
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 text-gold-accent hover:bg-gold-accent/10"
+                                  disabled={isActionLoading}
                                 >
                                   <MoreHorizontal className="h-4 w-4" />
                                   <span className="sr-only">Open menu</span>
@@ -321,11 +318,17 @@ export default function SubscriptionsPage() {
                                   Actions
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator className="bg-gold-accent/20" />
-                                <DropdownMenuItem className="font-lora">
+                                <DropdownMenuItem
+                                  className="font-lora"
+                                  disabled={isActionLoading}
+                                >
                                   <Eye className="mr-2 h-4 w-4 text-gold-accent" />
                                   View Details
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="font-lora">
+                                <DropdownMenuItem
+                                  className="font-lora"
+                                  disabled={isActionLoading}
+                                >
                                   <Edit className="mr-2 h-4 w-4 text-gold-accent" />
                                   Edit Subscription
                                 </DropdownMenuItem>
@@ -335,9 +338,19 @@ export default function SubscriptionsPage() {
                                   onClick={() =>
                                     handleDeleteSubscription(subscription.id)
                                   }
+                                  disabled={isActionLoading}
                                 >
-                                  <Trash className="mr-2 h-4 w-4" />
-                                  Delete Subscription
+                                  {isActionLoading ? (
+                                    <div className="flex items-center">
+                                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-600 border-t-transparent mr-2"></div>
+                                      Deleting...
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <Trash className="mr-2 h-4 w-4" />
+                                      Delete Subscription
+                                    </>
+                                  )}
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>

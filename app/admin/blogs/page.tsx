@@ -545,196 +545,201 @@ export default function BlogsPage() {
       </motion.div>
 
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-        <DialogContent className="max-w-4xl bg-card border-gold-accent/20">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
-              Create New Blog Post
-            </DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleCreateBlog} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+        <ScrollArea>
+          <DialogContent className="max-w-4xl bg-card border-gold-accent/20">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+                Create New Blog Post
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleCreateBlog} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="title" className="font-lora text-foreground">
+                    Title
+                  </Label>
+                  <Input
+                    id="title"
+                    value={newBlog.title}
+                    onChange={(e) => {
+                      const title = e.target.value;
+                      setNewBlog((prev) => ({
+                        ...prev,
+                        title,
+                        slug: generateSlug(title),
+                      }));
+                    }}
+                    placeholder="Enter blog title"
+                    className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="slug" className="font-lora text-foreground">
+                    Slug
+                  </Label>
+                  <Input
+                    id="slug"
+                    value={newBlog.slug}
+                    onChange={(e) =>
+                      setNewBlog((prev) => ({ ...prev, slug: e.target.value }))
+                    }
+                    placeholder="auto-generated-from-title"
+                    className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  />
+                </div>
+              </div>
+
               <div>
-                <Label htmlFor="title" className="font-lora text-foreground">
-                  Title
+                <Label
+                  htmlFor="coverImage"
+                  className="font-lora text-foreground"
+                >
+                  Cover Image
                 </Label>
-                <Input
-                  id="title"
-                  value={newBlog.title}
-                  onChange={(e) => {
-                    const title = e.target.value;
-                    setNewBlog((prev) => ({
-                      ...prev,
-                      title,
-                      slug: generateSlug(title),
-                    }));
-                  }}
-                  placeholder="Enter blog title"
+                <div className="space-y-2">
+                  <Input
+                    id="coverImage"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileSelect(e)}
+                    disabled={isUploading}
+                    className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  />
+                  {isUploading && (
+                    <div className="flex items-center gap-2 text-sm font-lora text-muted-foreground">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-gold-accent border-t-transparent" />
+                      Uploading image...
+                    </div>
+                  )}
+                  {imagePreview && (
+                    <div className="relative inline-block">
+                      <img
+                        src={imagePreview}
+                        alt="Cover preview"
+                        className="h-32 w-48 object-cover rounded-md border border-gold-accent/20"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 hover:bg-red-600"
+                        onClick={() => removeImage()}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="excerpt" className="font-lora text-foreground">
+                  Excerpt
+                </Label>
+                <Textarea
+                  id="excerpt"
+                  value={newBlog.excerpt}
+                  onChange={(e) =>
+                    setNewBlog((prev) => ({ ...prev, excerpt: e.target.value }))
+                  }
+                  placeholder="Brief description of the blog post"
+                  rows={2}
                   className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="slug" className="font-lora text-foreground">
-                  Slug
+                <Label htmlFor="content" className="font-lora text-foreground">
+                  Content
+                </Label>
+                <Textarea
+                  id="content"
+                  value={newBlog.content}
+                  onChange={(e) =>
+                    setNewBlog((prev) => ({ ...prev, content: e.target.value }))
+                  }
+                  placeholder="Write your blog content here..."
+                  rows={10}
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label
+                    htmlFor="authorName"
+                    className="font-lora text-foreground"
+                  >
+                    Author Name
+                  </Label>
+                  <Input
+                    id="authorName"
+                    value={newBlog.author.name}
+                    onChange={(e) =>
+                      setNewBlog((prev) => ({
+                        ...prev,
+                        author: { ...prev.author, name: e.target.value },
+                      }))
+                    }
+                    placeholder="Author name"
+                    className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  />
+                </div>
+                <div>
+                  <Label
+                    htmlFor="authorEmail"
+                    className="font-lora text-foreground"
+                  >
+                    Author Email
+                  </Label>
+                  <Input
+                    id="authorEmail"
+                    type="email"
+                    value={newBlog.author.email}
+                    onChange={(e) =>
+                      setNewBlog((prev) => ({
+                        ...prev,
+                        author: { ...prev.author, email: e.target.value },
+                      }))
+                    }
+                    placeholder="author@example.com"
+                    className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="tags" className="font-lora text-foreground">
+                  Tags (comma-separated)
                 </Label>
                 <Input
-                  id="slug"
-                  value={newBlog.slug}
-                  onChange={(e) =>
-                    setNewBlog((prev) => ({ ...prev, slug: e.target.value }))
-                  }
-                  placeholder="auto-generated-from-title"
+                  id="tags"
+                  value={tagsInput}
+                  onChange={(e) => setTagsInput(e.target.value)}
+                  placeholder="technology, business, lifestyle"
                   className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
-            </div>
-
-            <div>
-              <Label htmlFor="coverImage" className="font-lora text-foreground">
-                Cover Image
-              </Label>
-              <div className="space-y-2">
-                <Input
-                  id="coverImage"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFileSelect(e)}
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
                   disabled={isUploading}
-                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-                />
-                {isUploading && (
-                  <div className="flex items-center gap-2 text-sm font-lora text-muted-foreground">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gold-accent border-t-transparent" />
-                    Uploading image...
-                  </div>
-                )}
-                {imagePreview && (
-                  <div className="relative inline-block">
-                    <img
-                      src={imagePreview}
-                      alt="Cover preview"
-                      className="h-32 w-48 object-cover rounded-md border border-gold-accent/20"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 hover:bg-red-600"
-                      onClick={() => removeImage()}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="excerpt" className="font-lora text-foreground">
-                Excerpt
-              </Label>
-              <Textarea
-                id="excerpt"
-                value={newBlog.excerpt}
-                onChange={(e) =>
-                  setNewBlog((prev) => ({ ...prev, excerpt: e.target.value }))
-                }
-                placeholder="Brief description of the blog post"
-                rows={2}
-                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="content" className="font-lora text-foreground">
-                Content
-              </Label>
-              <Textarea
-                id="content"
-                value={newBlog.content}
-                onChange={(e) =>
-                  setNewBlog((prev) => ({ ...prev, content: e.target.value }))
-                }
-                placeholder="Write your blog content here..."
-                rows={10}
-                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label
-                  htmlFor="authorName"
-                  className="font-lora text-foreground"
+                  className="gold-gradient text-black hover:opacity-90 font-lora"
                 >
-                  Author Name
-                </Label>
-                <Input
-                  id="authorName"
-                  value={newBlog.author.name}
-                  onChange={(e) =>
-                    setNewBlog((prev) => ({
-                      ...prev,
-                      author: { ...prev.author, name: e.target.value },
-                    }))
-                  }
-                  placeholder="Author name"
-                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-                />
-              </div>
-              <div>
-                <Label
-                  htmlFor="authorEmail"
-                  className="font-lora text-foreground"
-                >
-                  Author Email
-                </Label>
-                <Input
-                  id="authorEmail"
-                  type="email"
-                  value={newBlog.author.email}
-                  onChange={(e) =>
-                    setNewBlog((prev) => ({
-                      ...prev,
-                      author: { ...prev.author, email: e.target.value },
-                    }))
-                  }
-                  placeholder="author@example.com"
-                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="tags" className="font-lora text-foreground">
-                Tags (comma-separated)
-              </Label>
-              <Input
-                id="tags"
-                value={tagsInput}
-                onChange={(e) => setTagsInput(e.target.value)}
-                placeholder="technology, business, lifestyle"
-                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-              />
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsCreateModalOpen(false)}
-                className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isUploading}
-                className="gold-gradient text-black hover:opacity-90 font-lora"
-              >
-                Create Blog Post
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
+                  Create Blog Post
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </ScrollArea>
       </Dialog>
 
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>

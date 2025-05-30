@@ -60,17 +60,15 @@ export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<ApiUser | null>(null);
-
   const [cardRef, cardInView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
-
   const [editUser, setEditUser] = useState<UserUpdate>({});
-
   const roles = ["user", "admin"];
 
   useEffect(() => {
@@ -84,7 +82,6 @@ export default function UsersPage() {
       setUsers(usersData);
       setFilteredUsers(usersData);
     } catch (error: any) {
-      console.error("Error fetching users:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -98,7 +95,6 @@ export default function UsersPage() {
 
   useEffect(() => {
     let result = users;
-
     if (searchTerm) {
       result = result.filter(
         (user) =>
@@ -108,11 +104,9 @@ export default function UsersPage() {
           user.id.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
     if (roleFilter !== "all") {
       result = result.filter((user) => user.role === roleFilter);
     }
-
     setFilteredUsers(result);
   }, [searchTerm, roleFilter, users]);
 
@@ -135,7 +129,7 @@ export default function UsersPage() {
   const handleUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedUser) return;
-
+    setIsActionLoading(true);
     try {
       const updatedUser = await apiClient.updateUser(selectedUser.id, editUser);
       setUsers((prev) =>
@@ -152,19 +146,20 @@ export default function UsersPage() {
         className: "font-lora",
       });
     } catch (error: any) {
-      console.error("Error updating user:", error);
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to update user",
         className: "font-lora",
       });
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
   const handleDeleteUser = async (userId: string, userName: string) => {
     if (!confirm(`Are you sure you want to delete "${userName}"?`)) return;
-
+    setIsActionLoading(true);
     try {
       await apiClient.deleteUser(userId);
       setUsers((prev) => prev.filter((u) => u.id !== userId));
@@ -175,13 +170,14 @@ export default function UsersPage() {
         className: "font-lora",
       });
     } catch (error: any) {
-      console.error("Error deleting user:", error);
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to delete user",
         className: "font-lora",
       });
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
@@ -345,6 +341,7 @@ export default function UsersPage() {
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 text-gold-accent hover:bg-gold-accent/10"
+                                  disabled={isActionLoading}
                                 >
                                   <MoreHorizontal className="h-4 w-4" />
                                   <span className="sr-only">Open menu</span>
@@ -361,6 +358,7 @@ export default function UsersPage() {
                                 <DropdownMenuItem
                                   className="font-lora"
                                   onClick={() => handleViewUser(user)}
+                                  disabled={isActionLoading}
                                 >
                                   <Eye className="mr-2 h-4 w-4 text-gold-accent" />
                                   View Details
@@ -368,6 +366,7 @@ export default function UsersPage() {
                                 <DropdownMenuItem
                                   className="font-lora"
                                   onClick={() => handleEditUser(user)}
+                                  disabled={isActionLoading}
                                 >
                                   <Edit className="mr-2 h-4 w-4 text-gold-accent" />
                                   Edit Member
@@ -381,9 +380,19 @@ export default function UsersPage() {
                                       `${user.firstName} ${user.lastName}`
                                     )
                                   }
+                                  disabled={isActionLoading}
                                 >
-                                  <Trash className="mr-2 h-4 w-4" />
-                                  Delete Member
+                                  {isActionLoading ? (
+                                    <div className="flex items-center">
+                                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-600 border-t-transparent mr-2"></div>
+                                      Deleting...
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <Trash className="mr-2 h-4 w-4" />
+                                      Delete Member
+                                    </>
+                                  )}
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -408,7 +417,6 @@ export default function UsersPage() {
         </Card>
       </motion.div>
 
-      {/* View User Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
         <DialogContent className="max-w-2xl bg-card border-gold-accent/20">
           <DialogHeader>
@@ -516,7 +524,6 @@ export default function UsersPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit User Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent className="max-w-2xl bg-card border-gold-accent/20">
           <DialogHeader>
@@ -544,6 +551,7 @@ export default function UsersPage() {
                   }
                   placeholder="Enter first name"
                   className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  disabled={isActionLoading}
                 />
               </div>
               <div>
@@ -561,6 +569,7 @@ export default function UsersPage() {
                   }
                   placeholder="Enter last name"
                   className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  disabled={isActionLoading}
                 />
               </div>
             </div>
@@ -576,6 +585,7 @@ export default function UsersPage() {
                 }
                 placeholder="Enter phone number"
                 className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                disabled={isActionLoading}
               />
             </div>
             <div>
@@ -590,6 +600,7 @@ export default function UsersPage() {
                 }
                 placeholder="Enter address"
                 className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                disabled={isActionLoading}
               />
             </div>
             <DialogFooter>
@@ -598,14 +609,23 @@ export default function UsersPage() {
                 variant="outline"
                 onClick={() => setIsEditModalOpen(false)}
                 className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
+                disabled={isActionLoading}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 className="gold-gradient text-black hover:opacity-90 font-lora"
+                disabled={isActionLoading}
               >
-                Update Member
+                {isActionLoading ? (
+                  <div className="flex items-center">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent mr-2"></div>
+                    Updating...
+                  </div>
+                ) : (
+                  "Update Member"
+                )}
               </Button>
             </DialogFooter>
           </form>

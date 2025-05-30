@@ -292,7 +292,7 @@ export default function Home() {
       </section>
 
       {/* Who We Serve Section */}
-      <section className="bg-black py-32" ref={whoWeServeRef}>
+      <section className="bg-black py-20" ref={whoWeServeRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -328,7 +328,7 @@ export default function Home() {
       </section>
 
       {/* What We Do Section */}
-      <section className="bg-black py-32" ref={servicesRef}>
+      <section className="bg-black py-20" ref={servicesRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -619,7 +619,7 @@ export default function Home() {
       </section>
 
       {/* The Sorted Circle Section */}
-      <section className="bg-black py-32" ref={circleRef}>
+      <section className="bg-black py-20" ref={circleRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -654,7 +654,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="bg-black py-32" ref={testimonialsRef}>
+      <section className="bg-black py-20" ref={testimonialsRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -691,10 +691,50 @@ export default function Home() {
             </div>
           </motion.div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={galleryInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.8, delay: 1 }}
+          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center mx-8"
+        >
+          <div className="luxury-card p-6 rounded-lg">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
+              500+
+            </h3>
+            <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
+              Curated Experiences
+            </p>
+          </div>
+          <div className="luxury-card p-6 rounded-lg">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
+              50+
+            </h3>
+            <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
+              Global Cities
+            </p>
+          </div>
+          <div className="luxury-card p-6 rounded-lg">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
+              1000+
+            </h3>
+            <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
+              Satisfied Clients
+            </p>
+          </div>
+          <div className="luxury-card p-6 rounded-lg">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
+              24/7
+            </h3>
+            <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
+              Concierge Support
+            </p>
+          </div>
+        </motion.div>
       </section>
 
       {/* Gallery Section */}
-      <section className="bg-black py-32" ref={galleryRef}>
+      <section className="bg-black py-20" ref={galleryRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -796,47 +836,7 @@ export default function Home() {
               </div>
             )}
           </div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={
-              galleryInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-            }
-            transition={{ duration: 0.8, delay: 1 }}
-            className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
-          >
-            <div className="luxury-card p-6 rounded-lg">
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
-                500+
-              </h3>
-              <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
-                Curated Experiences
-              </p>
-            </div>
-            <div className="luxury-card p-6 rounded-lg">
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
-                50+
-              </h3>
-              <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
-                Global Cities
-              </p>
-            </div>
-            <div className="luxury-card p-6 rounded-lg">
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
-                1000+
-              </h3>
-              <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
-                Satisfied Clients
-              </p>
-            </div>
-            <div className="luxury-card p-6 rounded-lg">
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
-                24/7
-              </h3>
-              <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
-                Concierge Support
-              </p>
-            </div>
-          </motion.div>
+
           <motion.div
             initial={{ opacity: 0 }}
             animate={galleryInView ? { opacity: 1 } : { opacity: 0 }}
@@ -861,7 +861,7 @@ export default function Home() {
       </section>
 
       {/* Begin Your Journey Section */}
-      <section className="relative aspect-[21/9] w-full sm:py-0 py-32">
+      <section className="relative aspect-[21/9] w-full sm:py-0 py-20">
         <Image
           loading="lazy"
           src="/image17.png"

@@ -72,19 +72,17 @@ export default function ServicesPage() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const itemsPerPage = 10;
-
   const [cardRef, cardInView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
-
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-
   const [newService, setNewService] = useState<ServiceCreate>({
     name: "",
     description: "",
@@ -93,9 +91,7 @@ export default function ServicesPage() {
     duration: "",
     isAvailable: true,
   });
-
   const [editService, setEditService] = useState<ServiceUpdate>({});
-
   const categories = [
     "Transportation",
     "Accommodation",
@@ -116,7 +112,6 @@ export default function ServicesPage() {
       setServices(servicesData);
       setFilteredServices(servicesData);
     } catch (error: any) {
-      console.error("Error fetching services:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -130,7 +125,6 @@ export default function ServicesPage() {
 
   useEffect(() => {
     let result = services;
-
     if (searchTerm) {
       result = result.filter(
         (service) =>
@@ -138,16 +132,13 @@ export default function ServicesPage() {
           service.id.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
     if (categoryFilter !== "all") {
       result = result.filter((service) => service.category === categoryFilter);
     }
-
     if (statusFilter !== "all") {
       const isAvailable = statusFilter === "Active";
       result = result.filter((service) => service.isAvailable === isAvailable);
     }
-
     setFilteredServices(result);
     setCurrentPage(1);
   }, [searchTerm, categoryFilter, statusFilter, services]);
@@ -182,7 +173,7 @@ export default function ServicesPage() {
       });
       return;
     }
-
+    setIsActionLoading(true);
     try {
       const createdService = await apiClient.createService(newService);
       setServices((prev) => [createdService, ...prev]);
@@ -202,13 +193,14 @@ export default function ServicesPage() {
         className: "font-lora",
       });
     } catch (error: any) {
-      console.error("Error creating service:", error);
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to create service",
         className: "font-lora",
       });
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
@@ -233,7 +225,7 @@ export default function ServicesPage() {
   const handleUpdateService = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedService) return;
-
+    setIsActionLoading(true);
     try {
       const updatedService = await apiClient.updateService(
         selectedService.id,
@@ -253,13 +245,14 @@ export default function ServicesPage() {
         className: "font-lora",
       });
     } catch (error: any) {
-      console.error("Error updating service:", error);
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to update service",
         className: "font-lora",
       });
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
@@ -268,7 +261,7 @@ export default function ServicesPage() {
     serviceName: string
   ) => {
     if (!confirm(`Are you sure you want to delete "${serviceName}"?`)) return;
-
+    setIsActionLoading(true);
     try {
       await apiClient.deleteService(serviceId);
       setServices((prev) => prev.filter((s) => s.id !== serviceId));
@@ -279,13 +272,14 @@ export default function ServicesPage() {
         className: "font-lora",
       });
     } catch (error: any) {
-      console.error("Error deleting service:", error);
       toast({
         variant: "destructive",
         title: "Error",
         description: error.message || "Failed to delete service",
         className: "font-lora",
       });
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
@@ -304,6 +298,7 @@ export default function ServicesPage() {
           size="sm"
           className="flex items-center gap-1 gold-gradient text-black hover:opacity-90 font-lora"
           onClick={() => setIsModalOpen(true)}
+          disabled={isActionLoading}
         >
           <Plus className="h-4 w-4" />
           <span>Add Service</span>
@@ -338,12 +333,14 @@ export default function ServicesPage() {
                   className="pl-8 bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  disabled={isActionLoading}
                 />
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Select
                   value={categoryFilter}
                   onValueChange={setCategoryFilter}
+                  disabled={isActionLoading}
                 >
                   <SelectTrigger className="w-full sm:w-[180px] bg-primary/10 border-gold-accent/20 text-foreground font-lora">
                     <SelectValue placeholder="Filter by category" />
@@ -363,7 +360,11 @@ export default function ServicesPage() {
                     ))}
                   </SelectContent>
                 </Select>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <Select
+                  value={statusFilter}
+                  onValueChange={setStatusFilter}
+                  disabled={isActionLoading}
+                >
                   <SelectTrigger className="w-full sm:w-[150px] bg-primary/10 border-gold-accent/20 text-foreground font-lora">
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
@@ -385,6 +386,7 @@ export default function ServicesPage() {
                   onClick={resetFilters}
                   title="Reset filters"
                   className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black"
+                  disabled={isActionLoading}
                 >
                   <Filter className="h-4 w-4" />
                 </Button>
@@ -473,6 +475,7 @@ export default function ServicesPage() {
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8 text-gold-accent hover:bg-gold-accent/10"
+                                    disabled={isActionLoading}
                                   >
                                     <MoreHorizontal className="h-4 w-4" />
                                     <span className="sr-only">Open menu</span>
@@ -489,6 +492,7 @@ export default function ServicesPage() {
                                   <DropdownMenuItem
                                     className="font-lora"
                                     onClick={() => handleViewService(service)}
+                                    disabled={isActionLoading}
                                   >
                                     <Eye className="mr-2 h-4 w-4 text-gold-accent" />
                                     View Details
@@ -496,6 +500,7 @@ export default function ServicesPage() {
                                   <DropdownMenuItem
                                     className="font-lora"
                                     onClick={() => handleEditService(service)}
+                                    disabled={isActionLoading}
                                   >
                                     <Edit className="mr-2 h-4 w-4 text-gold-accent" />
                                     Edit Service
@@ -509,9 +514,19 @@ export default function ServicesPage() {
                                         service.name
                                       )
                                     }
+                                    disabled={isActionLoading}
                                   >
-                                    <Trash className="mr-2 h-4 w-4" />
-                                    Delete Service
+                                    {isActionLoading ? (
+                                      <div className="flex items-center">
+                                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-600 border-t-transparent mr-2"></div>
+                                        Deleting...
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <Trash className="mr-2 h-4 w-4" />
+                                        Delete Service
+                                      </>
+                                    )}
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -559,7 +574,7 @@ export default function ServicesPage() {
                                 page <= currentPage + 1)
                           )
                           .map((page, i, array) => (
-                            <React.Fragment key={page}>
+                            <React.Fragment key={`page-${page}`}>
                               {i > 0 && array[i - 1] !== page - 1 && (
                                 <PaginationItem>
                                   <span className="px-4 py-2 font-lora text-muted-foreground">
@@ -621,6 +636,7 @@ export default function ServicesPage() {
               </Label>
               <Input
                 id="name"
+                type="text"
                 value={newService.name}
                 onChange={(e) =>
                   setNewService((prev) => ({ ...prev, name: e.target.value }))
@@ -628,6 +644,7 @@ export default function ServicesPage() {
                 placeholder="Enter service name"
                 className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 required
+                disabled={isActionLoading}
               />
             </div>
             <div>
@@ -649,6 +666,7 @@ export default function ServicesPage() {
                 placeholder="Enter service description"
                 className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 required
+                disabled={isActionLoading}
               />
             </div>
             <div>
@@ -660,6 +678,7 @@ export default function ServicesPage() {
                 onValueChange={(value) =>
                   setNewService((prev) => ({ ...prev, category: value }))
                 }
+                disabled={isActionLoading}
               >
                 <SelectTrigger className="bg-primary/10 border-gold-accent/20 text-foreground font-lora">
                   <SelectValue placeholder="Select category" />
@@ -684,7 +703,7 @@ export default function ServicesPage() {
               <Input
                 id="price"
                 type="number"
-                value={newService.price}
+                value={newService.price || ""}
                 onChange={(e) =>
                   setNewService((prev) => ({
                     ...prev,
@@ -694,6 +713,7 @@ export default function ServicesPage() {
                 placeholder="Enter price"
                 className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 required
+                disabled={isActionLoading}
               />
             </div>
             <div>
@@ -712,6 +732,7 @@ export default function ServicesPage() {
                 placeholder="e.g., 2 hours, Half day"
                 className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 required
+                disabled={isActionLoading}
               />
             </div>
             <div className="flex items-center space-x-2">
@@ -721,6 +742,7 @@ export default function ServicesPage() {
                 onCheckedChange={(checked) =>
                   setNewService((prev) => ({ ...prev, isAvailable: checked }))
                 }
+                disabled={isActionLoading}
               />
               <Label
                 htmlFor="isAvailable"
@@ -735,14 +757,23 @@ export default function ServicesPage() {
                 variant="outline"
                 onClick={() => setIsModalOpen(false)}
                 className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
+                disabled={isActionLoading}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 className="gold-gradient text-black hover:opacity-90 font-lora"
+                disabled={isActionLoading}
               >
-                Create Service
+                {isActionLoading ? (
+                  <div className="flex items-center">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent mr-2"></div>
+                    Creating...
+                  </div>
+                ) : (
+                  "Create Service"
+                )}
               </Button>
             </DialogFooter>
           </form>
@@ -798,7 +829,7 @@ export default function ServicesPage() {
                         : "bg-red-600/20 text-red-400"
                     }`}
                   >
-                    {selectedService.isAvailable ? "Available" : "Unavailable"}
+                    {selectedService.isAvailable ? "Active" : "Inactive"}
                   </Badge>
                 </div>
                 <div>
@@ -858,6 +889,7 @@ export default function ServicesPage() {
                 }
                 placeholder="Enter service name"
                 className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                disabled={isActionLoading}
               />
             </div>
             <div>
@@ -878,6 +910,7 @@ export default function ServicesPage() {
                 }
                 placeholder="Enter service description"
                 className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                disabled={isActionLoading}
               />
             </div>
             <div>
@@ -892,6 +925,7 @@ export default function ServicesPage() {
                 onValueChange={(value) =>
                   setEditService((prev) => ({ ...prev, category: value }))
                 }
+                disabled={isActionLoading}
               >
                 <SelectTrigger className="bg-primary/10 border-gold-accent/20 text-foreground font-lora">
                   <SelectValue placeholder="Select category" />
@@ -929,6 +963,7 @@ export default function ServicesPage() {
                   }
                   placeholder="Enter price"
                   className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  disabled={isActionLoading}
                 />
               </div>
               <div>
@@ -949,6 +984,7 @@ export default function ServicesPage() {
                   }
                   placeholder="e.g., 2 hours, Half day"
                   className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  disabled={isActionLoading}
                 />
               </div>
             </div>
@@ -959,6 +995,7 @@ export default function ServicesPage() {
                 onCheckedChange={(checked) =>
                   setEditService((prev) => ({ ...prev, isAvailable: checked }))
                 }
+                disabled={isActionLoading}
               />
               <Label
                 htmlFor="editIsAvailable"
@@ -973,14 +1010,23 @@ export default function ServicesPage() {
                 variant="outline"
                 onClick={() => setIsEditModalOpen(false)}
                 className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
+                disabled={isActionLoading}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 className="gold-gradient text-black hover:opacity-90 font-lora"
+                disabled={isActionLoading}
               >
-                Update Service
+                {isActionLoading ? (
+                  <div className="flex items-center">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent mr-2"></div>
+                    Updating...
+                  </div>
+                ) : (
+                  "Update Service"
+                )}
               </Button>
             </DialogFooter>
           </form>
