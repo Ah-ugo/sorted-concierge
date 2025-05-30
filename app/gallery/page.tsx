@@ -1,54 +1,15 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import Link from "next/link";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, Instagram } from "lucide-react";
+import { apiClient, type GalleryImage } from "@/lib/api";
+import { useToast } from "@/components/ui/use-toast";
 
-// Gallery images with Unsplash URLs
-const galleryImages = [
-  {
-    id: "1",
-    src: "https://images.unsplash.com/photo-1519741497674-611481863552",
-    alt: "Elegant Parisian Gala",
-    caption: "An Unforgettable Evening in Paris",
-  },
-  {
-    id: "2",
-    src: "https://images.unsplash.com/photo-1629236703739-9a2f03e0bdfa",
-    alt: "Private Jet Interior",
-    caption: "Travel in Ultimate Comfort",
-  },
-  {
-    id: "3",
-    src: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
-    alt: "Fine Dining Experience",
-    caption: "Exquisite Culinary Moments",
-  },
-  {
-    id: "4",
-    src: "https://images.unsplash.com/photo-1534453784731-3fadae1f28cb",
-    alt: "Fashion Week Runway",
-    caption: "Front Row at Fashion Week",
-  },
-  {
-    id: "5",
-    src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    alt: "Private Island Paradise",
-    caption: "Escape to Paradise",
-  },
-  {
-    id: "6",
-    src: "https://images.unsplash.com/photo-1579965342575-16428a7c8881",
-    alt: "Art Auction Display",
-    caption: "Bidding on Masterpieces",
-  },
-];
-
-// Instagram images with Unsplash URLs
+// Static Instagram images with Unsplash URLs
 const instagramImages = [
   {
     id: "1",
@@ -81,12 +42,15 @@ const instagramImages = [
 ];
 
 export default function Gallery() {
+  const { toast } = useToast();
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [selectedImage, setSelectedImage] = useState<{
     src: string;
     alt: string;
     caption: string;
   } | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 300], [1, 0.7]);
@@ -107,6 +71,25 @@ export default function Gallery() {
   });
   const [ctaRef, ctaInView] = useInView({ triggerOnce: false, threshold: 0.2 });
 
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const galleryData = await apiClient.getGallery({});
+        setGalleryImages(galleryData);
+      } catch (error: any) {
+        console.error("Error fetching gallery:", error);
+        toast({
+          title: "Error",
+          description: error.message || "Failed to load gallery images.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchGallery();
+  }, [toast]);
+
   const openPreview = (
     image: { src: string; alt: string; caption: string },
     index: number
@@ -121,14 +104,24 @@ export default function Gallery() {
 
   const nextImage = () => {
     const nextIndex = (currentIndex + 1) % galleryImages.length;
-    setSelectedImage(galleryImages[nextIndex]);
+    setSelectedImage({
+      src: galleryImages[nextIndex].image_url,
+      alt: galleryImages[nextIndex].title,
+      caption:
+        galleryImages[nextIndex].description || galleryImages[nextIndex].title,
+    });
     setCurrentIndex(nextIndex);
   };
 
   const prevImage = () => {
     const prevIndex =
       (currentIndex - 1 + galleryImages.length) % galleryImages.length;
-    setSelectedImage(galleryImages[prevIndex]);
+    setSelectedImage({
+      src: galleryImages[prevIndex].image_url,
+      alt: galleryImages[prevIndex].title,
+      caption:
+        galleryImages[prevIndex].description || galleryImages[prevIndex].title,
+    });
     setCurrentIndex(prevIndex);
   };
 
@@ -153,7 +146,6 @@ export default function Gallery() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/70" />
         </motion.div>
-
         <div className="container relative z-10 mx-auto my-16 md:my-32 px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -196,35 +188,53 @@ export default function Gallery() {
               Curated Moments
             </h2>
           </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {galleryImages.map((image, index) => (
-              <motion.div
-                key={image.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={
-                  galleryInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
-                }
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative group cursor-pointer"
-                onClick={() => openPreview(image, index)}
-              >
-                <div className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-md rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    width={400}
-                    height={300}
-                    className="w-full h-64 object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 text-center text-white font-lora text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {image.caption}
+          {isLoading ? (
+            <div className="text-center text-gray-300 font-lora">
+              Loading gallery...
+            </div>
+          ) : galleryImages.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {galleryImages.map((image, index) => (
+                <motion.div
+                  key={image.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={
+                    galleryInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
+                  }
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="relative group cursor-pointer"
+                  onClick={() =>
+                    openPreview(
+                      {
+                        src: image.image_url,
+                        alt: image.title,
+                        caption: image.description || image.title,
+                      },
+                      index
+                    )
+                  }
+                >
+                  <div className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-md rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                    <Image
+                      src={image.image_url}
+                      alt={image.title}
+                      width={400}
+                      height={300}
+                      className="w-full h-64 object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-center text-white font-lora text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      {image.description || image.title}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-gray-300 font-lora">
+              No gallery images available.
+            </div>
+          )}
         </div>
       </section>
 
@@ -241,7 +251,6 @@ export default function Gallery() {
               Follow Us on Instagram
             </h2>
           </motion.div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {instagramImages.map((image, index) => (
               <motion.div
@@ -277,7 +286,6 @@ export default function Gallery() {
               </motion.div>
             ))}
           </div>
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={instaInView ? { opacity: 1 } : { opacity: 0 }}

@@ -5,13 +5,14 @@ import Image from "next/image";
 import { useScroll, useTransform, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Button } from "@/components/ui/button";
-import { apiClient, type Service } from "@/lib/api";
+import { apiClient, type Service, type GalleryImage } from "@/lib/api";
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronDown } from "lucide-react";
 
 export default function Home() {
   const { toast } = useToast();
   const [services, setServices] = useState<Service[]>([]);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPreloaderVisible, setIsPreloaderVisible] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -29,39 +30,51 @@ export default function Home() {
   const [galleryRef, galleryInView] = useInView({ threshold: 0.03 });
 
   useEffect(() => {
-    const fetchServices = async () => {
+    const fetchData = async () => {
       try {
-        const data = await apiClient.getServices({ limit: 3 });
-        setServices(data);
+        const servicesData = await apiClient.getServices({ limit: 3 });
+        setServices(servicesData);
+        const galleryData = await apiClient.getGallery({ limit: 10 });
+        setGalleryImages(galleryData);
       } catch (error: any) {
-        console.error("Error fetching services:", error);
+        console.error("Error fetching data:", error);
         toast({
           title: "Error",
           description:
-            error.message || "Failed to load services. Please try again.",
+            error.message || "Failed to load data. Please try again.",
           variant: "destructive",
         });
       } finally {
         setIsLoading(false);
       }
     };
-    fetchServices();
+
+    fetchData();
 
     const timer = setTimeout(() => setIsPreloaderVisible(false), 2500);
     return () => clearTimeout(timer);
   }, [toast]);
 
+  const categories = [
+    "All",
+    ...new Set(galleryImages.map((image) => image.category)),
+  ];
+  const filteredGalleryImages =
+    selectedCategory === "All"
+      ? galleryImages.slice(0, 11)
+      : galleryImages
+          .filter((image) => image.category === selectedCategory)
+          .slice(0, 11);
+
   return (
     <>
+      {/* Preloader Section */}
       {/* {isPreloaderVisible && (
         <div className="preloader-container">
           <motion.div
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
-            transition={{
-              duration: 1,
-              ease: [0.76, 0, 0.24, 1],
-            }}
+            transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
             className="fixed inset-0 z-[60] bg-black flex items-center justify-center"
           >
             <motion.div
@@ -71,10 +84,7 @@ export default function Home() {
               className="text-center"
             >
               <motion.div
-                animate={{
-                  scale: [1, 1.05, 1],
-                  opacity: [0.9, 1, 0.9],
-                }}
+                animate={{ scale: [1, 1.05, 1], opacity: [0.9, 1, 0.9] }}
                 transition={{
                   repeat: Number.POSITIVE_INFINITY,
                   duration: 2.5,
@@ -86,14 +96,12 @@ export default function Home() {
                   SORTED
                 </h1>
               </motion.div>
-
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: "200px" }}
                 transition={{ duration: 1.2, delay: 0.8, ease: "easeInOut" }}
                 className="h-0.5 bg-gradient-to-r from-transparent via-gold-accent to-transparent mx-auto mb-6"
               />
-
               <motion.p
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -102,7 +110,6 @@ export default function Home() {
               >
                 Concierge Experience
               </motion.p>
-
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -121,26 +128,16 @@ export default function Home() {
               </motion.div>
             </motion.div>
           </motion.div>
-
           <motion.div
             initial={{ x: "-100%" }}
             animate={{ x: "100%" }}
-            transition={{
-              duration: 1.2,
-              delay: 1.5,
-              ease: [0.76, 0, 0.24, 1],
-            }}
+            transition={{ duration: 1.2, delay: 1.5, ease: [0.76, 0, 0.24, 1] }}
             className="fixed inset-0 z-[59] bg-gradient-to-r from-black via-gray-900 to-black"
           />
-
           <motion.div
             initial={{ x: "-100%" }}
             animate={{ x: "100%" }}
-            transition={{
-              duration: 0.8,
-              delay: 2,
-              ease: [0.76, 0, 0.24, 1],
-            }}
+            transition={{ duration: 0.8, delay: 2, ease: [0.76, 0, 0.24, 1] }}
             className="fixed inset-0 z-[58] bg-gradient-to-r from-black/60 to-transparent"
           />
         </div>
@@ -166,7 +163,6 @@ export default function Home() {
             <source src="/0526.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-
           <div
             data-testid="bgOverlay"
             className="absolute inset-0 z-2"
@@ -179,11 +175,9 @@ export default function Home() {
               mixBlendMode: "overlay",
             }}
           />
-
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50 z-3" />
           <div className="absolute inset-0 bg-radial-gradient from-transparent via-transparent to-black/20 z-3" />
         </motion.div>
-
         <div className="container relative z-10 mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -192,14 +186,10 @@ export default function Home() {
             className="mx-auto max-w-3xl"
           >
             <h1 className="mb-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cinzel font-bold uppercase tracking-widest text-white drop-shadow-lg">
-              {/* UNLOCK GLOBAL ACCESS */}
               LUXURY HANDLED
             </h1>
             <p className="mb-12 font-lora text-sm sm:text-base md:text-lg tracking-wider text-gray-300">
               With absolute discretion for those who demand the exceptional
-              {/* . Sorted Concierge opens doors to a world of curated
-              luxury, where every detail is meticulously tailored to your unique
-              desires. */}
             </p>
             <div className="mt-16 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
@@ -218,7 +208,6 @@ export default function Home() {
             </div>
           </motion.div>
         </div>
-
         <motion.div
           className="absolute bottom-10 left-0 right-0 z-10 flex justify-center"
           animate={{ y: [0, 10, 0] }}
@@ -232,7 +221,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* The Sorted Promise */}
+      {/* The Sorted Promise Section */}
       <section className="bg-black py-32" ref={promiseRef}>
         <div className="container mx-auto px-6">
           <motion.div
@@ -247,7 +236,6 @@ export default function Home() {
               The Sorted Promise
             </h2>
           </motion.div>
-
           <div className="grid gap-24 md:grid-cols-2">
             <motion.div
               initial={{ opacity: 0, x: -40 }}
@@ -268,7 +256,6 @@ export default function Home() {
                 />
               </div>
             </motion.div>
-
             <motion.div
               initial={{ opacity: 0, x: 40 }}
               animate={
@@ -304,7 +291,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Who We Serve */}
+      {/* Who We Serve Section */}
       <section className="bg-black py-32" ref={whoWeServeRef}>
         <div className="container mx-auto px-6">
           <motion.div
@@ -340,7 +327,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* What We Do */}
+      {/* What We Do Section */}
       <section className="bg-black py-32" ref={servicesRef}>
         <div className="container mx-auto px-6">
           <motion.div
@@ -355,14 +342,11 @@ export default function Home() {
               What We Do
             </h2>
           </motion.div>
-
           <div className="max-w-full mx-auto overflow-hidden relative group">
             <div className="mb-8 overflow-hidden relative">
               <motion.div
                 className="flex gap-6 w-max cursor-grab active:cursor-grabbing"
-                animate={{
-                  x: [0, -1200],
-                }}
+                animate={{ x: [0, -1200] }}
                 transition={{
                   x: {
                     repeat: Number.POSITIVE_INFINITY,
@@ -416,7 +400,6 @@ export default function Home() {
                         </h3>
                       </div>
                     </motion.div>
-
                     <motion.div
                       initial={{ opacity: 0, y: 30 }}
                       animate={
@@ -450,7 +433,6 @@ export default function Home() {
                         </h3>
                       </div>
                     </motion.div>
-
                     <motion.div
                       initial={{ opacity: 0, y: 30 }}
                       animate={
@@ -487,7 +469,6 @@ export default function Home() {
                   </div>
                 ))}
               </motion.div>
-
               <div className="absolute top-1/2 right-4 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="bg-black/50 backdrop-blur-sm rounded-full p-2">
                   <p className="text-[0.75rem] sm:text-xs text-white font-lora">
@@ -496,13 +477,10 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
             <div className="overflow-hidden relative">
               <motion.div
                 className="flex gap-6 w-max cursor-grab active:cursor-grabbing"
-                animate={{
-                  x: [-1200, 0],
-                }}
+                animate={{ x: [-1200, 0] }}
                 transition={{
                   x: {
                     repeat: Number.POSITIVE_INFINITY,
@@ -551,7 +529,6 @@ export default function Home() {
                         </h3>
                       </div>
                     </motion.div>
-
                     <motion.div
                       initial={{ opacity: 0, y: 30 }}
                       animate={
@@ -585,7 +562,6 @@ export default function Home() {
                         </h3>
                       </div>
                     </motion.div>
-
                     <motion.div
                       initial={{ opacity: 0, y: 30 }}
                       animate={
@@ -642,7 +618,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* The Sorted Circle */}
+      {/* The Sorted Circle Section */}
       <section className="bg-black py-32" ref={circleRef}>
         <div className="container mx-auto px-6">
           <motion.div
@@ -677,7 +653,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Testimonials Section */}
       <section className="bg-black py-32" ref={testimonialsRef}>
         <div className="container mx-auto px-6">
           <motion.div
@@ -717,7 +693,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Gallery */}
+      {/* Gallery Section */}
       <section className="bg-black py-32" ref={galleryRef}>
         <div className="container mx-auto px-6">
           <motion.div
@@ -736,7 +712,6 @@ export default function Home() {
               meticulously crafted for those who demand the exceptional.
             </p>
           </motion.div>
-
           <div className="mb-12 overflow-hidden">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -747,14 +722,7 @@ export default function Home() {
               className="flex overflow-x-auto scrollbar-hide space-x-4 px-0 pb-4 scroll-smooth"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-              {[
-                "All",
-                "Travel",
-                "Events",
-                "Lifestyle",
-                "Experiences",
-                "Logistics",
-              ].map((category, index) => (
+              {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
@@ -769,202 +737,65 @@ export default function Home() {
               ))}
             </motion.div>
           </div>
-
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 auto-rows-[200px]">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={
-                galleryInView
-                  ? { opacity: 1, scale: 1 }
-                  : { opacity: 0, scale: 0.95 }
-              }
-              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-              className="group relative col-span-2 row-span-2 overflow-hidden rounded-lg elegant-shadow cursor-pointer"
-            >
-              <Image
-                loading="lazy"
-                src="/romantic-bohemian-couple-bed.jpg"
-                alt="Luxury travel experience"
-                width={600}
-                height={600}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="gold-gradient text-black px-3 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
-                  Travel
-                </span>
+            {filteredGalleryImages.length > 0 ? (
+              filteredGalleryImages.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={
+                    galleryInView
+                      ? { opacity: 1, scale: 1 }
+                      : { opacity: 0, scale: 0.95 }
+                  }
+                  transition={{
+                    duration: 0.6,
+                    delay: 0.1 + (index % 6) * 0.1,
+                    ease: "easeOut",
+                  }}
+                  className={`group relative ${
+                    index % 7 === 0 || index % 7 === 7
+                      ? "col-span-2 row-span-2"
+                      : "col-span-1 row-span-1"
+                  } overflow-hidden rounded-lg elegant-shadow cursor-pointer`}
+                >
+                  <Image
+                    loading="lazy"
+                    src={item.image_url}
+                    alt={item.title}
+                    width={index % 7 === 0 || index % 7 === 6 ? 600 : 300}
+                    height={index % 7 === 0 || index % 7 === 6 ? 600 : 200}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    sizes={
+                      index % 7 === 0 || index % 7 === 6
+                        ? "(max-width: 768px) 100vw, 50vw"
+                        : "(max-width: 768px) 50vw, 25vw"
+                    }
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <span className="gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
+                      {item.category}
+                    </span>
+                  </div>
+                  {(index % 7 === 0 || index % 7 === 6) && (
+                    <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <h3 className="text-white font-cinzel font-bold text-base sm:text-lg md:text-xl mb-1">
+                        {item.title}
+                      </h3>
+                      <p className="text-white/80 text-xs sm:text-sm font-lora">
+                        {item.description || "Curated experience"}
+                      </p>
+                    </div>
+                  )}
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-gray-300 font-lora">
+                No images available for this category.
               </div>
-              <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <h3 className="text-white font-cinzel font-bold text-base sm:text-lg md:text-xl mb-1">
-                  Luxury Travel
-                </h3>
-                <p className="text-white/80 text-xs sm:text-sm font-lora">
-                  Seamless global journeys
-                </p>
-              </div>
-            </motion.div>
-
-            {[
-              {
-                src: "/medium-shot-people-eating.jpg",
-                category: "Events",
-                title: "Private Event Production",
-              },
-              {
-                src: "/image.png",
-                category: "Experiences",
-                title: "Rare Cultural Moments",
-              },
-              {
-                src: "/image1.png",
-                category: "Lifestyle",
-                title: "Lifestyle Management",
-              },
-              {
-                src: "/image3.png",
-                category: "Logistics",
-                title: "High-Stakes Logistics",
-              },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={
-                  galleryInView
-                    ? { opacity: 1, scale: 1 }
-                    : { opacity: 0, scale: 0.95 }
-                }
-                transition={{
-                  duration: 0.6,
-                  delay: 0.2 + index * 0.1,
-                  ease: "easeOut",
-                }}
-                className="group relative col-span-1 row-span-1 overflow-hidden rounded-lg elegant-shadow cursor-pointer"
-              >
-                <Image
-                  loading="lazy"
-                  src={item.src}
-                  alt={item.title}
-                  width={300}
-                  height={200}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  sizes="(max-width: 768px) 50vw, 25vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
-                    {item.category}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={
-                galleryInView
-                  ? { opacity: 1, scale: 1 }
-                  : { opacity: 0, scale: 0.95 }
-              }
-              transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-              className="group relative col-span-2 row-span-2 overflow-hidden rounded-lg elegant-shadow cursor-pointer"
-            >
-              <Image
-                loading="lazy"
-                src="/image2.png"
-                alt="Personal affairs and lifestyle management"
-                width={600}
-                height={600}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="gold-gradient text-black px-3 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
-                  Lifestyle
-                </span>
-              </div>
-              <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <h3 className="text-white font-cinzel font-bold text-base sm:text-lg md:text-xl mb-1">
-                  Lifestyle Management
-                </h3>
-                <p className="text-white/80 text-xs sm:text-sm font-lora">
-                  Tailored personal affairs
-                </p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={
-                galleryInView
-                  ? { opacity: 1, scale: 1 }
-                  : { opacity: 0, scale: 0.95 }
-              }
-              transition={{ duration: 0.6, delay: 0.7, ease: "easeOut" }}
-              className="group relative col-span-2 row-span-1 overflow-hidden rounded-lg elegant-shadow cursor-pointer"
-            >
-              <Image
-                loading="lazy"
-                src="/tourist-carrying-luggage.jpg"
-                alt="Luxury transportation services"
-                width={600}
-                height={200}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
-                  Mobility
-                </span>
-              </div>
-              <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <h3 className="text-white font-cinzel font-bold text-sm sm:text-base md:text-lg mb-1">
-                  Secure Mobility
-                </h3>
-              </div>
-            </motion.div>
-
-            {[...Array(4)].map((_, index) => (
-              <motion.div
-                key={`extra-${index}`}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={
-                  galleryInView
-                    ? { opacity: 1, scale: 1 }
-                    : { opacity: 0, scale: 0.95 }
-                }
-                transition={{
-                  duration: 0.6,
-                  delay: 0.8 + index * 0.1,
-                  ease: "easeOut",
-                }}
-                className="group relative col-span-1 row-span-1 overflow-hidden rounded-lg elegant-shadow cursor-pointer"
-              >
-                <Image
-                  loading="lazy"
-                  src={`/placeholder.svg?height=200&width=300&text=Experience ${
-                    index + 1
-                  }`}
-                  alt={`Curated experience ${index + 1}`}
-                  width={300}
-                  height={200}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  sizes="(max-width: 768px) 50vw, 25vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
-                    Premium
-                  </span>
-                </div>
-              </motion.div>
-            ))}
+            )}
           </div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={
@@ -1006,7 +837,6 @@ export default function Home() {
               </p>
             </div>
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={galleryInView ? { opacity: 1 } : { opacity: 0 }}
@@ -1030,7 +860,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Begin Your Journey */}
+      {/* Begin Your Journey Section */}
       <section className="relative aspect-[21/9] w-full sm:py-0 py-32">
         <Image
           loading="lazy"
