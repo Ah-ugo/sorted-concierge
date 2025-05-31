@@ -56,6 +56,8 @@
     "react-dom": "^19",
     "react-hook-form": "latest",
     "react-intersection-observer": "latest",
+    "react-quill": "^2.0.0",
+    "react-quilljs": "^2.0.5",
     "react-resizable-panels": "^2.1.7",
     "react-responsive": "^10.0.1",
     "recharts": "2.15.0",

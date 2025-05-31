@@ -2,6 +2,7 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,36 @@ import {
   type BlogUpdate,
 } from "@/lib/api";
 import { toast } from "@/components/ui/use-toast";
+import { useQuill } from "react-quilljs";
+import "quill/dist/quill.snow.css";
+
+// Dynamically import react-quilljs with SSR disabled
+const QuillEditor = dynamic(
+  () =>
+    import("react-quilljs").then((mod) => {
+      return (props: any) => {
+        const { quill, quillRef } = useQuill({
+          theme: "snow",
+          modules: props.modules,
+        });
+
+        useEffect(() => {
+          if (quill) {
+            quill.on("text-change", () => {
+              props.onChange(quill.root.innerHTML);
+            });
+            quill.root.innerHTML = props.value;
+          }
+        }, [quill, props.value]);
+
+        return <div ref={quillRef} className={props.className} />;
+      };
+    }),
+  {
+    ssr: false,
+    loading: () => <p>Loading editor...</p>,
+  }
+);
 
 export default function BlogsPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -78,12 +109,24 @@ export default function BlogsPage() {
   });
   const [tagsInput, setTagsInput] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>("");
+  const [imagePreview, setImagePreview] = useState("");
 
   const [editBlog, setEditBlog] = useState<BlogUpdate>({});
   const [editTagsInput, setEditTagsInput] = useState("");
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
-  const [editImagePreview, setEditImagePreview] = useState<string>("");
+  const [editImagePreview, setEditImagePreview] = useState("");
+
+  // Quill editor modules configuration
+  const quillModules = {
+    toolbar: [
+      [{ header: [2, 3, false] }],
+      ["bold", "italic", "underline", "strike"],
+      ["blockquote"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link"],
+      ["clean"],
+    ],
+  };
 
   useEffect(() => {
     fetchBlogs();
@@ -146,6 +189,7 @@ export default function BlogsPage() {
         setImagePreview(response.imageUrl);
       }
       toast({
+        variant: "default",
         title: "Success",
         description: "Image uploaded successfully",
         className: "font-lora",
@@ -218,6 +262,7 @@ export default function BlogsPage() {
       setIsCreateModalOpen(false);
       resetCreateForm();
       toast({
+        variant: "default",
         title: "Success",
         description: "Blog post created successfully",
         className: "font-lora",
@@ -256,6 +301,7 @@ export default function BlogsPage() {
       setIsEditModalOpen(false);
       setSelectedBlog(null);
       toast({
+        variant: "default",
         title: "Success",
         description: "Blog post updated successfully",
         className: "font-lora",
@@ -279,6 +325,7 @@ export default function BlogsPage() {
       setBlogs((prev) => prev.filter((b) => b.id !== blogId));
       setFilteredBlogs((prev) => prev.filter((b) => b.id !== blogId));
       toast({
+        variant: "default",
         title: "Success",
         description: "Blog post deleted successfully",
         className: "font-lora",
@@ -545,13 +592,13 @@ export default function BlogsPage() {
       </motion.div>
 
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-        <ScrollArea>
-          <DialogContent className="max-w-4xl bg-card border-gold-accent/20">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
-                Create New Blog Post
-              </DialogTitle>
-            </DialogHeader>
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-card border-gold-accent/20">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
+              Create New Blog Post
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[70vh] pr-4">
             <form onSubmit={handleCreateBlog} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -653,16 +700,13 @@ export default function BlogsPage() {
                 <Label htmlFor="content" className="font-lora text-foreground">
                   Content
                 </Label>
-                <Textarea
-                  id="content"
+                <QuillEditor
                   value={newBlog.content}
-                  onChange={(e) =>
-                    setNewBlog((prev) => ({ ...prev, content: e.target.value }))
+                  onChange={(value: string) =>
+                    setNewBlog((prev) => ({ ...prev, content: value }))
                   }
-                  placeholder="Write your blog content here..."
-                  rows={10}
-                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-                  required
+                  modules={quillModules}
+                  className="bg-primary/10 border border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -738,8 +782,8 @@ export default function BlogsPage() {
                 </Button>
               </DialogFooter>
             </form>
-          </DialogContent>
-        </ScrollArea>
+          </ScrollArea>
+        </DialogContent>
       </Dialog>
 
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
@@ -749,8 +793,8 @@ export default function BlogsPage() {
               View Blog Post
             </DialogTitle>
           </DialogHeader>
-          {selectedBlog && (
-            <ScrollArea className="max-h-[70vh] pr-4">
+          <ScrollArea className="max-h-[70vh] pr-4">
+            {selectedBlog && (
               <div className="space-y-4">
                 {selectedBlog.coverImage && (
                   <img
@@ -779,11 +823,10 @@ export default function BlogsPage() {
                   <h3 className="font-lora font-semibold text-foreground mb-2">
                     Content
                   </h3>
-                  <div className="prose max-w-none">
-                    <p className="whitespace-pre-wrap text-foreground font-lora">
-                      {selectedBlog.content}
-                    </p>
-                  </div>
+                  <div
+                    className="prose max-w-none text-foreground font-lora"
+                    dangerouslySetInnerHTML={{ __html: selectedBlog.content }}
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -829,8 +872,8 @@ export default function BlogsPage() {
                   </p>
                 </div>
               </div>
-            </ScrollArea>
-          )}
+            )}
+          </ScrollArea>
           <DialogFooter>
             <Button
               onClick={() => setIsViewModalOpen(false)}
@@ -843,204 +886,210 @@ export default function BlogsPage() {
       </Dialog>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-4xl bg-card border-gold-accent/20">
+        <DialogContent className="max-w-4xl max-h-[90vh] bg-card border-gold-accent/20">
           <DialogHeader>
             <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
               Edit Blog Post
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdateBlog} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          <ScrollArea className="max-h-[70vh] pr-4">
+            <form onSubmit={handleUpdateBlog} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label
+                    htmlFor="editTitle"
+                    className="font-lora text-foreground"
+                  >
+                    Title
+                  </Label>
+                  <Input
+                    id="editTitle"
+                    value={editBlog.title || ""}
+                    onChange={(e) => {
+                      const title = e.target.value;
+                      setEditBlog((prev) => ({
+                        ...prev,
+                        title,
+                        slug: generateSlug(title),
+                      }));
+                    }}
+                    placeholder="Enter blog title"
+                    className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  />
+                </div>
+                <div>
+                  <Label
+                    htmlFor="editSlug"
+                    className="font-lora text-foreground"
+                  >
+                    Slug
+                  </Label>
+                  <Input
+                    id="editSlug"
+                    value={editBlog.slug || ""}
+                    onChange={(e) =>
+                      setEditBlog((prev) => ({ ...prev, slug: e.target.value }))
+                    }
+                    placeholder="auto-generated-from-title"
+                    className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  />
+                </div>
+              </div>
+
               <div>
                 <Label
-                  htmlFor="editTitle"
+                  htmlFor="editCoverImage"
                   className="font-lora text-foreground"
                 >
-                  Title
+                  Cover Image
                 </Label>
-                <Input
-                  id="editTitle"
-                  value={editBlog.title || ""}
-                  onChange={(e) => {
-                    const title = e.target.value;
+                <div className="space-y-2">
+                  <Input
+                    id="editCoverImage"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileSelect(e, true)}
+                    disabled={isUploading}
+                    className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  />
+                  {isUploading && (
+                    <div className="flex items-center gap-2 text-sm font-lora text-muted-foreground">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-gold-accent border-t-transparent" />
+                      Uploading image...
+                    </div>
+                  )}
+                  {editImagePreview && (
+                    <div className="relative inline-block">
+                      <img
+                        src={editImagePreview}
+                        alt="Cover preview"
+                        className="h-32 w-48 object-cover rounded-md border border-gold-accent/20"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 hover:bg-red-600"
+                        onClick={() => removeImage(true)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <Label
+                  htmlFor="editExcerpt"
+                  className="font-lora text-foreground"
+                >
+                  Excerpt
+                </Label>
+                <Textarea
+                  id="editExcerpt"
+                  value={editBlog.excerpt || ""}
+                  onChange={(e) =>
                     setEditBlog((prev) => ({
                       ...prev,
-                      title,
-                      slug: generateSlug(title),
-                    }));
-                  }}
-                  placeholder="Enter blog title"
+                      excerpt: e.target.value,
+                    }))
+                  }
+                  placeholder="Brief description of the blog post"
+                  rows={2}
                   className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
               <div>
-                <Label htmlFor="editSlug" className="font-lora text-foreground">
-                  Slug
+                <Label
+                  htmlFor="editContent"
+                  className="font-lora text-foreground"
+                >
+                  Content
+                </Label>
+                <QuillEditor
+                  value={editBlog.content || ""}
+                  onChange={(value: string) =>
+                    setEditBlog((prev) => ({ ...prev, content: value }))
+                  }
+                  modules={quillModules}
+                  className="bg-primary/10 border border-gold-accent/20 text-foreground font-lora"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label
+                    htmlFor="editAuthorName"
+                    className="font-lora text-foreground"
+                  >
+                    Author Name
+                  </Label>
+                  <Input
+                    id="editAuthorName"
+                    value={editBlog.author?.name || ""}
+                    onChange={(e) =>
+                      setEditBlog((prev) => ({
+                        ...prev,
+                        author: { ...prev.author, name: e.target.value },
+                      }))
+                    }
+                    placeholder="Author name"
+                    className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  />
+                </div>
+                <div>
+                  <Label
+                    htmlFor="editAuthorEmail"
+                    className="font-lora text-foreground"
+                  >
+                    Author Email
+                  </Label>
+                  <Input
+                    id="editAuthorEmail"
+                    type="email"
+                    value={editBlog.author?.email || ""}
+                    onChange={(e) =>
+                      setEditBlog((prev) => ({
+                        ...prev,
+                        author: { ...prev.author, email: e.target.value },
+                      }))
+                    }
+                    placeholder="author@example.com"
+                    className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="editTags" className="font-lora text-foreground">
+                  Tags (comma-separated)
                 </Label>
                 <Input
-                  id="editSlug"
-                  value={editBlog.slug || ""}
-                  onChange={(e) =>
-                    setEditBlog((prev) => ({ ...prev, slug: e.target.value }))
-                  }
-                  placeholder="auto-generated-from-title"
+                  id="editTags"
+                  value={editTagsInput}
+                  onChange={(e) => setEditTagsInput(e.target.value)}
+                  placeholder="technology, business, lifestyle"
                   className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
-            </div>
-
-            <div>
-              <Label
-                htmlFor="editCoverImage"
-                className="font-lora text-foreground"
-              >
-                Cover Image
-              </Label>
-              <div className="space-y-2">
-                <Input
-                  id="editCoverImage"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFileSelect(e, true)}
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
                   disabled={isUploading}
-                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-                />
-                {isUploading && (
-                  <div className="flex items-center gap-2 text-sm font-lora text-muted-foreground">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gold-accent border-t-transparent" />
-                    Uploading image...
-                  </div>
-                )}
-                {editImagePreview && (
-                  <div className="relative inline-block">
-                    <img
-                      src={editImagePreview}
-                      alt="Cover preview"
-                      className="h-32 w-48 object-cover rounded-md border border-gold-accent/20"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute -top-2 -right-2 h-6 w-6 bg-red-500 hover:bg-red-600"
-                      onClick={() => removeImage(true)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <Label
-                htmlFor="editExcerpt"
-                className="font-lora text-foreground"
-              >
-                Excerpt
-              </Label>
-              <Textarea
-                id="editExcerpt"
-                value={editBlog.excerpt || ""}
-                onChange={(e) =>
-                  setEditBlog((prev) => ({ ...prev, excerpt: e.target.value }))
-                }
-                placeholder="Brief description of the blog post"
-                rows={2}
-                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-              />
-            </div>
-            <div>
-              <Label
-                htmlFor="editContent"
-                className="font-lora text-foreground"
-              >
-                Content
-              </Label>
-              <Textarea
-                id="editContent"
-                value={editBlog.content || ""}
-                onChange={(e) =>
-                  setEditBlog((prev) => ({ ...prev, content: e.target.value }))
-                }
-                placeholder="Write your blog content here..."
-                rows={10}
-                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label
-                  htmlFor="editAuthorName"
-                  className="font-lora text-foreground"
+                  className="gold-gradient text-black hover:opacity-90 font-lora"
                 >
-                  Author Name
-                </Label>
-                <Input
-                  id="editAuthorName"
-                  value={editBlog.author?.name || ""}
-                  onChange={(e) =>
-                    setEditBlog((prev) => ({
-                      ...prev,
-                      author: { ...prev.author, name: e.target.value },
-                    }))
-                  }
-                  placeholder="Author name"
-                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-                />
-              </div>
-              <div>
-                <Label
-                  htmlFor="editAuthorEmail"
-                  className="font-lora text-foreground"
-                >
-                  Author Email
-                </Label>
-                <Input
-                  id="editAuthorEmail"
-                  type="email"
-                  value={editBlog.author?.email || ""}
-                  onChange={(e) =>
-                    setEditBlog((prev) => ({
-                      ...prev,
-                      author: { ...prev.author, email: e.target.value },
-                    }))
-                  }
-                  placeholder="author@example.com"
-                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="editTags" className="font-lora text-foreground">
-                Tags (comma-separated)
-              </Label>
-              <Input
-                id="editTags"
-                value={editTagsInput}
-                onChange={(e) => setEditTagsInput(e.target.value)}
-                placeholder="technology, business, lifestyle"
-                className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
-              />
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsEditModalOpen(false)}
-                className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isUploading}
-                className="gold-gradient text-black hover:opacity-90 font-lora"
-              >
-                Update Blog Post
-              </Button>
-            </DialogFooter>
-          </form>
+                  Update Blog Post
+                </Button>
+              </DialogFooter>
+            </form>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>
