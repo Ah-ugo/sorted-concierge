@@ -7,7 +7,16 @@ import { useInView } from "react-intersection-observer";
 import { Button } from "@/components/ui/button";
 import { apiClient, type Service, type GalleryImage } from "@/lib/api";
 import { useToast } from "@/components/ui/use-toast";
-import { ChevronDown } from "lucide-react";
+import {
+  ChevronDown,
+  Plane,
+  Car,
+  Calendar,
+  Users,
+  Star,
+  Briefcase,
+  Shield,
+} from "lucide-react";
 
 export default function Home() {
   const { toast } = useToast();
@@ -66,83 +75,39 @@ export default function Home() {
           .filter((image) => image.category === selectedCategory)
           .slice(0, 11);
 
+  const serviceItems = [
+    {
+      title: "Global Travel & Aviation Planning",
+      icon: <Plane className="w-8 h-8 gold-accent" />,
+    },
+    {
+      title: "Luxury Transportation & Secure Mobility",
+      icon: <Car className="w-8 h-8 gold-accent" />,
+    },
+    {
+      title: "Private Event Production",
+      icon: <Calendar className="w-8 h-8 gold-accent" />,
+    },
+    {
+      title: "Personal Affairs & Lifestyle Management",
+      icon: <Users className="w-8 h-8 gold-accent" />,
+    },
+    {
+      title: "Access to Rare Experiences & Cultural Moments",
+      icon: <Star className="w-8 h-8 gold-accent" />,
+    },
+    {
+      title: "Vetting, Scheduling, & Managing Luxury Vendors",
+      icon: <Briefcase className="w-8 h-8 gold-accent" />,
+    },
+    {
+      title: "Crisis Response & High-Stakes Logistics",
+      icon: <Shield className="w-8 h-8 gold-accent" />,
+    },
+  ];
+
   return (
     <>
-      {/* Preloader Section */}
-      {/* {isPreloaderVisible && (
-        <div className="preloader-container">
-          <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-[60] bg-black flex items-center justify-center"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-              className="text-center"
-            >
-              <motion.div
-                animate={{ scale: [1, 1.05, 1], opacity: [0.9, 1, 0.9] }}
-                transition={{
-                  repeat: Number.POSITIVE_INFINITY,
-                  duration: 2.5,
-                  ease: "easeInOut",
-                }}
-                className="mb-6"
-              >
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold gold-accent tracking-widest">
-                  SORTED
-                </h1>
-              </motion.div>
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: "200px" }}
-                transition={{ duration: 1.2, delay: 0.8, ease: "easeInOut" }}
-                className="h-0.5 bg-gradient-to-r from-transparent via-gold-accent to-transparent mx-auto mb-6"
-              />
-              <motion.p
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.2 }}
-                className="text-xs sm:text-sm font-lora uppercase tracking-[0.3em] text-gray-300"
-              >
-                Concierge Experience
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 1.6 }}
-                className="mt-8"
-              >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    repeat: Number.POSITIVE_INFINITY,
-                    duration: 2,
-                    ease: "linear",
-                  }}
-                  className="w-8 h-8 border border-gold-accent border-t-transparent rounded-full mx-auto"
-                />
-              </motion.div>
-            </motion.div>
-          </motion.div>
-          <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: "100%" }}
-            transition={{ duration: 1.2, delay: 1.5, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-[59] bg-gradient-to-r from-black via-gray-900 to-black"
-          />
-          <motion.div
-            initial={{ x: "-100%" }}
-            animate={{ x: "100%" }}
-            transition={{ duration: 0.8, delay: 2, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-[58] bg-gradient-to-r from-black/60 to-transparent"
-          />
-        </div>
-      )} */}
-
       {/* Hero Section */}
       <section
         className="relative flex h-screen items-center justify-center bg-black"
@@ -186,7 +151,7 @@ export default function Home() {
             className="mx-auto max-w-3xl"
           >
             <h1 className="mb-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cinzel font-bold uppercase tracking-widest text-white drop-shadow-lg">
-              LUXURY HANDLED
+              Luxury, handled.
             </h1>
             <p className="mb-12 font-lora text-sm sm:text-base md:text-lg tracking-wider text-gray-300">
               With absolute discretion for those who demand the exceptional
@@ -197,13 +162,13 @@ export default function Home() {
                 variant="outline"
                 className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow backdrop-blur-sm"
               >
-                <Link href="/services">Explore Our Services</Link>
+                <Link href="/services">What We Handle</Link>
               </Button>
               <Button
                 asChild
                 className="gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
               >
-                <Link href="/contact">Request a Consultation</Link>
+                <Link href="/contact">Request Private Access</Link>
               </Button>
             </div>
           </motion.div>
@@ -222,36 +187,37 @@ export default function Home() {
       </section>
 
       {/* The Sorted Promise Section */}
-      <section className="bg-black py-32" ref={promiseRef}>
+      <section className="bg-black py-24 md:py-32" ref={promiseRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={
               promiseInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
             }
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="mx-auto max-w-3xl text-center"
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="mx-auto max-w-4xl text-center mb-12"
           >
-            <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               The Sorted Promise
             </h2>
           </motion.div>
-          <div className="grid gap-24 md:grid-cols-2">
+          <div className="grid gap-12 md:grid-cols-2 items-center">
             <motion.div
               initial={{ opacity: 0, x: -40 }}
               animate={
                 promiseInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }
               }
-              transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              className="group"
             >
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg elegant-shadow">
                 <Image
                   loading="lazy"
-                  src="/tourist-carrying-luggage.jpg"
+                  src="/luxury-jet-interior.jpg"
                   alt="Seamless travel experience"
                   width={600}
                   height={450}
-                  className="object-cover w-full h-full"
+                  className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
@@ -261,17 +227,17 @@ export default function Home() {
               animate={
                 promiseInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }
               }
-              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-              className="flex flex-col justify-center"
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+              className="flex flex-col justify-center space-y-6"
             >
-              <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
                 At Sorted Concierge, we understand your time is your most
                 valuable asset. That's why we go beyond simply meeting
                 expectations; we anticipate them, eliminate friction, and
                 orchestrate seamless experiences that empower you to move
                 through the world with unparalleled ease.
               </p>
-              <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
                 Our promise is to provide more than just a service; it's to
                 deliver a lifestyle where the extraordinary becomes your
                 everyday standard. Whether securing a private jet for a
@@ -281,10 +247,9 @@ export default function Home() {
               </p>
               <Button
                 asChild
-                variant="link"
-                className="px-0 text-xs sm:text-sm font-lora uppercase tracking-widest gold-accent hover:opacity-80 link-underline"
+                className="gold-gradient px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow w-fit"
               >
-                <Link href="/about">Learn More</Link>
+                <Link href="/about">Discover Our Approach</Link>
               </Button>
             </motion.div>
           </div>
@@ -309,20 +274,42 @@ export default function Home() {
               We're more than a concierge. We're your lifestyle architect, your
               trusted fixer, and your inside line to the extraordinary.
             </p>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
               Whether you think of us as bespoke travel designers, luxury
               lifestyle managers, or your executive team, Sorted is whatever you
-              need us to be. We serve private clients, families, and elite
-              global citizens who demand certainty, delivered with quiet
-              excellence.
+              need us to be. How we show up remains constant: with quiet
+              excellence, relentless attention to detail, and the ability to
+              make your vision real, anywhere in the world.
             </p>
-            <Button
-              asChild
-              variant="link"
-              className="px-0 text-xs sm:text-sm font-lora uppercase tracking-widest gold-accent hover:opacity-80 link-underline"
-            >
-              <Link href="/about">Learn More</Link>
-            </Button>
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              We work across three key verticals, serving private clients,
+              families, and elite global citizens who demand more than service;
+              they demand certainty. And they know: with Sorted, it’s always
+              handled.
+            </p>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Button
+                asChild
+                variant="outline"
+                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
+              >
+                <Link href="/lifestyle">Sorted Lifestyle</Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
+              >
+                <Link href="/experiences">Sorted Experiences</Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
+              >
+                <Link href="/heritage">Sorted Heritage</Link>
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -341,6 +328,17 @@ export default function Home() {
             <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               What We Do
             </h2>
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              Whether you're orchestrating a multi-continent business tour,
+              hosting an intimate gathering in an unfamiliar city, or managing
+              the intricate demands of a high-profile lifestyle, we are the
+              invisible force ensuring perfection at every turn.
+            </p>
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              We don't just handle requests, we anticipate needs, solve problems
+              before they surface, and deliver outcomes that exceed
+              expectations. You envision, we execute.
+            </p>
           </motion.div>
           <div className="max-w-full mx-auto overflow-hidden relative group">
             <div className="mb-8 overflow-hidden relative">
@@ -599,22 +597,53 @@ export default function Home() {
                 ))}
               </motion.div>
             </div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={
-                servicesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-              }
-              transition={{ duration: 0.8, delay: 0.7 }}
-              className="mt-16 text-center"
-            >
-              <Button
-                asChild
-                className="gold-gradient px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
-              >
-                <Link href="/services">See Our Signature Services</Link>
-              </Button>
-            </motion.div>
           </div>
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {serviceItems.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                animate={
+                  servicesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
+                }
+                transition={{
+                  duration: 0.5,
+                  delay: index * 0.1,
+                  ease: "easeOut",
+                }}
+                className="group relative p-6 bg-black/50 border border-gray-800 rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 hover:border-gold-accent"
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className="mb-4">{item.icon}</div>
+                  <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white mb-4">
+                    {item.title}
+                  </h3>
+                  <Button
+                    asChild
+                    className="gold-gradient px-6 py-3 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  >
+                    <Link href="/services">Learn More</Link>
+                  </Button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={
+              servicesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+            }
+            transition={{ duration: 0.8, delay: 0.7 }}
+            className="mt-16 text-center"
+          >
+            <Button
+              asChild
+              className="gold-gradient px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+            >
+              <Link href="/services">See Our Signature Services</Link>
+            </Button>
+          </motion.div>
         </div>
       </section>
 
@@ -745,7 +774,7 @@ export default function Home() {
             className="mx-auto max-w-3xl text-center"
           >
             <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
-              Curated Moments
+              Your World, Curated
             </h2>
             <p className="mb-16 text-sm sm:text-base md:text-lg font-lora text-gray-300">
               Explore a world of rare experiences and cultural moments,
@@ -836,7 +865,6 @@ export default function Home() {
               </div>
             )}
           </div>
-
           <motion.div
             initial={{ opacity: 0 }}
             animate={galleryInView ? { opacity: 1 } : { opacity: 0 }}
@@ -854,7 +882,7 @@ export default function Home() {
               variant="outline"
               className="border-secondary px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary hover:bg-secondary hover:text-gray-400 hover:border-gray-400 elegant-shadow"
             >
-              <Link href="/contact">Request a Consultation</Link>
+              <Link href="/contact">Request Private Access</Link>
             </Button>
           </motion.div>
         </div>
@@ -886,7 +914,7 @@ export default function Home() {
               asChild
               className="gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
             >
-              <Link href="/contact">Request a Consultation</Link>
+              <Link href="/contact">Request Private Access</Link>
             </Button>
           </motion.div>
         </div>
