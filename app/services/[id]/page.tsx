@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-// Using custom button component
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   CheckCircle,
   ChevronDown,
@@ -18,8 +19,7 @@ import {
   Zap,
   Diamond,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const memberships = [
   {
@@ -109,15 +109,15 @@ const faqs = [
 ];
 
 export default function MembershipDetails() {
-  const [openFaq, setOpenFaq] = useState(null);
-  const [expandedService, setExpandedService] = useState(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [expandedService, setExpandedService] = useState<number | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
 
-  const membership = memberships[0]; // Using first membership for demo
+  const membership = memberships[0];
 
   useEffect(() => {
-    const handleMouseMove = (e: any) => {
+    const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
@@ -174,9 +174,9 @@ export default function MembershipDetails() {
           className="absolute inset-0"
           style={{
             backgroundImage: `
-            linear-gradient(rgba(251, 191, 36, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(251, 191, 36, 0.1) 1px, transparent 1px)
-          `,
+              linear-gradient(rgba(251, 191, 36, 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(251, 191, 36, 0.1) 1px, transparent 1px)
+            `,
             backgroundSize: "50px 50px",
             transform: `translate(${mousePosition.x * 0.01}px, ${
               mousePosition.y * 0.01
@@ -185,8 +185,20 @@ export default function MembershipDetails() {
         />
       </div>
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-0">
+      {/* Hero Section with Background Image */}
+      <section
+        className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-0"
+        style={{
+          backgroundImage: "url('/image6.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        {/* Dark Overlay */}
+        {/* <div className="absolute inset-0 bg-black/60" /> */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/80" />
+
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-2 h-2 bg-amber-400 rounded-full animate-ping" />
@@ -199,10 +211,10 @@ export default function MembershipDetails() {
         </div>
 
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-900/95 to-black/90" />
+        {/* <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-900/95 to-black/90" /> */}
 
         <div className="container relative z-10 mx-auto px-4 sm:px-6 text-center">
-          {/* Back Button with Hover Effect - Improved */}
+          {/* Back Button with Hover Effect */}
           <div className="mb-6 sm:mb-8 flex justify-center sm:justify-start w-full px-4 sm:px-0">
             <Link href="/memberships" passHref>
               <Button
@@ -255,10 +267,28 @@ export default function MembershipDetails() {
             <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-yellow-500 blur opacity-30 group-hover:opacity-60 transition-opacity duration-500" />
           </Button>
         </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 1 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-6 h-10 border-2 border-gray-400/70 rounded-full flex justify-center backdrop-blur-sm"
+          >
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1 h-3 bg-secondary rounded-full mt-2"
+            />
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Overview Section with Parallax Cards */}
-      <section className="py-16 sm:py-32 relative">
+      <section className="py-16 sm:py-16 relative">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-10 sm:mb-20">
             <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
@@ -278,7 +308,7 @@ export default function MembershipDetails() {
       </section>
 
       {/* Services Section with Interactive Cards */}
-      <section className="py-16 sm:py-32 relative">
+      <section className="py-16 sm:py-16 relative">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-10 sm:mb-20">
             <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
@@ -392,7 +422,7 @@ export default function MembershipDetails() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-16 sm:py-32 relative">
+      <section className="py-16 sm:py-16 relative">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="max-w-5xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
@@ -470,7 +500,7 @@ export default function MembershipDetails() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 sm:py-32 relative bg-gray-800/20">
+      <section className="py-16 sm:py-16 relative bg-gray-800/20">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-10 sm:mb-20">
             <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
