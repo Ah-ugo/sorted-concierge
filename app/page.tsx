@@ -213,7 +213,8 @@ export default function Home() {
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg elegant-shadow">
                 <Image
                   loading="lazy"
-                  src="/luxury-jet-interior.jpg"
+                  // src="/luxury-jet-interior.jpg"
+                  src={"/image16.png"}
                   alt="Seamless travel experience"
                   width={600}
                   height={450}
