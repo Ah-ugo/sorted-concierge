@@ -1,15 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import Link from "next/link";
-import Image from "next/image";
-import { CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  CheckCircle,
+  ChevronDown,
+  ChevronUp,
+  ArrowRight,
+  Star,
+  Users,
+  Shield,
+  Clock,
+} from "lucide-react";
 
 const PackageCard = ({
   package: pkg,
+  index,
 }: {
   package: {
     id: string;
@@ -19,61 +25,134 @@ const PackageCard = ({
     popular: boolean;
     type: string;
   };
+  index: number;
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <motion.div
-      whileHover={{ scale: 1.05 }}
-      className={`relative bg-gradient-to-br ${
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      whileHover={{
+        scale: 1.02,
+        transition: { duration: 0.2 },
+      }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className={`relative group overflow-hidden rounded-2xl transition-all duration-500 ${
         pkg.popular
-          ? "from-gray-900 to-blue-900/80"
-          : "from-gray-800/90 to-gray-900/90"
-      } backdrop-blur-md rounded-xl p-8 shadow-lg transition-all duration-300 border ${
-        pkg.popular ? "border-secondary/50" : "border-gray-700/50"
-      }`}
+          ? "bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-secondary/50"
+          : "bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-gray-700/50"
+      } backdrop-blur-xl shadow-2xl hover:shadow-secondary/10`}
     >
+      {/* Glow effect */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isHovered ? 1 : 0 }}
+        className="absolute inset-0 bg-secondary/5 rounded-2xl"
+      />
+
+      {/* Popular badge */}
       {pkg.popular && (
-        <span className="absolute top-0 right-0 bg-secondary text-white text-xs font-lora uppercase tracking-widest px-3 py-1 rounded-bl-md">
-          Most Popular
-        </span>
-      )}
-      <div className="relative flex flex-col h-full">
-        <h3 className="text-2xl font-cinzel font-bold text-white mb-4">
-          {pkg.title}
-        </h3>
-        <p className="text-sm font-lora text-gray-300 mb-4">
-          {pkg.description.split("\n")[0]}
-        </p>
-        <ul className="space-y-2 mb-6">
-          {pkg.features.map((feature, index) => (
-            <li
-              key={index}
-              className="flex items-center text-sm font-lora text-gray-200"
-            >
-              <CheckCircle className="w-5 h-5 text-secondary mr-2" />
-              {feature}
-            </li>
-          ))}
-        </ul>
-        <Button
-          asChild
-          className="mt-auto bg-secondary text-white font-lora uppercase tracking-widest hover:bg-secondary/80"
+        <motion.div
+          initial={{ scale: 0, rotate: -12 }}
+          animate={{ scale: 1, rotate: -12 }}
+          transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+          className="absolute -top-2 -right-2 z-10"
         >
-          <Link href={`/services/${pkg.id}`}>Join Now</Link>
-        </Button>
+          <div className="bg-secondary text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
+            <Star className="w-3 h-3 fill-current" />
+            MOST POPULAR
+          </div>
+        </motion.div>
+      )}
+
+      <div className="relative p-8 h-full flex flex-col">
+        {/* Header */}
+        <div className="mb-6">
+          <motion.h3
+            className="text-2xl font-bold text-white mb-3 group-hover:text-secondary transition-colors duration-300"
+            style={{ fontFamily: "serif" }}
+          >
+            {pkg.title}
+          </motion.h3>
+          <motion.div
+            className="w-12 h-1 bg-secondary rounded-full mb-4"
+            initial={{ width: 0 }}
+            animate={{ width: 48 }}
+            transition={{ delay: 0.5 + index * 0.1, duration: 0.8 }}
+          />
+          <p className="text-gray-300 leading-relaxed text-sm">
+            {pkg.description}
+          </p>
+        </div>
+
+        {/* Features */}
+        <div className="flex-1 mb-8">
+          <ul className="space-y-3">
+            {pkg.features.map((feature, featureIndex) => (
+              <motion.li
+                key={featureIndex}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  delay: 0.6 + index * 0.1 + featureIndex * 0.1,
+                  duration: 0.4,
+                }}
+                className="flex items-start gap-3 text-sm text-gray-200"
+              >
+                <CheckCircle className="w-5 h-5 text-secondary mt-0.5 flex-shrink-0" />
+                <span className="leading-relaxed">{feature}</span>
+              </motion.li>
+            ))}
+          </ul>
+        </div>
+
+        {/* CTA Button */}
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className={`group relative overflow-hidden rounded-xl px-6 py-3 font-medium transition-all duration-300 ${
+            pkg.popular
+              ? "bg-secondary text-white shadow-lg hover:bg-secondary/80"
+              : "bg-gray-700/50 text-gray-200 hover:bg-gray-600/50 border border-gray-600/50"
+          }`}
+        >
+          <a
+            href={`/services/${pkg.id}`}
+            className="relative z-10 flex items-center justify-center gap-2 text-sm font-medium uppercase tracking-wider"
+          >
+            Join Now
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </a>
+        </motion.button>
       </div>
     </motion.div>
   );
 };
 
-export default function ServicesPage() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const { scrollY } = useScroll();
-  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0.8]);
-  const heroScale = useTransform(scrollY, [0, 300], [1, 1.03]);
+const StatCard = ({ icon: Icon, number, label, delay }: any) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6, delay }}
+    viewport={{ once: true }}
+    className="text-center p-6 rounded-xl bg-gray-800/30 backdrop-blur-sm border border-gray-700/30"
+  >
+    <Icon className="w-8 h-8 text-secondary mx-auto mb-3" />
+    <div className="text-2xl font-bold text-white mb-1">{number}</div>
+    <div className="text-sm text-gray-400 uppercase tracking-wider">
+      {label}
+    </div>
+  </motion.div>
+);
 
-  const [heroRef, heroInView] = useInView({ threshold: 0.1 });
-  const [packagesRef, packagesInView] = useInView({ threshold: 0.1 });
-  const [faqRef, faqInView] = useInView({ threshold: 0.1 });
+export default function ServicesPage() {
+  const [openFaq, setOpenFaq] = useState(null);
+  const { scrollY } = useScroll();
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
+  const heroY = useTransform(scrollY, [0, 400], [0, -100]);
 
   const packages = [
     {
@@ -85,6 +164,8 @@ export default function ServicesPage() {
         "Luxury Event Curation",
         "Destination Planning",
         "Group Travel & Experiences",
+        "24/7 Lifestyle Management",
+        "Personal Concierge Services",
       ],
       popular: true,
       type: "Membership",
@@ -98,6 +179,8 @@ export default function ServicesPage() {
         "Luxury Event Curation",
         "Destination Planning",
         "Group Travel & Experiences",
+        "Milestone Celebrations",
+        "Exclusive Access Network",
       ],
       popular: false,
       type: "Membership",
@@ -124,7 +207,7 @@ export default function ServicesPage() {
       question:
         "What sets Sorted Concierge apart from other luxury concierge services?",
       answer:
-        "We’re not a concierge directory, a call center, or a glorified booking agent. Sorted is a high-trust lifestyle management partner. That means we don’t just respond to requests, we anticipate needs, manage logistics end-to-end, and operate like a personal operations team behind the scenes. You talk to one dedicated manager, we use a vetted global network, and we cap our client list for excellence.",
+        "We're not a concierge directory, a call center, or a glorified booking agent. Sorted is a high-trust lifestyle management partner. That means we don't just respond to requests, we anticipate needs, manage logistics end-to-end, and operate like a personal operations team behind the scenes. You talk to one dedicated manager, we use a vetted global network, and we cap our client list for excellence.",
     },
     {
       question:
@@ -136,19 +219,19 @@ export default function ServicesPage() {
       question:
         "What happens if I run into any issues during my concierge service period?",
       answer:
-        "If anything doesn’t go as expected, we handle it immediately with a dedicated 24/7 lifestyle manager (depending on your tier). We resolve issues like missed flights or vendor problems quickly and discreetly, often before you ask twice.",
+        "If anything doesn't go as expected, we handle it immediately with a dedicated 24/7 lifestyle manager (depending on your tier). We resolve issues like missed flights or vendor problems quickly and discreetly, often before you ask twice.",
     },
     {
       question:
         "How far in advance should I contact Sorted to kick off the booking process?",
       answer:
-        "As soon as possible, especially for high-demand periods like Detty December or Fashion Week. Simple tasks need 24–48 hours, luxury events 3–8 weeks, travel 2–6 weeks, and residency/legacy planning varies. We’re experts at moving fast without sacrificing quality.",
+        "As soon as possible, especially for high-demand periods like Detty December or Fashion Week. Simple tasks need 24–48 hours, luxury events 3–8 weeks, travel 2–6 weeks, and residency/legacy planning varies. We're experts at moving fast without sacrificing quality.",
     },
     {
       question:
         "Will you work with me if I need a private concierge on short notice?",
       answer:
-        "Yes, on a case-by-case basis depending on availability. We prioritize referred clients and ensure we can deliver at our standard of care. Provide full context upfront for faster delivery, and we’ll confirm immediately if we can take it on.",
+        "Yes, on a case-by-case basis depending on availability. We prioritize referred clients and ensure we can deliver at our standard of care. Provide full context upfront for faster delivery, and we'll confirm immediately if we can take it on.",
     },
     {
       question:
@@ -169,186 +252,318 @@ export default function ServicesPage() {
   ];
 
   return (
-    <div className="bg-gray-900 text-white">
-      {/* Hero Section */}
-      <section
-        ref={heroRef}
-        className="relative flex min-h-[60vh] items-center justify-center pt-16 overflow-hidden"
-      >
-        <motion.div
-          style={{ opacity: heroOpacity, scale: heroScale }}
-          className="absolute inset-0"
-        >
-          <Image
-            src="/image6.png"
-            alt="Services Hero"
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
+    <div className="bg-gray-900 text-white overflow-x-hidden">
+      {/* Hero Section with Image Overlay */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <div
+            className="w-full h-full bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: "url('/image6.png')",
+            }}
           />
-          <div className="absolute inset-0 bg-black/70" />
+          {/* Multi-layered overlay for depth */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/80" />
+          {/* <div className="absolute inset-0 bg-gray-900/85" /> */}
+          {/* <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-900/70 to-gray-800/80" /> */}
+          {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_70%,rgba(255,255,255,0.03),transparent_60%)]" /> */}
+        </div>
+
+        <motion.div
+          style={{ opacity: heroOpacity, y: heroY }}
+          className="absolute inset-0 z-1"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.02),transparent_70%)]" />
         </motion.div>
+
         <div className="container relative z-10 mx-auto px-6 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="max-w-4xl mx-auto"
           >
-            <p className="mb-4 font-lora text-sm md:text-lg italic text-secondary">
-              YOUR LUXURY, OUR EXPERTISE
-            </p>
-            <h1 className="mb-6 text-3xl md:text-5xl font-cinzel font-bold uppercase tracking-widest">
-              Sorted Concierge Memberships
-            </h1>
-            <p className="mb-8 text-sm md:text-lg font-lora text-gray-200 max-w-2xl mx-auto">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="inline-block mb-6"
+            >
+              <span className="px-4 py-2 bg-gray-800/70 border border-gray-700/70 rounded-full text-secondary text-sm font-medium uppercase tracking-wider backdrop-blur-sm">
+                Your Luxury, Our Expertise
+              </span>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+              className="text-4xl md:text-7xl font-bold mb-8 leading-tight"
+              style={{ fontFamily: "serif" }}
+            >
+              <span className="text-white drop-shadow-lg">
+                Sorted Concierge
+              </span>
+              <br />
+              <span className="text-2xl md:text-4xl text-secondary font-normal drop-shadow-lg">
+                Memberships
+              </span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="text-lg md:text-xl text-gray-200 mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-md"
+            >
               High-trust lifestyle management for those who value time, privacy,
               and seamless experiences.
-            </p>
-            <Button
-              asChild
-              className="bg-secondary px-8 py-3 text-sm font-lora uppercase tracking-widest text-white hover:bg-secondary/80"
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <Link href="/booking">Get Started</Link>
-            </Button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="group relative overflow-hidden px-8 py-4 bg-secondary rounded-xl text-white font-medium shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
+              >
+                <span className="relative z-10 flex items-center gap-2 text-sm uppercase tracking-wider">
+                  Get Started
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </span>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 border border-gray-500/70 rounded-xl text-gray-200 font-medium hover:bg-gray-800/50 transition-all duration-300 text-sm uppercase tracking-wider backdrop-blur-sm"
+              >
+                Learn More
+              </motion.button>
+            </motion.div>
           </motion.div>
+        </div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 1 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-6 h-10 border-2 border-gray-400/70 rounded-full flex justify-center backdrop-blur-sm"
+          >
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1 h-3 bg-secondary rounded-full mt-2"
+            />
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-gray-800/20">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+            <StatCard
+              icon={Users}
+              number="500+"
+              label="Elite Clients"
+              delay={0}
+            />
+            <StatCard
+              icon={Shield}
+              number="99%"
+              label="Success Rate"
+              delay={0.1}
+            />
+            <StatCard icon={Clock} number="24/7" label="Support" delay={0.2} />
+            <StatCard icon={Star} number="5-Star" label="Service" delay={0.3} />
+          </div>
         </div>
       </section>
 
       {/* Membership Tiers Section */}
-      <section ref={packagesRef} className="bg-gray-800/50 py-16 md:py-24">
+      <section className="py-24 bg-gray-800/50">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
-            animate={packagesInView ? { opacity: 1, y: 0 } : {}}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto mb-12"
+            viewport={{ once: true }}
+            className="text-center max-w-3xl mx-auto mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest">
+            <h2
+              className="text-3xl md:text-5xl font-bold mb-6 text-white"
+              style={{ fontFamily: "serif" }}
+            >
               Our Membership Tiers
             </h2>
-            <p className="mt-4 text-sm md:text-base font-lora text-gray-300">
+            <div className="w-24 h-1 bg-secondary rounded-full mx-auto mb-6" />
+            <p className="text-lg text-gray-300 leading-relaxed">
               Three distinct paths built around how you live, travel, and plan
               for the future.
             </p>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {packages.map((pkg, index) => (
-              <motion.div
-                key={pkg.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={packagesInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <PackageCard package={pkg} />
-              </motion.div>
+              <PackageCard key={pkg.id} package={pkg} index={index} />
             ))}
           </div>
+
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={packagesInView ? { opacity: 1 } : {}}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-12 text-center"
+            viewport={{ once: true }}
+            className="mt-16 text-center"
           >
-            <p className="mb-6 text-sm md:text-base font-lora text-gray-200">
+            <p className="text-gray-300 mb-8 text-lg">
               Need a custom solution? We can tailor a membership to your unique
               lifestyle.
             </p>
-            <Button
-              asChild
-              className="bg-secondary px-8 py-3 text-sm font-lora uppercase tracking-widest text-white hover:bg-secondary/80"
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-4 border border-secondary/50 rounded-xl text-secondary font-medium hover:bg-secondary/10 transition-all duration-300 text-sm uppercase tracking-wider"
             >
-              <Link href="/contact">Contact Us</Link>
-            </Button>
+              Contact Us
+            </motion.button>
           </motion.div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section ref={faqRef} className="py-16 md:py-24">
+      <section className="py-24 bg-gray-900">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
-            animate={faqInView ? { opacity: 1, y: 0 } : {}}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto mb-12"
+            viewport={{ once: true }}
+            className="text-center max-w-3xl mx-auto mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest">
+            <h2
+              className="text-3xl md:text-5xl font-bold mb-6 text-white"
+              style={{ fontFamily: "serif" }}
+            >
               Frequently Asked Questions
             </h2>
+            <div className="w-24 h-1 bg-secondary rounded-full mx-auto" />
           </motion.div>
-          <div className="space-y-4 max-w-3xl mx-auto">
+
+          <div className="space-y-4 max-w-4xl mx-auto">
             {faqs.map((faq, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
-                animate={faqInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-xl p-6 shadow-md"
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+                viewport={{ once: true }}
+                className="group"
               >
-                <button
-                  className="flex w-full items-center justify-between text-left"
-                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                >
-                  <h3 className="text-lg md:text-xl font-cinzel font-bold text-white">
-                    {faq.question}
-                  </h3>
-                  {openFaq === index ? (
-                    <ChevronUp className="w-5 h-5 text-secondary" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-secondary" />
-                  )}
-                </button>
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={
-                    openFaq === index
-                      ? { height: "auto", opacity: 1 }
-                      : { height: 0, opacity: 0 }
-                  }
-                  transition={{ duration: 0.3 }}
-                  className="overflow-hidden"
-                >
-                  <p className="mt-2 text-sm md:text-base font-lora text-gray-200">
-                    {faq.answer}
-                  </p>
-                </motion.div>
+                <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden transition-all duration-300 hover:border-secondary/30">
+                  <motion.button
+                    className="flex w-full items-center justify-between p-6 text-left focus:outline-none focus:ring-2 focus:ring-secondary/50 rounded-2xl"
+                    onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                    whileHover={{ backgroundColor: "rgba(55, 65, 81, 0.1)" }}
+                  >
+                    <h3
+                      className="text-lg md:text-xl font-bold text-white pr-4 leading-relaxed"
+                      style={{ fontFamily: "serif" }}
+                    >
+                      {faq.question}
+                    </h3>
+                    <motion.div
+                      animate={{ rotate: openFaq === index ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex-shrink-0"
+                    >
+                      <ChevronDown className="w-6 h-6 text-secondary" />
+                    </motion.div>
+                  </motion.button>
+
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={
+                      openFaq === index
+                        ? { height: "auto", opacity: 1 }
+                        : { height: 0, opacity: 0 }
+                    }
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6">
+                      <div className="w-full h-px bg-gray-600/50 mb-4" />
+                      <p className="text-gray-300 leading-relaxed whitespace-pre-line">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </motion.div>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative aspect-[21/9] min-h-[300px]">
-        <div className="absolute inset-0">
-          <Image
-            src="/image7.png"
-            alt="CTA Background"
-            fill
-            className="object-cover"
-            sizes="100vw"
+      {/* CTA Section with Image Overlay */}
+      <section className="relative py-24 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <div
+            className="w-full h-full bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: "url('/image7.png')",
+            }}
           />
+          {/* Multi-layered overlay */}
+
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          {/* <div className="absolute inset-0 bg-gray-900/80" /> */}
+          {/* <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-gray-800/75 to-gray-900/90" /> */}
+          {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.04),transparent_60%)]" /> */}
         </div>
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
+
+        <div className="container relative z-10 mx-auto px-6 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center"
+            className="max-w-3xl mx-auto"
           >
-            <h2 className="mb-6 text-2xl md:text-4xl font-cinzel font-bold uppercase tracking-widest">
+            <h2
+              className="text-3xl md:text-5xl font-bold mb-8 text-white drop-shadow-lg"
+              style={{ fontFamily: "serif" }}
+            >
               Ready to Live Sorted?
             </h2>
-            <Button
-              asChild
-              className="bg-secondary px-8 py-3 text-sm font-lora uppercase tracking-widest text-white hover:bg-secondary/80"
+            <p className="text-lg text-gray-200 mb-10 leading-relaxed drop-shadow-md">
+              Join an exclusive community of individuals who demand excellence
+              in every aspect of their lifestyle.
+            </p>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group relative overflow-hidden px-10 py-5 bg-secondary rounded-2xl text-white font-bold shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
             >
-              <Link href="/booking">Apply Now</Link>
-            </Button>
+              <span className="relative z-10 flex items-center gap-3 text-lg uppercase tracking-wider">
+                Apply Now
+                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
+              </span>
+            </motion.button>
           </motion.div>
         </div>
       </section>

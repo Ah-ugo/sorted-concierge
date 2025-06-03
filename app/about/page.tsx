@@ -241,7 +241,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Origins Section */}
-      <section className="bg-black py-16 md:py-32" ref={originsRef}>
+      <section className="bg-black py-16 md:py-16" ref={originsRef}>
         <div className="container mx-auto px-6">
           <div className="grid gap-12 md:gap-24 md:grid-cols-2">
             <motion.div
@@ -310,7 +310,7 @@ export default function AboutPage() {
       </section>
 
       {/* Founder’s Profile Section */}
-      <section className="bg-black py-16 md:py-32" ref={founderRef}>
+      <section className="bg-black py-16 md:py-16" ref={founderRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}

@@ -890,7 +890,7 @@ export default function Home() {
       </section>
 
       {/* Begin Your Journey Section */}
-      <section className="relative aspect-[21/9] w-full sm:py-0 py-20">
+      <section className="relative aspect-[21/9] w-full sm:py-0 py-52">
         <Image
           loading="lazy"
           src="/image17.png"

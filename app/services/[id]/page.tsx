@@ -1,28 +1,81 @@
 "use client";
 
-import { useState } from "react";
-import { use } from "react";
+import { useState, useEffect } from "react";
+// Using custom button component
+import {
+  CheckCircle,
+  ChevronDown,
+  ArrowLeft,
+  ArrowRight,
+  Phone,
+  Mail,
+  MapPin,
+  Star,
+  Sparkles,
+  Crown,
+  Shield,
+  Globe,
+  Zap,
+  Diamond,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useInView } from "react-intersection-observer";
 import Link from "next/link";
-import Image from "next/image";
-import { CheckCircle, ChevronDown, ChevronUp, ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 const memberships = [
   {
     id: "sorted-lifestyle",
     name: "Sorted Lifestyle",
+    subtitle: "Luxury, from touchdown to takeoff.",
     description:
-      "Luxury, from touchdown to takeoff. Sorted Lifestyle is built for high-performers, power travelers, and seasoned executives who need everything done, but don’t have time to chase details. From the moment you land to the second you take off, our team handles the logistics, so you can focus on living well.",
-    features: [
-      "VIP Airport Protocol & Global Fast-Track: Private immigration, dedicated ground handling, luggage coordination, meet-and-greet services, average processing time of 12 minutes.",
-      "Executive Transport & Armored Security: Armored vehicles, real-time GPS tracking, executive protection specialists, 24/7 emergency response.",
-      "Private Aviation & Air Transfers: On-demand charter coordination, vetted aircraft, custom catering, ground handling, real-time flight tracking.",
-      "Private Culinary Experiences: Michelin-trained chefs, custom menus, premium ingredient sourcing, wine pairing services.",
-      "Private Island & Yacht Charters: Access to private islands, luxury yachts, custom itineraries, gourmet catering, water sports equipment.",
-      "Exclusive Access & Social Capital: Private members' clubs, gallery openings, business networking, VIP sporting and entertainment events.",
+      "Sorted Lifestyle is built for high-performers, power travelers, and seasoned executives who need everything done, but don't have time to chase details. From the moment you land to the second you take off, our team handles the logistics, so you can focus on living well.",
+    fullDescription:
+      "We ensure your arrival commands attention for all the right reasons. From Lagos to London, Dubai to New York, our global network transforms travel from necessity into seamless luxury.",
+    icon: Crown,
+    gradient: "from-amber-400/20 via-yellow-500/20 to-amber-600/20",
+    detailedServices: [
+      {
+        title: "VIP Airport Protocol & Global Fast-Track",
+        icon: Shield,
+        description:
+          "We ensure that within minutes, you're through private immigration channels, your luggage is secured, and your transport awaits. No queues. No delays. No explanations needed.",
+        details:
+          "Our protocol specialists maintain relationships at key airports worldwide. Whether touching down in Lagos, London Heathrow, JFK, or Dubai International, your passage remains consistently effortless.",
+        features: [
+          "Private immigration and customs processing",
+          "Dedicated ground handling teams",
+          "Luggage coordination and security screening",
+          "Meet-and-greet services with government-trained staff",
+          "Average processing time: 12 minutes from aircraft to transport",
+        ],
+      },
+      {
+        title: "Executive Transport & Armored Security",
+        icon: Globe,
+        description:
+          "Our global fleet, from armored Range Rovers in Lagos to Bentley Mulsannes in London, maintains the same exacting standards. Each vehicle undergoes weekly security assessments, and every team member carries certifications that most governments would envy.",
+        details: "Global Fleet Standards:",
+        features: [
+          "Armored protection rated to international standards",
+          "Real-time GPS tracking and communication systems",
+          "Executive protection specialists from military/police backgrounds",
+          "24/7 emergency response coordination",
+          "Discrete security protocols tailored to each destination",
+        ],
+      },
+      {
+        title: "Private Aviation & Air Transfers",
+        icon: Zap,
+        description: "When commercial aviation becomes inconvenient.",
+        details:
+          "Your schedule doesn't bend to airline timetables. Our aviation division connects you with vetted aircraft operators across six continents, ensuring your travel aligns with your agenda, not theirs.",
+        features: [
+          "On-demand charter coordination globally",
+          "Pre-vetted aircraft and crew certifications",
+          "Custom catering and in-flight preferences",
+          "Ground handling coordination at departure and arrival",
+          "Real-time flight tracking and communication",
+        ],
+      },
     ],
     contact: {
       lagos: "+234 [Number]",
@@ -30,42 +83,7 @@ const memberships = [
       dubai: "+971 [Number]",
       global: "[Email Address]",
     },
-    icon: "🌟",
-  },
-  {
-    id: "sorted-experiences",
-    name: "Sorted Experiences",
-    description:
-      "Unforgettable moments, flawlessly executed. Sorted Experiences exists for those who understand that extraordinary moments don't happen by accident; they're orchestrated by people who refuse to accept anything less than perfection.",
-    features: [
-      "Milestone Celebrations & Proposal Planning: Custom proposals with 100% success rate, milestone birthdays, anniversary celebrations, surprise coordination.",
-      "Cultural Immersion & Art Curation: Private gallery tours, fashion week access, exclusive performances, museum after-hours tours.",
-      "Destination Experiences Worldwide: Events in Africa, Europe, Middle East, Asia, Americas, with local expertise and global standards.",
-      "Bespoke Experience Design: Custom concerts, celebrity chef dinners, pop-up art exhibitions, tailored to your vision.",
-    ],
-    contact: {
-      global: "[Email Address]",
-      direct: "[Phone Number]",
-    },
-    icon: "🎉",
-  },
-  {
-    id: "sorted-heritage",
-    name: "Sorted Heritage",
-    description:
-      "Legacy lives here. Sorted Heritage serves families and individuals who understand that today's achievements represent tomorrow's foundation. We connect accomplished individuals with sophisticated financial structures, global mobility solutions, and wealth preservation strategies.",
-    features: [
-      "Global Citizenship & Residency Solutions: Caribbean, European, UAE, Singapore programs, visa-free travel, tax optimization.",
-      "International Real Estate & Investment Assets: Off-market properties in London, Dubai, Lagos, Cape Town, New York, Singapore, with due diligence and financing.",
-      "Wealth Preservation & Life Insurance: USD-denominated universal life policies, tax-deferred accumulation, estate planning benefits.",
-      "Family Office & Estate Planning: Governance, investment oversight, succession planning, international trust structures.",
-      "Private Banking & Investment Access: Swiss private banks, offshore banking, institutional-quality private equity, pre-IPO opportunities.",
-    ],
-    contact: {
-      global: "[Email Address]",
-      direct: "[Phone Number]",
-    },
-    icon: "🏛️",
+    closing: "Because access is everything, and you're already Sorted.",
   },
 ];
 
@@ -74,249 +92,446 @@ const faqs = [
     question:
       "What sets Sorted Concierge apart from other luxury concierge services?",
     answer:
-      "We’re not a concierge directory, a call center, or a glorified booking agent. Sorted is a high-trust lifestyle management partner. We anticipate needs, manage logistics end-to-end, and operate like a personal operations team. You deal with one dedicated manager, we use a vetted global network, and we cap our client list for excellence.",
+      "We're not a concierge directory, a call center, or a glorified booking agent. Sorted is a high-trust lifestyle management partner. We anticipate needs, manage logistics end-to-end, and operate like a personal operations team.",
   },
   {
     question:
       "How far in advance should I contact Sorted to kick off the booking process?",
     answer:
-      "As soon as possible, especially for high-demand periods like Detty December or Fashion Week. Simple tasks need 24–48 hours, luxury events 3–8 weeks, travel 2–6 weeks, and residency/legacy planning varies. We’re experts at moving fast without sacrificing quality.",
+      "As soon as possible, especially for high-demand periods like Detty December or Fashion Week. Simple tasks need 24–48 hours, luxury events 3–8 weeks, travel 2–6 weeks.",
   },
   {
     question:
       "Will you work with me if I need a private concierge on short notice?",
     answer:
-      "Yes, on a case-by-case basis depending on availability. We prioritize referred clients and ensure we can deliver at our standard of care. Provide full context upfront for faster delivery, and we’ll confirm immediately if we can take it on.",
+      "Yes, on a case-by-case basis depending on availability. We prioritize referred clients and ensure we can deliver at our standard of care.",
   },
 ];
 
-interface MembershipDetailsProps {
-  params: Promise<{ id: string }>;
-}
+export default function MembershipDetails() {
+  const [openFaq, setOpenFaq] = useState(null);
+  const [expandedService, setExpandedService] = useState(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [scrollY, setScrollY] = useState(0);
 
-export default function MembershipDetails({ params }: MembershipDetailsProps) {
-  const router = useRouter();
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const membership = memberships[0]; // Using first membership for demo
 
-  const { id } = use(params);
+  useEffect(() => {
+    const handleMouseMove = (e: any) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
 
-  const { scrollY } = useScroll();
-  const heroOpacity = useTransform(scrollY, [0, 300], [1, 0.8]);
-  const heroScale = useTransform(scrollY, [0, 300], [1, 1.03]);
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
 
-  const [heroRef, heroInView] = useInView({ threshold: 0.1 });
-  const [detailsRef, detailsInView] = useInView({ threshold: 0.1 });
-  const [faqRef, faqInView] = useInView({ threshold: 0.1 });
-  const [ctaRef, ctaInView] = useInView({ threshold: 0.1 });
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("scroll", handleScroll);
 
-  const membership = memberships.find((m) => m.id === id) || memberships[0];
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const FloatingOrbs = () => (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full bg-gradient-to-r from-amber-400/10 to-yellow-500/10 blur-xl animate-pulse"
+          style={{
+            width: `${100 + i * 50}px`,
+            height: `${100 + i * 50}px`,
+            left: `${20 + i * 15}%`,
+            top: `${10 + i * 20}%`,
+            animationDelay: `${i * 2}s`,
+            animationDuration: `${4 + i}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+
+  const ParallaxBackground = () => (
+    <div
+      className="fixed inset-0 opacity-5 pointer-events-none"
+      style={{
+        backgroundImage: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(251, 191, 36, 0.1) 0%, transparent 50%)`,
+        transform: `translateY(${scrollY * 0.1}px)`,
+      }}
+    />
+  );
 
   return (
-    <div className="bg-gray-900 text-white">
-      {/* Hero Section */}
-      <section
-        ref={heroRef}
-        className="relative flex min-h-[60vh] items-center justify-center pt-16 overflow-hidden"
-      >
-        <motion.div
-          style={{ opacity: heroOpacity, scale: heroScale }}
+    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
+      <FloatingOrbs />
+      <ParallaxBackground />
+
+      {/* Animated Grid Background */}
+      <div className="fixed inset-0 opacity-5 pointer-events-none">
+        <div
           className="absolute inset-0"
-        >
-          <Image
-            src="/image6.png"
-            alt={`${membership.name} Hero`}
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
+          style={{
+            backgroundImage: `
+            linear-gradient(rgba(251, 191, 36, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(251, 191, 36, 0.1) 1px, transparent 1px)
+          `,
+            backgroundSize: "50px 50px",
+            transform: `translate(${mousePosition.x * 0.01}px, ${
+              mousePosition.y * 0.01
+            }px)`,
+          }}
+        />
+      </div>
+
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-0">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-2 h-2 bg-amber-400 rounded-full animate-ping" />
+          <div className="absolute top-40 right-32 w-1 h-1 bg-yellow-500 rounded-full animate-pulse" />
+          <div className="absolute bottom-32 left-1/4 w-3 h-3 bg-amber-300 rounded-full animate-bounce" />
+          <div
+            className="absolute top-1/3 right-20 w-2 h-2 bg-yellow-400 rounded-full animate-ping"
+            style={{ animationDelay: "1s" }}
           />
-          <div className="absolute inset-0 bg-black/70" />
-        </motion.div>
-        <div className="container relative z-10 mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto"
-          >
-            <Button
-              asChild
-              variant="ghost"
-              className="mb-4 text-gray-200 hover:text-white hover:bg-secondary/20"
-            >
-              <Link href="/services">
-                <ArrowLeft className="w-5 h-5 mr-2" />
+        </div>
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-900/95 to-black/90" />
+
+        <div className="container relative z-10 mx-auto px-4 sm:px-6 text-center">
+          {/* Back Button with Hover Effect - Improved */}
+          <div className="mb-6 sm:mb-8 flex justify-center sm:justify-start w-full px-4 sm:px-0">
+            <Link href="/memberships" passHref>
+              <Button
+                variant="ghost"
+                className="group text-sm sm:text-base text-gray-400 hover:text-amber-400 hover:bg-gray-800/50 transition-all duration-500 border border-gray-700/50 hover:border-amber-400/50 rounded-xl px-4 py-2 sm:px-6 sm:py-3 relative flex items-center"
+              >
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2 transition-transform group-hover:-translate-x-1 duration-300" />
                 Back to Memberships
-              </Link>
-            </Button>
-            <p className="mb-4 font-lora text-sm md:text-lg italic text-secondary">
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-400/0 via-amber-400/5 to-amber-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
+              </Button>
+            </Link>
+          </div>
+
+          {/* Membership Badge */}
+          <div className="mb-4 sm:mb-6 inline-flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-full bg-gradient-to-r from-amber-400/20 to-yellow-500/20 border border-amber-400/30 backdrop-blur-sm">
+            <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+            <span className="text-xs sm:text-sm text-amber-400 font-medium tracking-wide">
               MEMBERSHIP TIER
-            </p>
-            <h1 className="mb-6 text-3xl md:text-5xl font-cinzel font-bold uppercase tracking-widest">
+            </span>
+          </div>
+
+          {/* Main Title with Animated Glow */}
+          <div className="relative mb-4 sm:mb-6">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold uppercase tracking-wider bg-gradient-to-r from-white via-amber-100 to-white bg-clip-text text-transparent relative">
               {membership.name}
             </h1>
-            <p className="mb-8 text-sm md:text-lg font-lora text-gray-200 max-w-2xl mx-auto">
-              {membership.description}
-            </p>
-            <Button
-              asChild
-              className="bg-secondary px-8 py-3 text-sm font-lora uppercase tracking-widest text-white hover:bg-secondary/80"
-            >
-              <Link href="/booking">Join This Membership</Link>
-            </Button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Details Section */}
-      <section ref={detailsRef} className="py-16 md:py-24">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={detailsInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto"
-          >
-            <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-md rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl md:text-3xl font-cinzel font-bold text-white mb-6">
-                What We Handle
-              </h2>
-              <ul className="space-y-4">
-                {membership.features.map((feature, index) => (
-                  <motion.li
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={detailsInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="flex items-start text-sm md:text-base font-lora text-gray-200"
-                  >
-                    <CheckCircle className="w-5 h-5 text-secondary mr-3 mt-1" />
-                    {feature}
-                  </motion.li>
-                ))}
-              </ul>
-              <div className="mt-8 flex items-center justify-center">
-                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-secondary">
-                  <span className="text-3xl">{membership.icon}</span>
-                </div>
-              </div>
+            <div className="absolute inset-0 text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold uppercase tracking-wider text-amber-400/20 blur-2xl">
+              {membership.name}
             </div>
-          </motion.div>
+          </div>
+
+          {/* Subtitle with Typewriter Effect */}
+          <p className="mb-4 sm:mb-6 text-amber-400 text-base sm:text-xl md:text-2xl italic relative">
+            {membership.subtitle}
+            <Sparkles className="inline-block w-4 h-4 sm:w-6 sm:h-6 ml-2 animate-pulse" />
+          </p>
+
+          {/* Description with Enhanced Typography */}
+          <p className="mb-6 sm:mb-10 text-sm sm:text-lg md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed px-4 sm:px-0">
+            {membership.description}
+          </p>
+
+          {/* CTA Button with Advanced Hover Effects */}
+          <Button className="group relative px-8 py-4 sm:px-12 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-widest text-black bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-yellow-500 hover:to-amber-400 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-amber-500/25 transform hover:scale-105">
+            <span className="relative z-10 flex items-center gap-2 sm:gap-3">
+              Join This Membership
+              <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-2 duration-300" />
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-yellow-500 blur opacity-30 group-hover:opacity-60 transition-opacity duration-500" />
+          </Button>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="bg-gray-800/50 py-16 md:py-24">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={detailsInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <h2 className="text-2xl md:text-3xl font-cinzel font-bold text-white mb-6">
-              Connect With Us
-            </h2>
-            <p className="text-sm md:text-base font-lora text-gray-200 mb-6">
-              Contact our global concierge team to discuss your{" "}
-              {membership.name.toLowerCase()} requirements. All communications
-              are held in absolute confidence.
-            </p>
-            <div className="space-y-2 text-sm md:text-base font-lora text-gray-200">
-              {Object.entries(membership.contact).map(([key, value]) => (
-                <p key={key}>
-                  {key.charAt(0).toUpperCase() + key.slice(1)}: {value}
-                </p>
-              ))}
+      {/* Overview Section with Parallax Cards */}
+      <section className="py-16 sm:py-32 relative">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10 sm:mb-20">
+            <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
+              <Diamond className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+              <span className="text-xs sm:text-sm text-amber-400 font-medium">
+                OVERVIEW
+              </span>
             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section ref={faqRef} className="py-16 md:py-24">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={faqInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest">
-              Frequently Asked Questions
+            <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold uppercase tracking-wider mb-6 sm:mb-8 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              Experience Excellence
             </h2>
-          </motion.div>
-          <div className="space-y-4 max-w-3xl mx-auto">
-            {faqs.map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={faqInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-xl p-6 shadow-md"
-              >
-                <button
-                  className="flex w-full items-center justify-between text-left"
-                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                >
-                  <h3 className="text-lg md:text-xl font-cinzel font-bold text-white">
-                    {faq.question}
-                  </h3>
-                  {openFaq === index ? (
-                    <ChevronUp className="w-5 h-5 text-secondary" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-secondary" />
-                  )}
-                </button>
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={
-                    openFaq === index
-                      ? { height: "auto", opacity: 1 }
-                      : { height: 0, opacity: 0 }
-                  }
-                  transition={{ duration: 0.3 }}
-                  className="overflow-hidden"
-                >
-                  <p className="mt-2 text-sm md:text-base font-lora text-gray-200">
-                    {faq.answer}
-                  </p>
-                </motion.div>
-              </motion.div>
-            ))}
+            <p className="text-sm sm:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed px-4 sm:px-0">
+              {membership.fullDescription}
+            </p>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section ref={ctaRef} className="relative aspect-[21/9] min-h-[300px]">
-        <div className="absolute inset-0">
-          <Image
-            src="/image7.png"
-            alt="CTA Background"
-            fill
-            className="object-cover"
-            sizes="100vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-        </div>
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={ctaInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h2 className="mb-6 text-2xl md:text-4xl font-cinzel font-bold uppercase tracking-widest">
-              Ready to Experience {membership.name}?
+      {/* Services Section with Interactive Cards */}
+      <section className="py-16 sm:py-32 relative">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10 sm:mb-20">
+            <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+              <span className="text-xs sm:text-sm text-amber-400 font-medium">
+                SERVICES
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold uppercase tracking-wider mb-4">
+              What We <span className="text-amber-400">Handle</span>
             </h2>
-            <Button
-              asChild
-              className="bg-secondary px-8 py-3 text-sm font-lora uppercase tracking-widest text-white hover:bg-secondary/80"
-            >
-              <Link href="/booking">Join Now</Link>
+          </div>
+
+          <div className="space-y-6 sm:space-y-8 max-w-6xl mx-auto">
+            {membership.detailedServices.map((service, index) => {
+              const IconComponent = service.icon;
+              const isExpanded = expandedService === index;
+
+              return (
+                <div
+                  key={index}
+                  className={`group relative rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-700 ${
+                    isExpanded
+                      ? "bg-gradient-to-br from-gray-800 to-gray-900"
+                      : "bg-gray-800/30"
+                  } border border-gray-700/50 hover:border-amber-400/30 backdrop-blur-sm`}
+                >
+                  {/* Animated Background */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-amber-400/0 via-amber-400/5 to-amber-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                  <button
+                    className="w-full p-4 sm:p-8 text-left transition-all duration-300 hover:bg-gray-700/20"
+                    onClick={() =>
+                      setExpandedService(isExpanded ? null : index)
+                    }
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-4 sm:gap-6 flex-1">
+                        {/* Animated Icon */}
+                        <div
+                          className={`p-2 sm:p-4 rounded-xl sm:rounded-2xl transition-all duration-500 ${
+                            isExpanded
+                              ? "bg-gradient-to-br from-amber-400 to-yellow-500 text-black"
+                              : "bg-gray-700/50 text-amber-400 group-hover:bg-amber-400/20"
+                          }`}
+                        >
+                          <IconComponent className="w-5 h-5 sm:w-8 sm:h-8" />
+                        </div>
+
+                        <div className="flex-1">
+                          <h3 className="text-lg sm:text-2xl md:text-3xl font-bold text-white mb-2 sm:mb-4 group-hover:text-amber-100 transition-colors duration-300">
+                            {service.title}
+                          </h3>
+                          <p className="text-amber-400 text-sm sm:text-lg mb-2 sm:mb-4 leading-relaxed">
+                            {service.description}
+                          </p>
+                          <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
+                            {service.details}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Animated Chevron */}
+                      <div
+                        className={`ml-2 sm:ml-6 p-1 sm:p-2 rounded-full transition-all duration-500 ${
+                          isExpanded
+                            ? "bg-amber-400 text-black rotate-180"
+                            : "bg-gray-700/50 text-amber-400"
+                        }`}
+                      >
+                        <ChevronDown className="w-4 h-4 sm:w-6 sm:h-6" />
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Expandable Content */}
+                  <div
+                    className={`overflow-hidden transition-all duration-700 ease-in-out ${
+                      isExpanded
+                        ? "max-h-[500px] opacity-100"
+                        : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="px-4 sm:px-8 pb-4 sm:pb-8">
+                      <div className="h-px bg-gradient-to-r from-transparent via-amber-400/50 to-transparent mb-4 sm:mb-6" />
+                      <div className="grid gap-2 sm:gap-4">
+                        {service.features.map((feature, featureIndex) => (
+                          <div
+                            key={featureIndex}
+                            className="flex items-start gap-2 sm:gap-4 p-2 sm:p-4 rounded-lg sm:rounded-xl bg-gray-700/20 hover:bg-gray-700/30 transition-all duration-300 group/feature"
+                            style={{
+                              animationDelay: `${featureIndex * 100}ms`,
+                            }}
+                          >
+                            <div className="p-0.5 sm:p-1 rounded-full bg-amber-400/20 group-hover/feature:bg-amber-400/30 transition-colors duration-300">
+                              <CheckCircle className="w-3 h-3 sm:w-5 sm:h-5 text-amber-400" />
+                            </div>
+                            <span className="text-xs sm:text-sm text-gray-200 leading-relaxed group-hover/feature:text-white transition-colors duration-300">
+                              {feature}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="py-16 sm:py-32 relative">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
+              <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+              <span className="text-xs sm:text-sm text-amber-400 font-medium">
+                CONNECT
+              </span>
+            </div>
+
+            <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold uppercase tracking-wider mb-6 sm:mb-8">
+              Ready to Experience
+              <span className="block text-amber-400">{membership.name}?</span>
+            </h2>
+
+            <p className="text-sm sm:text-xl text-gray-300 mb-8 sm:mb-12 leading-relaxed px-4 sm:px-0">
+              {membership.closing}
+            </p>
+
+            {/* Contact Card */}
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700/50 rounded-2xl sm:rounded-3xl p-6 sm:p-10 mb-8 sm:mb-12 backdrop-blur-sm relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-400/5 via-transparent to-amber-400/5" />
+
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6 relative z-10">
+                Connect With Our Global Team
+              </h3>
+              <p className="text-sm sm:text-lg text-gray-300 mb-6 sm:mb-8 relative z-10">
+                Contact our global concierge team to discuss your requirements.
+                All communications are held in absolute confidence.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 relative z-10">
+                {Object.entries(membership.contact).map(([key, value]) => {
+                  const IconComponent =
+                    key.includes("phone") ||
+                    key.includes("lagos") ||
+                    key.includes("london") ||
+                    key.includes("dubai")
+                      ? Phone
+                      : key.includes("global") || key.includes("email")
+                      ? Mail
+                      : MapPin;
+
+                  return (
+                    <div
+                      key={key}
+                      className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gray-700/20 hover:bg-gray-700/40 transition-all duration-300 group"
+                    >
+                      <div className="p-1 sm:p-2 rounded-full bg-amber-400/20 group-hover:bg-amber-400/30 transition-colors duration-300">
+                        <IconComponent className="w-3 h-3 sm:w-5 sm:h-5 text-amber-400" />
+                      </div>
+                      <div className="text-left">
+                        <div className="text-xs sm:text-sm text-amber-400 font-medium uppercase tracking-wide">
+                          {key}
+                        </div>
+                        <div className="text-sm sm:text-base text-white">
+                          {value}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* CTA Button */}
+            <Button className="group relative px-8 py-4 sm:px-12 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-widest text-black bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-yellow-500 hover:to-amber-400 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-amber-500/25 transform hover:scale-105">
+              <span className="relative z-10 flex items-center gap-2 sm:gap-3">
+                Apply Now
+                <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-2 duration-300" />
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </Button>
-          </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 sm:py-32 relative bg-gray-800/20">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10 sm:mb-20">
+            <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+              <span className="text-xs sm:text-sm text-amber-400 font-medium">
+                FAQ
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold uppercase tracking-wider">
+              Frequently Asked
+              <span className="block text-amber-400">Questions</span>
+            </h2>
+          </div>
+
+          <div className="space-y-4 sm:space-y-6 max-w-4xl mx-auto">
+            {faqs.map((faq, index) => {
+              const isOpen = openFaq === index;
+
+              return (
+                <div
+                  key={index}
+                  className={`group rounded-xl sm:rounded-3xl overflow-hidden transition-all duration-500 ${
+                    isOpen
+                      ? "bg-gradient-to-br from-gray-800 to-gray-900"
+                      : "bg-gray-800/30"
+                  } border border-gray-700/50 hover:border-amber-400/30 backdrop-blur-sm`}
+                >
+                  <button
+                    className="flex w-full items-center justify-between text-left p-4 sm:p-8 hover:bg-gray-700/20 transition-all duration-300"
+                    onClick={() => setOpenFaq(isOpen ? null : index)}
+                  >
+                    <h3 className="text-sm sm:text-xl md:text-2xl font-bold text-white pr-4 sm:pr-6 leading-tight group-hover:text-amber-100 transition-colors duration-300">
+                      {faq.question}
+                    </h3>
+                    <div
+                      className={`p-1 sm:p-2 rounded-full transition-all duration-500 ${
+                        isOpen
+                          ? "bg-amber-400 text-black rotate-180"
+                          : "bg-gray-700/50 text-amber-400"
+                      }`}
+                    >
+                      <ChevronDown className="w-4 h-4 sm:w-6 sm:h-6" />
+                    </div>
+                  </button>
+
+                  <div
+                    className={`overflow-hidden transition-all duration-700 ease-in-out ${
+                      isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="px-4 sm:px-8 pb-4 sm:pb-8">
+                      <div className="h-px bg-gradient-to-r from-transparent via-amber-400/50 to-transparent mb-4 sm:mb-6" />
+                      <p className="text-sm sm:text-lg text-gray-300 leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
     </div>

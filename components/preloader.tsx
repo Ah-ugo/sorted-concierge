@@ -93,7 +93,7 @@ export default function Preloader() {
                 duration: 2,
                 ease: "linear",
               }}
-              className="w-8 h-8 border border-gold-accent border-t-transparent rounded-full mx-auto"
+              className="w-8 h-8 border border-white border-t-transparent rounded-full mx-auto"
             />
           </motion.div>
         </div>
