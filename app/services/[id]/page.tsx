@@ -216,7 +216,7 @@ export default function MembershipDetails() {
         <div className="container relative z-10 mx-auto px-4 sm:px-6 text-center">
           {/* Back Button with Hover Effect */}
           <div className="mb-6 sm:mb-8 flex justify-center sm:justify-start w-full px-4 sm:px-0">
-            <Link href="/memberships" passHref>
+            <Link href="/services" passHref>
               <Button
                 variant="ghost"
                 className="group text-sm sm:text-base text-gray-400 hover:text-amber-400 hover:bg-gray-800/50 transition-all duration-500 border border-gray-700/50 hover:border-amber-400/50 rounded-xl px-4 py-2 sm:px-6 sm:py-3 relative flex items-center"
@@ -258,14 +258,16 @@ export default function MembershipDetails() {
           </p>
 
           {/* CTA Button with Advanced Hover Effects */}
-          <Button className="group relative px-8 py-4 sm:px-12 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-widest text-black bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-yellow-500 hover:to-amber-400 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-amber-500/25 transform hover:scale-105">
-            <span className="relative z-10 flex items-center gap-2 sm:gap-3">
-              Join This Membership
-              <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-2 duration-300" />
-            </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-yellow-500 blur opacity-30 group-hover:opacity-60 transition-opacity duration-500" />
-          </Button>
+          <Link href={"/booking"}>
+            <Button className="group relative px-8 py-4 sm:px-12 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-widest text-black bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-yellow-500 hover:to-amber-400 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-amber-500/25 transform hover:scale-105">
+              <span className="relative z-10 flex items-center gap-2 sm:gap-3">
+                Join This Membership
+                <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-2 duration-300" />
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-yellow-500 blur opacity-30 group-hover:opacity-60 transition-opacity duration-500" />
+            </Button>
+          </Link>
         </div>
         <motion.div
           initial={{ opacity: 0 }}
@@ -488,13 +490,15 @@ export default function MembershipDetails() {
             </div>
 
             {/* CTA Button */}
-            <Button className="group relative px-8 py-4 sm:px-12 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-widest text-black bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-yellow-500 hover:to-amber-400 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-amber-500/25 transform hover:scale-105">
-              <span className="relative z-10 flex items-center gap-2 sm:gap-3">
-                Apply Now
-                <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-2 duration-300" />
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            </Button>
+            <Link href={"/booking"}>
+              <Button className="group relative px-8 py-4 sm:px-12 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-widest text-black bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-yellow-500 hover:to-amber-400 transition-all duration-500 rounded-2xl overflow-hidden shadow-2xl hover:shadow-amber-500/25 transform hover:scale-105">
+                <span className="relative z-10 flex items-center gap-2 sm:gap-3">
+                  Apply Now
+                  <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-2 duration-300" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
