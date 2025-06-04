@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +12,16 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
+import { useState } from "react";
+import { apiClient } from "@/lib/api";
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+
+  const Subscribe = async () => {
+    const resp = await apiClient.subscribeToNewsletter(email);
+    console.log(resp);
+  };
   return (
     <footer className="bg-background text-white pt-16 pb-8">
       <div className="container mx-auto px-4">
@@ -147,10 +157,14 @@ export default function Footer() {
             <div className="flex flex-col space-y-2">
               <Input
                 type="email"
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
                 className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500"
               />
-              <Button className="bg-secondary hover:bg-teal-500 text-neutral-900">
+              <Button
+                onClick={Subscribe}
+                className="bg-secondary hover:bg-teal-500 text-neutral-900"
+              >
                 Subscribe
               </Button>
             </div>
