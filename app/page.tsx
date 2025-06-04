@@ -294,21 +294,23 @@ export default function Home() {
                 variant="outline"
                 className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
               >
-                <Link href="/lifestyle">Sorted Lifestyle</Link>
+                <Link href="/services/sorted-lifestyle">Sorted Lifestyle</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
                 className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
               >
-                <Link href="/experiences">Sorted Experiences</Link>
+                <Link href="/services/sorted-experiences">
+                  Sorted Experiences
+                </Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
                 className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
               >
-                <Link href="/heritage">Sorted Heritage</Link>
+                <Link href="/services/sorted-heritage">Sorted Heritage</Link>
               </Button>
             </div>
           </motion.div>
