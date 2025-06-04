@@ -52,6 +52,8 @@ export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
   useEffect(() => {
     const fetchBlogPosts = async () => {
@@ -85,6 +87,7 @@ export default function BlogPage() {
               ? error.message
               : "Failed to load blog posts. Please try again.",
           variant: "destructive",
+          duration: 3000,
         });
       } finally {
         setIsLoading(false);
@@ -104,6 +107,57 @@ export default function BlogPage() {
             post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
         )
       : blogPosts;
+
+  // Handle newsletter subscription
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setIsSubscribing(true);
+    try {
+      await apiClient.subscribeToNewsletter(email);
+      toast({
+        title: "Success!",
+        description: "Thank you for subscribing to our newsletter!",
+        variant: "default",
+        className: "bg-green-500 text-white border-green-600",
+        duration: 3000,
+      });
+      setEmail("");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to subscribe. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -274,15 +328,27 @@ export default function BlogPage() {
                   <p className="text-sm sm:text-base font-lora text-muted-foreground mb-4">
                     Stay updated with our latest articles and exclusive offers.
                   </p>
-                  <div className="space-y-3">
+                  <form onSubmit={handleSubscribe} className="space-y-3">
                     <Input
+                      type="email"
                       placeholder="Your email address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="bg-muted text-sm sm:text-base text-foreground placeholder:text-muted-foreground font-lora"
+                      disabled={isSubscribing}
+                      aria-label="Email address for newsletter subscription"
                     />
-                    <Button className="w-full bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground font-lora">
+                    <Button
+                      type="submit"
+                      className="w-full bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground font-lora"
+                      disabled={isSubscribing}
+                    >
+                      {isSubscribing ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : null}
                       Subscribe
                     </Button>
-                  </div>
+                  </form>
                 </div>
               </div>
             </div>

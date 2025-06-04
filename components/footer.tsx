@@ -11,17 +11,68 @@ import {
   Mail,
   Phone,
   MapPin,
+  Loader2,
 } from "lucide-react";
 import { useState } from "react";
 import { apiClient } from "@/lib/api";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Footer() {
+  const { toast } = useToast();
   const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
-  const Subscribe = async () => {
-    const resp = await apiClient.subscribeToNewsletter(email);
-    console.log(resp);
+  // Handle newsletter subscription
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+
+    setIsSubscribing(true);
+    try {
+      await apiClient.subscribeToNewsletter(email);
+      toast({
+        title: "Success!",
+        description: "Thank you for subscribing to our newsletter!",
+        variant: "default",
+        className: "bg-green-500 text-white border-green-600",
+        duration: 3000,
+      });
+      setEmail("");
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to subscribe. Please try again.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    } finally {
+      setIsSubscribing(false);
+    }
   };
+
   return (
     <footer className="bg-background text-white pt-16 pb-8">
       <div className="container mx-auto px-4">
@@ -154,20 +205,30 @@ export default function Footer() {
             <p className="text-neutral-400 mb-4">
               Stay updated with our latest news and special offers.
             </p>
-            <div className="flex flex-col space-y-2">
+            <form
+              onSubmit={handleSubscribe}
+              className="flex flex-col space-y-2"
+            >
               <Input
                 type="email"
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
                 className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500"
+                disabled={isSubscribing}
+                aria-label="Email address for newsletter subscription"
               />
               <Button
-                onClick={Subscribe}
+                type="submit"
                 className="bg-secondary hover:bg-teal-500 text-neutral-900"
+                disabled={isSubscribing}
               >
+                {isSubscribing ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
                 Subscribe
               </Button>
-            </div>
+            </form>
           </div>
         </div>
 
@@ -175,7 +236,7 @@ export default function Footer() {
         <div className="pt-8 border-t border-neutral-800 text-center text-neutral-500 text-sm">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p>
-              &copy; {new Date().getFullYear()} Sorted Concierge. All rights
+              © {new Date().getFullYear()} Sorted Concierge. All rights
               reserved.
             </p>
             <div className="flex space-x-4 mt-4 md:mt-0">

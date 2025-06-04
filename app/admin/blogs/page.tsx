@@ -52,36 +52,13 @@ import {
   type BlogUpdate,
 } from "@/lib/api";
 import { toast } from "@/components/ui/use-toast";
-import { useQuill } from "react-quilljs";
-import "quill/dist/quill.snow.css";
+import "react-quill-new/dist/quill.snow.css";
 
-// Dynamically import react-quilljs with SSR disabled
-const QuillEditor = dynamic(
-  () =>
-    import("react-quilljs").then((mod) => {
-      return (props: any) => {
-        const { quill, quillRef } = useQuill({
-          theme: "snow",
-          modules: props.modules,
-        });
-
-        useEffect(() => {
-          if (quill) {
-            quill.on("text-change", () => {
-              props.onChange(quill.root.innerHTML);
-            });
-            quill.root.innerHTML = props.value;
-          }
-        }, [quill, props.value]);
-
-        return <div ref={quillRef} className={props.className} />;
-      };
-    }),
-  {
-    ssr: false,
-    loading: () => <p>Loading editor...</p>,
-  }
-);
+// Dynamically import react-quill-new with SSR disabled
+const ReactQuill = dynamic(() => import("react-quill-new"), {
+  ssr: false,
+  loading: () => <p>Loading editor...</p>,
+});
 
 export default function BlogsPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -390,6 +367,109 @@ export default function BlogsPage() {
 
   return (
     <div className="space-y-6 bg-background p-6">
+      <style jsx global>{`
+        .ql-toolbar.ql-snow {
+          background: hsl(var(--card)) !important;
+          border: 1px solid hsl(var(--border)) !important;
+          font-family: "Lora", serif !important;
+          color: hsl(var(--foreground)) !important;
+        }
+
+        .ql-toolbar.ql-snow .ql-picker-label {
+          color: hsl(var(--foreground)) !important;
+        }
+
+        .ql-toolbar.ql-snow .ql-picker-label:hover {
+          color: hsl(var(--primary)) !important;
+        }
+
+        /* NUCLEAR OPTION - Force all possible dropdown selectors */
+        .ql-picker-options,
+        .ql-snow .ql-picker-options,
+        .ql-snow .ql-picker.ql-header .ql-picker-options,
+        .ql-toolbar .ql-picker-options,
+        div[class*="ql-picker-options"],
+        [class*="ql-picker-options"] {
+          background: #1a1a1a !important;
+          background-color: #1a1a1a !important;
+          border: 1px solid #333 !important;
+          color: white !important;
+          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3) !important;
+        }
+
+        /* Force all picker items */
+        .ql-picker-item,
+        .ql-snow .ql-picker-item,
+        .ql-snow .ql-picker.ql-header .ql-picker-item,
+        .ql-toolbar .ql-picker-item,
+        div[class*="ql-picker-item"],
+        [class*="ql-picker-item"] {
+          font-family: "Lora", serif !important;
+          color: white !important;
+          background: transparent !important;
+          background-color: transparent !important;
+        }
+
+        /* Force hover states */
+        .ql-picker-item:hover,
+        .ql-snow .ql-picker-item:hover,
+        .ql-snow .ql-picker.ql-header .ql-picker-item:hover,
+        .ql-toolbar .ql-picker-item:hover,
+        div[class*="ql-picker-item"]:hover,
+        [class*="ql-picker-item"]:hover {
+          background: #333 !important;
+          background-color: #333 !important;
+          color: #d4af37 !important;
+        }
+
+        /* Target any white backgrounds globally within quill */
+        .ql-snow *[style*="background: white"],
+        .ql-snow *[style*="background-color: white"],
+        .ql-snow *[style*="background: #fff"],
+        .ql-snow *[style*="background-color: #fff"] {
+          background: #1a1a1a !important;
+          background-color: #1a1a1a !important;
+        }
+
+        /* Fix for the editor container */
+        .ql-container.ql-snow {
+          border: 1px solid hsl(var(--border)) !important;
+          font-family: "Lora", serif !important;
+          background: hsl(var(--card)) !important;
+        }
+
+        /* Fix for the editor content area */
+        .ql-editor {
+          color: hsl(var(--foreground)) !important;
+          background: hsl(var(--card)) !important;
+        }
+
+        /* Additional fixes for other toolbar elements */
+        .ql-toolbar.ql-snow .ql-stroke {
+          stroke: hsl(var(--foreground)) !important;
+        }
+
+        .ql-toolbar.ql-snow .ql-fill {
+          fill: hsl(var(--foreground)) !important;
+        }
+
+        .ql-toolbar.ql-snow button:hover,
+        .ql-toolbar.ql-snow button:focus {
+          background: hsl(var(--accent)) !important;
+        }
+
+        .ql-toolbar.ql-snow button.ql-active {
+          background: hsl(var(--primary)) !important;
+        }
+
+        .ql-toolbar.ql-snow button.ql-active .ql-stroke {
+          stroke: hsl(var(--primary-foreground)) !important;
+        }
+
+        .ql-toolbar.ql-snow button.ql-active .ql-fill {
+          fill: hsl(var(--primary-foreground)) !important;
+        }
+      `}</style>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -405,27 +485,27 @@ export default function BlogsPage() {
           onClick={() => setIsCreateModalOpen(true)}
         >
           <Plus className="h-4 w-4" />
-          <span>Add Blog Post</span>
+          <span>Create Blog Post</span>
         </Button>
       </motion.div>
 
       <motion.div
         ref={cardRef}
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={cardInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.8 }}
       >
-        <Card className="bg-card elegant-shadow border-gold-accent/20">
+        <Card className="bg-card elegant-shadow border">
           <CardHeader className="pb-3">
-            <CardTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
-              Manage Blog Posts
+            <div className="text-xl font-cinzel uppercase tracking-widest text-foreground">
+              <h3>Manage Blogs</h3>
               <motion.div
                 className="h-0.5 bg-gradient-to-r from-transparent via-gold-accent to-transparent mt-2"
                 initial={{ width: 0 }}
                 animate={cardInView ? { width: "100px" } : {}}
                 transition={{ duration: 1, delay: 0.5 }}
               />
-            </CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -700,12 +780,13 @@ export default function BlogsPage() {
                 <Label htmlFor="content" className="font-lora text-foreground">
                   Content
                 </Label>
-                <QuillEditor
+                <ReactQuill
                   value={newBlog.content}
                   onChange={(value: string) =>
                     setNewBlog((prev) => ({ ...prev, content: value }))
                   }
                   modules={quillModules}
+                  theme="snow"
                   className="bg-primary/10 border border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
@@ -1007,12 +1088,13 @@ export default function BlogsPage() {
                 >
                   Content
                 </Label>
-                <QuillEditor
+                <ReactQuill
                   value={editBlog.content || ""}
                   onChange={(value: string) =>
                     setEditBlog((prev) => ({ ...prev, content: value }))
                   }
                   modules={quillModules}
+                  theme="snow"
                   className="bg-primary/10 border border-gold-accent/20 text-foreground font-lora"
                 />
               </div>
