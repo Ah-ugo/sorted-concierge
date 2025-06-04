@@ -12,6 +12,7 @@ import {
   Shield,
   Clock,
 } from "lucide-react";
+import Link from "next/link";
 
 const PackageCard = ({
   package: pkg,
@@ -327,24 +328,27 @@ export default function ServicesPage() {
               transition={{ delay: 0.8, duration: 0.8 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative overflow-hidden px-8 py-4 bg-secondary rounded-xl text-white font-medium shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
-              >
-                <span className="relative z-10 flex items-center gap-2 text-sm uppercase tracking-wider">
-                  Get Started
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </span>
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 border border-gray-500/70 rounded-xl text-gray-200 font-medium hover:bg-gray-800/50 transition-all duration-300 text-sm uppercase tracking-wider backdrop-blur-sm"
-              >
-                Learn More
-              </motion.button>
+              <Link href={"/booking"}>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="group relative overflow-hidden px-8 py-4 bg-secondary rounded-xl text-white font-medium shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
+                >
+                  <span className="relative z-10 flex items-center gap-2 text-sm uppercase tracking-wider">
+                    Get Started
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </motion.button>
+              </Link>
+              <Link href={"/about"}>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 border border-gray-500/70 rounded-xl text-gray-200 font-medium hover:bg-gray-800/50 transition-all duration-300 text-sm uppercase tracking-wider backdrop-blur-sm"
+                >
+                  Learn More
+                </motion.button>
+              </Link>
             </motion.div>
           </motion.div>
         </div>
@@ -432,13 +436,15 @@ export default function ServicesPage() {
               Need a custom solution? We can tailor a membership to your unique
               lifestyle.
             </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 border border-secondary/50 rounded-xl text-secondary font-medium hover:bg-secondary/10 transition-all duration-300 text-sm uppercase tracking-wider"
-            >
-              Contact Us
-            </motion.button>
+            <Link href={"/contact"}>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 border border-secondary/50 rounded-xl text-secondary font-medium hover:bg-secondary/10 transition-all duration-300 text-sm uppercase tracking-wider"
+              >
+                Contact Us
+              </motion.button>
+            </Link>
           </motion.div>
         </div>
       </section>
@@ -554,16 +560,18 @@ export default function ServicesPage() {
               in every aspect of their lifestyle.
             </p>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="group relative overflow-hidden px-10 py-5 bg-secondary rounded-2xl text-white font-bold shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
-            >
-              <span className="relative z-10 flex items-center gap-3 text-lg uppercase tracking-wider">
-                Apply Now
-                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
-              </span>
-            </motion.button>
+            <Link href={"/booking"}>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="group relative overflow-hidden px-10 py-5 bg-secondary rounded-2xl text-white font-bold shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
+              >
+                <span className="relative z-10 flex items-center gap-3 text-lg uppercase tracking-wider">
+                  Apply Now
+                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
+                </span>
+              </motion.button>
+            </Link>
           </motion.div>
         </div>
       </section>
