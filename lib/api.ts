@@ -13,11 +13,25 @@ const api = axios.create({
 });
 
 // Interceptor to add auth token
+// api.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
+
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Check if we're in a browser environment before accessing localStorage
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
@@ -951,15 +965,57 @@ export const apiClient = {
     }
   },
 
+  // async getBlogBySlug(slug: string): Promise<Blog> {
+  //   try {
+  //     const response = await api.get(`/blogs/blog/${slug}`);
+  //     console.log(slug, "api slug 1");
+  //     console.log(response, "response");
+  //     return response.data;
+  //   } catch (error: any) {
+  //     console.log(slug, "api slug 2");
+  //     throw new APIError(
+  //       error.response?.status || 500,
+  //       error.response?.data?.detail || "Failed to fetch blog by slug"
+  //     );
+  //   }
+  // },
+
+  // Fixed getBlogBySlug function in api.ts
   async getBlogBySlug(slug: string): Promise<Blog> {
     try {
+      console.log("Fetching blog with slug:", slug);
       const response = await api.get(`/blogs/blog/${slug}`);
+      console.log("API Response:", response.data);
+
+      // Validate that we got the expected data structure
+      if (!response.data) {
+        throw new Error("No data received from API");
+      }
+
+      // Ensure required fields exist
+      const blogData = response.data;
+      if (!blogData.title || !blogData.slug) {
+        throw new Error("Invalid blog data structure");
+      }
+
       return response.data;
     } catch (error: any) {
-      throw new APIError(
-        error.response?.status || 500,
-        error.response?.data?.detail || "Failed to fetch blog by slug"
-      );
+      console.error("Error in getBlogBySlug:", error);
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+
+      // More specific error handling
+      if (error.response?.status === 404) {
+        throw new APIError(404, `Blog post with slug "${slug}" not found`);
+      } else if (error.response?.status) {
+        throw new APIError(
+          error.response.status,
+          error.response.data?.detail ||
+            `Failed to fetch blog by slug: ${error.message}`
+        );
+      } else {
+        throw new APIError(500, `Network error: ${error.message}`);
+      }
     }
   },
 

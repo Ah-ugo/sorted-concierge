@@ -1,32 +1,13 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import {
-  ArrowLeft,
-  Calendar,
-  User,
-  Clock,
-  Share2,
-  Facebook,
-  Twitter,
-  Linkedin,
-  Loader2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import BlogPostClient from "./BlogPostClient";
 import { apiClient } from "@/lib/api";
+import { Metadata } from "next";
 
-// Type Definitions
 interface AuthorApiResponse {
   name?: string;
   username?: string;
   avatar?: string;
   bio?: string;
+  [key: string]: string | undefined;
 }
 
 interface BlogPostApiResponse {
@@ -38,7 +19,8 @@ interface BlogPostApiResponse {
   coverImage?: string;
   author: AuthorApiResponse;
   tags: string[];
-  published_at?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface AuthorUI {
@@ -67,151 +49,95 @@ interface BlogPostUI {
   relatedPosts: RelatedPostUI[];
 }
 
-export default function BlogPostPage() {
-  const { toast } = useToast();
-  const [post, setPost] = useState<BlogPostUI | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [email, setEmail] = useState("");
-  const [isSubscribing, setIsSubscribing] = useState(false);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  try {
+    const { slug } = await params;
+    console.log(slug, "params===");
+    const apiPost = await apiClient.getBlogBySlug(slug);
 
-  // Get params from the router
-  const params = useParams<{ slug: string }>();
-  const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+    return {
+      title: `${apiPost.title} | Sorted Concierge Blog`,
+      description: apiPost.excerpt,
+      openGraph: {
+        type: "article",
+        url: `https://naijaconcierge.com/blog/${apiPost.slug}`,
+        title: apiPost.title,
+        description: apiPost.excerpt,
+        images: apiPost.coverImage || "/placeholder.svg?height=600&width=1200",
+        publishedTime: new Date(apiPost.createdAt).toISOString(),
+        authors:
+          apiPost.author.name || apiPost.author.username || "Unknown Author",
+        section: apiPost.tags[0] || "General",
+        tags: apiPost.tags,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: apiPost.title,
+        description: apiPost.excerpt,
+        images: apiPost.coverImage || "/placeholder.svg?height=600&width=1200",
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Blog Post | Sorted Concierge Blog",
+      description: "Read this interesting blog post",
+    };
+  }
+}
 
-  useEffect(() => {
-    const fetchBlogPost = async () => {
-      try {
-        const apiPost: BlogPostApiResponse = await apiClient.getBlogBySlug(
-          slug
-        );
-        const relatedApiPosts: BlogPostApiResponse[] = await apiClient.getBlogs(
-          {
-            tag: apiPost.tags[0] || undefined,
-            limit: 3,
-          }
-        );
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  try {
+    const { slug } = await params;
+    const apiPost: BlogPostApiResponse = await apiClient.getBlogBySlug(slug);
+    const relatedApiPosts = await apiClient.getBlogs({
+      tag: apiPost.tags[0] || undefined,
+      limit: 3,
+    });
 
-        const relatedPosts: RelatedPostUI[] = relatedApiPosts
-          .filter((p) => p.slug !== slug)
-          .slice(0, 3)
-          .map((p) => ({
-            title: p.title,
-            slug: p.slug,
-            image: p.coverImage || "/placeholder.svg?height=300&width=300",
-          }));
+    const wordCount = (apiPost.content || "").split(/\s+/).length;
+    const readTimeMinutes = Math.ceil(wordCount / 200);
+    const readTime = `${readTimeMinutes} min read`;
 
-        const wordCount = (apiPost.content || "").split(/\s+/).length;
-        const readTimeMinutes = Math.ceil(wordCount / 200);
-        const readTime = `${readTimeMinutes} min read`;
-
-        const blogPost: BlogPostUI = {
-          slug: apiPost.slug,
-          title: apiPost.title,
-          excerpt: apiPost.excerpt,
-          content: apiPost.content || "<p>No content available.</p>",
-          author: {
-            name:
-              apiPost.author.name ||
-              apiPost.author.username ||
-              "Unknown Author",
-            image:
-              apiPost.author.avatar || "/placeholder.svg?height=100&width=100",
-            bio: apiPost.author.bio || "Contributor to our blog.",
-          },
-          date:
-            apiPost.published_at ||
-            new Date().toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            }),
-          readTime,
-          image: apiPost.coverImage || "/placeholder.svg?height=600&width=1200",
-          category: apiPost.tags[0] || "General",
-          tags: apiPost.tags || [],
-          relatedPosts,
-        };
-        setPost(blogPost);
-      } catch (error: unknown) {
-        console.error("Error fetching blog post:", error);
-        toast({
-          title: "Error",
-          description:
-            error instanceof Error ? error.message : "Failed to load blog post",
-          variant: "destructive",
-          duration: 3000,
-        });
-        setPost(null);
-      } finally {
-        setIsLoading(false);
-      }
+    const blogPost: BlogPostUI = {
+      slug: apiPost.slug,
+      title: apiPost.title,
+      excerpt: apiPost.excerpt,
+      content: apiPost.content || "<p>No content available.</p>",
+      author: {
+        name:
+          apiPost.author.name || apiPost.author.username || "Unknown Author",
+        image: apiPost.author.avatar || "/placeholder.svg?height=100&width=100",
+        bio: apiPost.author.bio || "Contributor to our blog.",
+      },
+      date: new Date(apiPost.createdAt).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+      readTime,
+      image: apiPost.coverImage || "/placeholder.svg?height=600&width=1200",
+      category: apiPost.tags[0] || "General",
+      tags: apiPost.tags || [],
+      relatedPosts: relatedApiPosts
+        .filter((p) => p.slug !== slug)
+        .slice(0, 3)
+        .map((p) => ({
+          title: p.title,
+          slug: p.slug,
+          image: p.coverImage || "/placeholder.svg?height=300&width=300",
+        })),
     };
 
-    if (slug) {
-      fetchBlogPost();
-    }
-  }, [slug, toast]);
-
-  // Handle newsletter subscription
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-        duration: 3000,
-      });
-      return;
-    }
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-        duration: 3000,
-      });
-      return;
-    }
-
-    setIsSubscribing(true);
-    try {
-      await apiClient.subscribeToNewsletter(email);
-      toast({
-        title: "Success!",
-        description: "Thank you for subscribing to our newsletter!",
-        variant: "default",
-        className: "bg-green-500 text-white border-green-600",
-        duration: 3000,
-      });
-      setEmail("");
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to subscribe. Please try again.",
-        variant: "destructive",
-        duration: 3000,
-      });
-    } finally {
-      setIsSubscribing(false);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
-      </div>
-    );
-  }
-
-  if (!post) {
+    return <BlogPostClient post={blogPost} />;
+  } catch (error) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-md">
@@ -222,177 +148,15 @@ export default function BlogPostPage() {
             The blog post you're looking for doesn't exist or may have been
             moved.
           </p>
-          <Button
-            asChild
-            className="bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground"
+          <a
+            href="/blog"
+            className="inline-flex items-center justify-center bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground px-4 py-2 rounded-md"
           >
-            <Link href="/blog">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Blog
-            </Link>
-          </Button>
+            <span className="mr-2">←</span>
+            Back to Blog
+          </a>
         </div>
       </div>
     );
   }
-
-  return (
-    <div className="min-h-screen pb-12 md:pb-16">
-      <div className="relative h-[50vh] md:h-[60vh] bg-background">
-        <Image
-          src={post.image}
-          alt={post.title}
-          fill
-          className="object-cover opacity-70"
-          priority
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-        <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-12">
-          <div className="container mx-auto max-w-4xl">
-            <Link
-              href="/blog"
-              className="flex items-center text-overlay mb-4 hover:text-secondary transition-colors text-sm sm:text-base"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Blog
-            </Link>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-overlay mb-4">
-              {post.title}
-            </h1>
-            <div className="flex flex-wrap items-center text-overlay/80 gap-4 md:gap-6 text-xs sm:text-sm">
-              <div className="flex items-center">
-                <Calendar className="mr-2 h-4 w-4" />
-                <span>{post.date}</span>
-              </div>
-              <div className="flex items-center">
-                <User className="mr-2 h-4 w-4" />
-                <span>{post.author.name}</span>
-              </div>
-              <div className="flex items-center">
-                <Clock className="mr-2 h-4 w-4" />
-                <span>{post.readTime}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto max-w-4xl px-4 py-8 md:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2">
-            <div
-              className="prose prose-base sm:prose-lg dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
-
-            <div className="mt-8 md:mt-12 border-t border-border pt-6">
-              <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 flex items-center">
-                <Share2 className="mr-2 h-5 w-5" />
-                Share this article
-              </h3>
-              <div className="flex space-x-4">
-                <Button variant="outline" size="icon">
-                  <Facebook className="h-5 w-5" />
-                </Button>
-                <Button variant="outline" size="icon">
-                  <Twitter className="h-5 w-5" />
-                </Button>
-                <Button variant="outline" size="icon">
-                  <Linkedin className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="mt-8 md:mt-12 border-t border-border pt-6">
-              <div className="flex items-start space-x-4">
-                <Image
-                  src={post.author.image}
-                  alt={post.author.name}
-                  width={80}
-                  height={80}
-                  className="rounded-full"
-                  sizes="(max-width: 768px) 20vw, 80px"
-                />
-                <div>
-                  <h3 className="text-base sm:text-lg md:text-xl font-semibold">
-                    {post.author.name}
-                  </h3>
-                  <p className="text-sm sm:text-base text-muted-foreground mt-1">
-                    {post.author.bio}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-8">
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">
-                  Subscribe to our Newsletter
-                </h3>
-                <p className="text-sm sm:text-base text-muted-foreground mb-4">
-                  Get the latest updates and offers directly to your inbox.
-                </p>
-                <form onSubmit={handleSubscribe} className="space-y-4">
-                  <Input
-                    placeholder="Your email address"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="text-sm sm:text-base"
-                    disabled={isSubscribing}
-                    aria-label="Email address for newsletter subscription"
-                  />
-                  <Button
-                    type="submit"
-                    className="w-full bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground"
-                    disabled={isSubscribing}
-                  >
-                    {isSubscribing ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ) : null}
-                    Subscribe
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-
-            <div>
-              <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">
-                Related Posts
-              </h3>
-              <div className="space-y-4">
-                {post.relatedPosts.map((relatedPost) => (
-                  <Link
-                    href={`/blog/${relatedPost.slug}`}
-                    key={relatedPost.slug}
-                    className="block group"
-                  >
-                    <div className="flex space-x-4">
-                      <div className="relative w-20 h-20 flex-shrink-0">
-                        <Image
-                          src={relatedPost.image}
-                          alt={relatedPost.title}
-                          fill
-                          className="object-cover rounded-md"
-                          sizes="(max-width: 768px) 20vw, 80px"
-                        />
-                      </div>
-                      <div>
-                        <h4 className="text-sm sm:text-base font-medium group-hover:text-secondary transition-colors">
-                          {relatedPost.title}
-                        </h4>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 }
