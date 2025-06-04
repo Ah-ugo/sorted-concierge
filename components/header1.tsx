@@ -140,6 +140,17 @@ export default function Header() {
                 >
                   {category.hasDropdown ? (
                     <button
+                      style={{
+                        padding: 0,
+                        border: "none",
+                        background: "none",
+                        outline: "none",
+                        cursor: "pointer",
+                        font: "inherit",
+                        color: "inherit",
+                        textAlign: "inherit",
+                        appearance: "none",
+                      }}
                       onClick={handleServicesClick}
                       className={cn(
                         "flex items-center gap-1 text-sm font-lora uppercase tracking-widest transition-colors",
