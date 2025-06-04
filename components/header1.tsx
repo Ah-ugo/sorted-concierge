@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import {
   Instagram,
   Facebook,
   Twitter,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
@@ -23,8 +24,11 @@ import { useAuth } from "@/lib/auth-context";
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  const servicesRef = useRef<HTMLLIElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,17 +49,65 @@ export default function Header() {
     };
   }, [isMenuOpen]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        servicesRef.current &&
+        !servicesRef.current.contains(event.target as Node) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsServicesOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const mainCategories = [
     { name: "HOME", href: "/" },
     { name: "ABOUT", href: "/about" },
-    { name: "SERVICES", href: "/services" },
+    { name: "SERVICES", href: "/services/sorted-lifestyle", hasDropdown: true },
     { name: "BLOG", href: "/blog" },
     { name: "CONTACT", href: "/contact" },
+  ];
+
+  const membershipTiers = [
+    {
+      name: "Sorted Lifestyle",
+      href: "/services/sorted-lifestyle",
+      bgImage:
+        "https://i.pinimg.com/736x/5e/f5/57/5ef5571362147ccfae934f029254c08a.jpg",
+      description: "Essential lifestyle management",
+    },
+    {
+      name: "Sorted Experiences",
+      href: "/services/sorted-experiences",
+      bgImage:
+        "https://i.pinimg.com/736x/28/9f/c9/289fc91f89ff0cabee6b82543c58d79e.jpg",
+      description: "Comprehensive concierge services",
+    },
+    {
+      name: "Sorted Heritage",
+      href: "/services/sorted-heritage",
+      bgImage:
+        "https://i.pinimg.com/736x/79/ae/a8/79aea8b777afb3553832790eac339876.jpg",
+      description: "Luxury lifestyle curation",
+    },
   ];
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === href;
     return pathname.startsWith(href);
+  };
+
+  const handleServicesClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsServicesOpen(!isServicesOpen);
   };
 
   return (
@@ -81,27 +133,52 @@ export default function Header() {
           <nav className="hidden md:block">
             <ul className="flex space-x-6">
               {mainCategories.map((category) => (
-                <li key={category.name}>
-                  <Link
-                    href={category.href}
-                    className={cn(
-                      "text-sm font-lora uppercase tracking-widest",
-                      isActive(category.href)
-                        ? "text-secondary"
-                        : isScrolled
-                        ? "text-foreground/80 hover:text-secondary"
-                        : "text-header hover:text-secondary"
-                    )}
-                  >
-                    {category.name}
-                  </Link>
+                <li
+                  key={category.name}
+                  className="relative"
+                  ref={category.name === "SERVICES" ? servicesRef : undefined}
+                >
+                  {category.hasDropdown ? (
+                    <button
+                      onClick={handleServicesClick}
+                      className={cn(
+                        "flex items-center gap-1 text-sm font-lora uppercase tracking-widest transition-colors",
+                        isActive(category.href)
+                          ? "text-secondary"
+                          : isScrolled
+                          ? "text-foreground/80 hover:text-secondary"
+                          : "text-header hover:text-secondary"
+                      )}
+                    >
+                      {category.name}
+                      <ChevronDown
+                        className={cn(
+                          "h-3 w-3 transition-transform duration-200",
+                          isServicesOpen ? "rotate-180" : ""
+                        )}
+                      />
+                    </button>
+                  ) : (
+                    <Link
+                      href={category.href}
+                      className={cn(
+                        "text-sm font-lora uppercase tracking-widest",
+                        isActive(category.href)
+                          ? "text-secondary"
+                          : isScrolled
+                          ? "text-foreground/80 hover:text-secondary"
+                          : "text-header hover:text-secondary"
+                      )}
+                    >
+                      {category.name}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
           </nav>
 
           <div className="flex items-center space-x-2">
-            {/* <ModeToggle /> */}
             {user ? (
               <Link href="/profile">
                 <Button
@@ -140,8 +217,54 @@ export default function Header() {
             </Button>
           </div>
         </div>
+
+        {/* Services Dropdown - Desktop */}
+        {isServicesOpen && (
+          <div
+            ref={dropdownRef}
+            className="absolute left-0 right-0 top-full bg-background border-b border-border shadow-lg z-50 hidden md:block"
+          >
+            <div className="container mx-auto px-4 py-6">
+              <div className="mb-4">
+                <Link
+                  href="/services"
+                  className="text-lg font-lora text-foreground hover:text-secondary transition-colors"
+                  onClick={() => setIsServicesOpen(false)}
+                >
+                  View All Services
+                </Link>
+              </div>
+              <div className="grid grid-cols-3 gap-6">
+                {membershipTiers.map((tier) => (
+                  <Link
+                    key={tier.name}
+                    href={tier.href}
+                    className="group block"
+                    onClick={() => setIsServicesOpen(false)}
+                  >
+                    <div
+                      className="relative h-40 bg-cover bg-center rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                      style={{ backgroundImage: `url(${tier.bgImage})` }}
+                    >
+                      {/* <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" /> */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-4">
+                        <h3 className="text-xl font-cinzel font-bold tracking-wider mb-2">
+                          {tier.name}
+                        </h3>
+                        <p className="text-sm font-lora opacity-90">
+                          {tier.description}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
+      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 flex flex-col bg-background subtle-glow md:hidden">
           <div className="flex h-16 items-center justify-between border-b border-border px-4">
@@ -175,6 +298,26 @@ export default function Header() {
                     >
                       {category.name}
                     </Link>
+                    {category.name === "SERVICES" && (
+                      <ul className="ml-4 mt-3 space-y-3">
+                        {membershipTiers.map((tier) => (
+                          <li key={tier.name}>
+                            <Link
+                              href={tier.href}
+                              className="block p-3 rounded-lg border border-border hover:border-secondary transition-colors"
+                              onClick={() => setIsMenuOpen(false)}
+                            >
+                              <div className="text-base font-cinzel font-semibold text-foreground mb-1">
+                                {tier.name}
+                              </div>
+                              <div className="text-sm font-lora text-muted-foreground">
+                                {tier.description}
+                              </div>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </li>
                 ))}
               </ul>
