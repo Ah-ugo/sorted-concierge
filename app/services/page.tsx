@@ -311,9 +311,9 @@ export default function ServicesPage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="group relative overflow-hidden px-8 py-4 bg-secondary rounded-xl text-white font-medium shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
+                  className="group relative overflow-hidden px-8 py-4 bg-secondary rounded-xl text-black font-medium shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
                 >
-                  <span className="relative z-10 flex items-center gap-2 text-sm uppercase tracking-wider">
+                  <span className="relative z-10 flex items-center gap-2 text-sm uppercase tracking-wider text-black">
                     Get Started
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </span>
@@ -352,9 +352,8 @@ export default function ServicesPage() {
           </motion.div>
         </motion.div>
       </section>
-
       {/* Stats Section */}
-      <section className="py-20 bg-gray-800/20">
+      <section className="py-12 sm:py-16 bg-gray-800/20">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <StatCard
@@ -374,9 +373,8 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
-
       {/* Membership Tiers Section */}
-      <section className="py-24 bg-gray-800/50">
+      <section className="py-12 sm:py-16 bg-gray-800/50">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -435,9 +433,8 @@ export default function ServicesPage() {
           </motion.div>
         </div>
       </section>
-
       {/* FAQ Section */}
-      <section className="py-24 bg-gray-900">
+      <section className="py-12 sm:py-16 bg-gray-900">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -510,9 +507,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* CTA Section with Image Overlay */}
-      <section className="relative py-24 overflow-hidden">
-        {/* Background Image */}
+      <section className="relative py-12 sm:py-16 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div
             className="w-full h-full bg-cover bg-center bg-no-repeat"
@@ -522,7 +517,6 @@ export default function ServicesPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
         </div>
-
         <div className="container relative z-10 mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -546,9 +540,9 @@ export default function ServicesPage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="group relative overflow-hidden px-10 py-5 bg-secondary rounded-2xl text-white font-bold shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
+                className="group relative overflow-hidden px-10 py-5 bg-secondary rounded-2xl text-black font-bold shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
               >
-                <span className="relative z-10 flex items-center gap-3 text-lg uppercase tracking-wider">
+                <span className="relative z-10 flex items-center gap-3 text-lg uppercase tracking-wider text-black">
                   Apply Now
                   <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
                 </span>

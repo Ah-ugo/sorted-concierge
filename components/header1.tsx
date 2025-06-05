@@ -109,7 +109,7 @@ export default function Header() {
     { name: "ABOUT", href: "/about" },
     {
       name: "SERVICES",
-      href: "/membership/6829b41919d4815586fee5f8",
+      href: "/services/6829b41919d4815586fee5f8",
       hasDropdown: true,
     }, // Default to Sorted Lifestyle ID
     { name: "BLOG", href: "/blog" },

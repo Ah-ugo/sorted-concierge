@@ -40,7 +40,7 @@ interface Membership {
   }[];
   contact: { [key: string]: string };
   closing: string;
-  image: string;
+  image?: string;
 }
 
 const faqs = [
@@ -104,7 +104,6 @@ export default function MembershipDetails() {
           throw new Error("Membership not found");
         }
 
-        // Enrich API data with detailed content
         const membershipData: Membership = {
           id: pkg.id,
           name: pkg.name,
@@ -283,7 +282,7 @@ export default function MembershipDetails() {
               : pkg.name === "Sorted Experiences"
               ? "You dream it. We sort it. Together, we make it legendary."
               : "Your legacy, our commitment. Sorted for generations.",
-          image: pkg.image,
+          image: pkg.image || "/placeholder.svg?height=1200&width=800",
         };
 
         setMembership(membershipData);
@@ -380,7 +379,9 @@ export default function MembershipDetails() {
       <section
         className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 md:pt-0"
         style={{
-          backgroundImage: `url(${membership.image})`,
+          backgroundImage: `url(${
+            membership.image || "/placeholder.svg?height=1200&width=800"
+          })`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -443,10 +444,10 @@ export default function MembershipDetails() {
             {membership.description}
           </p>
 
-          {/* CTA Button with Advanced Hover Effects */}
+          {/* CTA Button with Filled Style */}
           <Link href="/booking">
-            <Button className="group relative px-8 py-4 sm:px-12 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-widest text-gray-900 bg-secondary hover:bg-secondary/80 transition-all duration-300 rounded-2xl overflow-hidden shadow-2xl hover:shadow-secondary/25 transform hover:scale-105">
-              <span className="relative z-10 flex items-center gap-2 sm:gap-3">
+            <Button className="group relative px-8 py-4 sm:px-12 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-widest bg-secondary text-black hover:bg-secondary/80 transition-all duration-300 rounded-2xl overflow-hidden shadow-2xl hover:shadow-secondary/25 transform hover:scale-105">
+              <span className="relative z-10 flex items-center gap-2 text-black sm:gap-3">
                 Join This Membership
                 <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-2 duration-300" />
               </span>
@@ -475,9 +476,9 @@ export default function MembershipDetails() {
       </section>
 
       {/* Overview Section with Parallax Cards */}
-      <section className="py-16 sm:py-16 relative">
+      <section className="py-8 sm:py-12 relative">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10 sm:mb-20">
+          <div className="text-center mb-10 sm:mb-16">
             <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
               <Diamond className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
               <span className="text-xs sm:text-sm text-secondary font-medium">
@@ -495,9 +496,9 @@ export default function MembershipDetails() {
       </section>
 
       {/* Services Section with Interactive Cards */}
-      <section className="py-16 sm:py-16 relative">
+      <section className="py-8 sm:py-12 relative">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10 sm:mb-20">
+          <div className="text-center mb-10 sm:mb-16">
             <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
               <Star className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
               <span className="text-xs sm:text-sm text-secondary font-medium">
@@ -519,9 +520,9 @@ export default function MembershipDetails() {
                   key={index}
                   className={`group relative rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-700 ${
                     isExpanded
-                      ? "bg-gradient-to-br from-gray-800 to-gray-900"
+                      ? "bg-gradient-to-br from-gray-800 to-gray-900 border-secondary"
                       : "bg-gray-800/30"
-                  } border border-gray-700/50 hover:border-secondary/30 backdrop-blur-sm`}
+                  } border border-gray-700/50 hover:border-secondary/50 backdrop-blur-sm`}
                 >
                   {/* Animated Background */}
                   <div className="absolute inset-0 bg-gradient-to-r from-secondary/5 via-secondary/10 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -609,7 +610,7 @@ export default function MembershipDetails() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-16 sm:py-16 relative">
+      <section className="py-8 sm:py-12 relative">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="max-w-5xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
@@ -673,9 +674,12 @@ export default function MembershipDetails() {
               </div>
             </div>
 
-            {/* CTA Button */}
-            <Link href="/booking">
-              <Button className="group relative px-8 py-4 sm:px-12 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-widest text-gray-900 bg-secondary hover:bg-secondary/80 transition-all duration-300 rounded-2xl overflow-hidden shadow-2xl hover:shadow-secondary/25 transform hover:scale-105">
+            {/* CTA Button with Outline Style */}
+            <Link href="/apply">
+              <Button
+                variant="outline"
+                className="group relative px-8 py-4 sm:px-8 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-wide border-secondary text-secondary hover:bg-secondary/10 hover:border-secondary/80 transition-all duration-300 rounded-lg overflow-hidden shadow-lg hover:shadow-secondary/20 transform hover:scale-105"
+              >
                 <span className="relative z-10 flex items-center gap-2 sm:gap-3">
                   Apply Now
                   <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-2 duration-300" />
@@ -688,9 +692,9 @@ export default function MembershipDetails() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 sm:py-16 relative bg-gray-800/20">
+      <section className="py-8 sm:py-12 relative bg-gray-800/20">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10 sm:mb-20">
+          <div className="text-center mb-10 sm:mb-16">
             <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
               <span className="text-xs sm:text-sm text-secondary font-medium">
@@ -710,9 +714,9 @@ export default function MembershipDetails() {
               return (
                 <div
                   key={index}
-                  className={`group rounded-xl sm:rounded-3xl overflow-hidden transition-all duration-500 ${
+                  className={`group relative rounded-xl sm:rounded-3xl overflow-hidden transition-all duration-500 ${
                     isOpen
-                      ? "bg-gradient-to-br from-gray-800 to-gray-900"
+                      ? "bg-gradient-to-br from-gray-800 to-gray-900 border-secondary/50"
                       : "bg-gray-800/30"
                   } border border-gray-700/50 hover:border-secondary/30 backdrop-blur-sm`}
                 >

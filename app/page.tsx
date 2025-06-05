@@ -216,7 +216,7 @@ export default function Home() {
       </section>
 
       {/* The Sorted Promise Section */}
-      <section className="bg-black py-24 md:py-32" ref={promiseRef}>
+      <section className="bg-black py-12 md:py-16" ref={promiseRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -287,7 +287,7 @@ export default function Home() {
       </section>
 
       {/* Who We Serve Section */}
-      <section className="bg-black py-20" ref={whoWeServeRef}>
+      <section className="bg-black py-12" ref={whoWeServeRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -345,7 +345,7 @@ export default function Home() {
       </section>
 
       {/* What We Do Section */}
-      <section className="bg-black py-20" ref={servicesRef}>
+      <section className="bg-black py-12" ref={servicesRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -679,7 +679,7 @@ export default function Home() {
       </section>
 
       {/* The Sorted Circle Section */}
-      <section className="bg-black py-20" ref={circleRef}>
+      <section className="bg-black py-12" ref={circleRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -715,7 +715,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="bg-black py-20" ref={testimonialsRef}>
+      <section className="bg-black py-12" ref={testimonialsRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -795,7 +795,7 @@ export default function Home() {
       </section>
 
       {/* Gallery Section */}
-      <section className="bg-black py-20" ref={galleryRef}>
+      <section className="bg-black py-12" ref={galleryRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -921,7 +921,7 @@ export default function Home() {
       </section>
 
       {/* Begin Your Journey Section */}
-      <section className="relative aspect-[21/9] w-full sm:py-0 py-52">
+      <section className="relative aspect-[21/9] w-full sm:py-0 py-32">
         <Image
           loading="lazy"
           src="/image17.png"

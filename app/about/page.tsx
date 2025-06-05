@@ -65,10 +65,22 @@ export default function AboutPage() {
     id: 1,
     name: "Emeka Idam",
     role: "Founder of Sorted Concierge",
-    bio: "Some people build businesses. He built a solution. After years of working with high-profile individuals and executives, and as a global traveler himself, Emeka saw the same pattern repeat: people had access to luxury, but not the ease that should come with it. Reservations were made, drivers showed up, and tickets were booked… but things still fell through the cracks. People still had to follow up, repeat themselves, and manage the very lifestyle they were paying others to manage. So he built something better. Sorted Concierge was never meant to be just another concierge service. He designed it to be a go-to fixer, lifestyle partner, and trusted extension of his clients’ lives. Today, Sorted supports a private roster of high-net-worth individuals, diaspora clients, family offices, and global creatives across key cities worldwide. Under his leadership, Sorted has grown into a brand known for its discretion, taste, and ability to make even the most complex experiences feel effortless.",
+    bio: [
+      "Some people build businesses. He built a solution.",
+      "After years of working with high-profile individuals and executives, and as a global traveler himself, Emeka saw a recurring issue.",
+      "Clients had access to luxury, but not the ease that should come with it.",
+      "Reservations were made, drivers showed up, and tickets were booked, yet things still fell through the cracks.",
+      "Clients had to follow up, repeat themselves, and manage the very lifestyle they paid others to handle.",
+      "So, he created Sorted Concierge to be a go-to fixer and lifestyle partner.",
+      "Today, Sorted supports a private roster of high-net-worth individuals, diaspora clients, family offices, and global creatives across key cities worldwide.",
+      "Under his leadership, Sorted is known for its discretion, taste, and ability to make complex experiences effortless.",
+    ],
     image: "/placeholder.svg?height=600&width=600&text=Emeka",
-    quote:
-      "“Luxury, to me, isn’t the thing you post, it’s the peace of mind you feel when everything’s just… handled.” — Emeka Idam",
+    quote: [
+      "“Luxury isn’t the thing you post.",
+      "It’s the peace of mind you feel when everything is just… handled.”",
+      "— Emeka Idam",
+    ],
   };
 
   const values = [
@@ -241,9 +253,9 @@ export default function AboutPage() {
       </section>
 
       {/* Our Origins Section */}
-      <section className="bg-black py-16 md:py-16" ref={originsRef}>
+      <section className="bg-black py-12 md:py-16" ref={originsRef}>
         <div className="container mx-auto px-6">
-          <div className="grid gap-12 md:gap-24 md:grid-cols-2">
+          <div className="grid gap-8 md:gap-12 md:grid-cols-2 items-center">
             <motion.div
               initial={{ opacity: 0, x: -40 }}
               animate={
@@ -252,38 +264,33 @@ export default function AboutPage() {
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
               className="flex flex-col justify-center order-2 md:order-1"
             >
-              <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest gold-accent">
+              <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest gold-accent">
                 Our Origins
               </h2>
-              <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
-                Sorted started with one goal: to make life easier for people who
-                live fast, travel often, and can’t afford chaos. Our founder, a
-                corporate strategist and lifestyle consultant, repeatedly saw
-                the same problem: clients had access to luxury but still had to
-                chase details, fix mistakes, and explain things twice.
-              </p>
-              <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
-                Sorted was born to change that. What began as a private network
-                serving a few Lagos-based executives and diaspora clients has
-                quickly grown into a trusted global service for HNWIs, founders,
-                creatives, and luxury brands across Lagos, London, Dubai, Paris,
-                and beyond.
-              </p>
-              <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
-                We built our name by handling one challenging request at a time,
-                turning complicated situations into smooth experiences. What
-                others called impossible, we made look easy.
-              </p>
-              <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
-                We work with a select group of private clients, family offices,
-                and luxury brands who know that excellent service isn’t about
-                how many clients you have, but how well you care for each one.
-              </p>
-              <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
-                We’ve stayed small on purpose. When you spread yourself too
-                thin, quality suffers. We’d rather serve fewer people
-                exceptionally well than many people just okay.
-              </p>
+              <div className="space-y-4">
+                <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+                  Sorted started with one goal: to make life easier for people
+                  who live fast, travel often, and can’t afford chaos.
+                </p>
+                <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+                  Our founder, a corporate strategist and lifestyle consultant,
+                  saw clients facing the same issue: access to luxury without
+                  ease.
+                </p>
+                <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+                  What began in Lagos serving executives and diaspora clients
+                  has grown into a trusted global service across cities like
+                  London, Dubai, and Paris.
+                </p>
+                <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+                  We built our name by turning complicated situations into
+                  seamless experiences.
+                </p>
+                <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+                  We stay small to serve a select group of clients exceptionally
+                  well, prioritizing quality over quantity.
+                </p>
+              </div>
             </motion.div>
 
             <motion.div
@@ -310,7 +317,7 @@ export default function AboutPage() {
       </section>
 
       {/* Founder’s Profile Section */}
-      <section className="bg-black py-16 md:py-16" ref={founderRef}>
+      <section className="bg-black py-12 md:py-16" ref={founderRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -358,19 +365,33 @@ export default function AboutPage() {
               <p className="mb-4 text-xs sm:text-sm font-lora uppercase tracking-wider gold-accent">
                 {founder.role}
               </p>
-              <p className="mb-4 text-sm sm:text-base font-lora text-gray-300">
-                {founder.bio}
-              </p>
-              <p className="text-sm sm:text-base font-lora italic text-gray-300">
-                {founder.quote}
-              </p>
+              <div className="space-y-3 mb-4">
+                {founder.bio.map((sentence, index) => (
+                  <p
+                    key={index}
+                    className="text-sm sm:text-base font-lora text-gray-300"
+                  >
+                    {sentence}
+                  </p>
+                ))}
+              </div>
+              <div className="space-y-2">
+                {founder.quote.map((line, index) => (
+                  <p
+                    key={index}
+                    className="text-sm sm:text-base font-lora italic text-gray-300"
+                  >
+                    {line}
+                  </p>
+                ))}
+              </div>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Who We Serve Section */}
-      <section className="bg-black py-16 md:py-32" ref={clientsRef}>
+      <section className="bg-black py-12 md:py-16" ref={clientsRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -405,7 +426,7 @@ export default function AboutPage() {
                   delay: index * 0.1,
                   ease: "easeOut",
                 }}
-                className="group bg-black/50 p-6 rounded-lg border border-gray-800 hover:border-gold-accent elegant-shadow hover:shadow-2xl transition-all duration-300"
+                className="group bg-black/50 p-6 rounded-lg border border-gray-800 hover:border-secondary elegant-shadow hover:shadow-2xl transition-all duration-300"
               >
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-gold-accent/10 group-hover:bg-gold-accent/20 transition-colors duration-300">
                   {client.icon}
@@ -423,7 +444,7 @@ export default function AboutPage() {
       </section>
 
       {/* How We Work Section */}
-      <section className="bg-black py-16 md:py-32" ref={howWeWorkRef}>
+      <section className="bg-black py-12 md:py-16" ref={howWeWorkRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -481,7 +502,7 @@ export default function AboutPage() {
               </p>
               <Button
                 asChild
-                className="gold-gradient px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+                className="px-8 py-4 border-secondary border text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:opacity-90 elegant-shadow"
               >
                 <Link href="/contact">Get Started</Link>
               </Button>
@@ -491,7 +512,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Values Section */}
-      <section className="bg-black py-16 md:py-32" ref={valuesRef}>
+      <section className="bg-black py-12 md:py-16" ref={valuesRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -519,7 +540,7 @@ export default function AboutPage() {
                   delay: index * 0.1,
                   ease: "easeOut",
                 }}
-                className="bg-black/50 p-6 md:p-8 shadow-sm rounded-lg border border-gray-800 hover:border-gold-accent elegant-shadow"
+                className="bg-black/50 p-6 md:p-8 shadow-sm rounded-lg border border-gray-800 hover:border-secondary elegant-shadow"
               >
                 <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-gold-accent/10">
                   {value.icon}
@@ -537,7 +558,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Policies & Approach Section */}
-      <section className="bg-black py-16 md:py-32" ref={policiesRef}>
+      <section className="bg-black py-12 md:py-16" ref={policiesRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -574,7 +595,11 @@ export default function AboutPage() {
               >
                 <button
                   onClick={() => toggleAccordion(index)}
-                  className="w-full flex justify-between items-center bg-black/50 p-4 rounded-lg border border-gray-800 hover:border-gold-accent elegant-shadow focus:outline-none focus:ring-2 focus:ring-gold-accent"
+                  className={`w-full flex justify-between items-center bg-black/50 p-4 rounded-lg border ${
+                    openAccordion === index
+                      ? "border-secondary"
+                      : "border-gray-800"
+                  } hover:border-secondary shadow-none focus:outline-none focus:ring-2 focus:border-secondary `}
                   aria-expanded={openAccordion === index}
                   aria-controls={`policy-${index}`}
                 >
@@ -582,9 +607,9 @@ export default function AboutPage() {
                     {policy.title}
                   </h3>
                   {openAccordion === index ? (
-                    <ChevronUp className="h-5 w-5 gold-accent" />
+                    <ChevronUp className={`h-5 w-5 text-white`} />
                   ) : (
-                    <ChevronDown className="h-5 w-5 gold-accent" />
+                    <ChevronDown className="h-5 w-5 text-white" />
                   )}
                 </button>
                 <motion.div
@@ -598,7 +623,7 @@ export default function AboutPage() {
                   transition={{ duration: 0.3, ease: "easeOut" }}
                   className="overflow-hidden"
                 >
-                  <div className="p-4 bg-gray-900 rounded-b-lg">
+                  <div className="p-4 bg-secondary/20 rounded-b-lg">
                     {policy.content}
                   </div>
                 </motion.div>
@@ -609,7 +634,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-16 md:py-32 bg-black" ref={ctaRef}>
+      <section className="relative py-12 md:py-16 bg-black" ref={ctaRef}>
         <div className="container relative z-10 mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -629,13 +654,13 @@ export default function AboutPage() {
               <Button
                 asChild
                 variant="outline"
-                className="border-gold-accent px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest bg-black text-white hover:bg-gold-accent hover:text-black elegant-shadow"
+                className="border-gold-accent px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest bg-black text-white hover:bg-secondary hover:text-black elegant-shadow"
               >
                 <Link href="/booking">Apply for Membership</Link>
               </Button>
               <Button
                 asChild
-                className="gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+                className="bg-secondary border px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black border-secondary hover:bg-none hover:border-secondary hover:text-white elegant-shadow"
               >
                 <Link href="/contact">Contact Us</Link>
               </Button>
