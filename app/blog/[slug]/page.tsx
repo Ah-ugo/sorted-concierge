@@ -59,32 +59,128 @@ export async function generateMetadata({
     console.log(slug, "params===");
     const apiPost = await apiClient.getBlogBySlug(slug);
 
+    // Ensure absolute URLs for images
+    const baseUrl = "https://naijaconcierge.com";
+    const imageUrl = apiPost.coverImage
+      ? apiPost.coverImage.startsWith("http")
+        ? apiPost.coverImage
+        : `${baseUrl}${apiPost.coverImage}`
+      : `${baseUrl}/placeholder.svg?height=630&width=1200`;
+
+    const authorName =
+      apiPost.author.name || apiPost.author.username || "Sorted Concierge";
+    const postUrl = `${baseUrl}/blog/${apiPost.slug}`;
+
     return {
       title: `${apiPost.title} | Sorted Concierge Blog`,
       description: apiPost.excerpt,
+      keywords: apiPost.tags.join(", "),
+      authors: [{ name: authorName }],
+      creator: authorName,
+      publisher: "Sorted Concierge",
+      robots: "index, follow",
+
+      // Open Graph tags (Facebook, WhatsApp, LinkedIn)
       openGraph: {
         type: "article",
-        url: `https://naijaconcierge.com/blog/${apiPost.slug}`,
+        url: postUrl,
         title: apiPost.title,
         description: apiPost.excerpt,
-        images: apiPost.coverImage || "/placeholder.svg?height=600&width=1200",
+        siteName: "Sorted Concierge Blog",
+        locale: "en_US",
+        images: [
+          {
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: apiPost.title,
+            type: "image/jpeg",
+          },
+          // WhatsApp prefers smaller images sometimes
+          {
+            url: imageUrl.replace("1200", "800").replace("630", "420"),
+            width: 800,
+            height: 420,
+            alt: apiPost.title,
+            type: "image/jpeg",
+          },
+        ],
         publishedTime: new Date(apiPost.createdAt).toISOString(),
-        authors:
-          apiPost.author.name || apiPost.author.username || "Unknown Author",
+        modifiedTime: new Date(apiPost.updatedAt).toISOString(),
+        authors: [authorName],
         section: apiPost.tags[0] || "General",
         tags: apiPost.tags,
       },
+
+      // Twitter/X Card tags
       twitter: {
         card: "summary_large_image",
+        site: "@sortedconcierge", // Add your Twitter handle
+        creator: "@sortedconcierge", // Add author's Twitter handle if available
         title: apiPost.title,
         description: apiPost.excerpt,
-        images: apiPost.coverImage || "/placeholder.svg?height=600&width=1200",
+        images: [imageUrl],
+      },
+
+      // Additional meta tags for better social sharing
+      other: {
+        // WhatsApp specific
+        "og:image:width": "1200",
+        "og:image:height": "630",
+        "og:image:type": "image/jpeg",
+
+        // LinkedIn specific
+        "article:author": authorName,
+        "article:published_time": new Date(apiPost.createdAt).toISOString(),
+        "article:modified_time": new Date(apiPost.updatedAt).toISOString(),
+        "article:section": apiPost.tags[0] || "General",
+        "article:tag": apiPost.tags.join(", "),
+
+        // Additional meta tags
+        "theme-color": "#000000", // Your brand color
+        "msapplication-TileColor": "#000000",
+
+        // Telegram specific
+        "telegram:channel": "@sortedconcierge", // If you have a Telegram channel
+      },
+
+      // Verification tags (add if you have them)
+      verification: {
+        // google: "your-google-verification-code",
+        // yandex: "your-yandex-verification-code",
+        // yahoo: "your-yahoo-verification-code",
       },
     };
   } catch (error) {
+    console.error("Error generating metadata:", error);
+    const baseUrl = "https://naijaconcierge.com";
+    const defaultImage = `${baseUrl}/placeholder.svg?height=630&width=1200`;
+
     return {
       title: "Blog Post | Sorted Concierge Blog",
-      description: "Read this interesting blog post",
+      description: "Read this interesting blog post from Sorted Concierge",
+      openGraph: {
+        type: "article",
+        url: `${baseUrl}/blog`,
+        title: "Blog Post | Sorted Concierge Blog",
+        description: "Read this interesting blog post from Sorted Concierge",
+        siteName: "Sorted Concierge Blog",
+        images: [
+          {
+            url: defaultImage,
+            width: 1200,
+            height: 630,
+            alt: "Sorted Concierge Blog",
+            type: "image/jpeg",
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "Blog Post | Sorted Concierge Blog",
+        description: "Read this interesting blog post from Sorted Concierge",
+        images: [defaultImage],
+      },
     };
   }
 }
