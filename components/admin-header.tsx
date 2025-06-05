@@ -24,7 +24,7 @@ export default function AdminHeader() {
     // Clear admin auth token
     localStorage.removeItem("adminToken");
     // Redirect to admin login
-    router.push("/admin/auth");
+    router.push("/auth/login");
   };
 
   return (

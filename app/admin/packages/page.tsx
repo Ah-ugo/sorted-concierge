@@ -92,8 +92,10 @@ export default function PackagesPage() {
     features: [],
     type: "",
     isPopular: false,
+    image: "", // Added image field
   });
   const [featuresInput, setFeaturesInput] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null); // State for image file
 
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -101,6 +103,7 @@ export default function PackagesPage() {
 
   const [editPackage, setEditPackage] = useState<PackageUpdate>({});
   const [editFeaturesInput, setEditFeaturesInput] = useState("");
+  const [editImageFile, setEditImageFile] = useState<File | null>(null); // State for edit image file
 
   const packageTypes = ["Basic", "Premium", "Enterprise", "Custom"];
 
@@ -158,6 +161,20 @@ export default function PackagesPage() {
     setTypeFilter("all");
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+    }
+  };
+
+  const handleEditImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setEditImageFile(file);
+    }
+  };
+
   const handleCreatePackage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (
@@ -192,9 +209,16 @@ export default function PackagesPage() {
 
     setIsActionLoading(true);
     try {
+      let imageUrl = newPackage.image;
+      if (imageFile) {
+        const uploadResponse = await apiClient.uploadPackageImage(imageFile);
+        imageUrl = uploadResponse.imageUrl;
+      }
+
       const createdPackage = await apiClient.createPackage({
         ...newPackage,
         features,
+        image: imageUrl,
       });
       setPackages((prev) => [createdPackage, ...prev]);
       setFilteredPackages((prev) => [createdPackage, ...prev]);
@@ -207,8 +231,10 @@ export default function PackagesPage() {
         features: [],
         type: "",
         isPopular: false,
+        image: "",
       });
       setFeaturesInput("");
+      setImageFile(null);
       toast({
         title: "Success",
         description: "Package created successfully",
@@ -268,8 +294,10 @@ export default function PackagesPage() {
       duration: pkg.duration,
       type: pkg.type,
       isPopular: pkg.isPopular,
+      image: pkg.image,
     });
     setEditFeaturesInput(pkg.features.join("\n"));
+    setEditImageFile(null);
     setIsEditModalOpen(true);
   };
 
@@ -309,9 +337,18 @@ export default function PackagesPage() {
 
     setIsActionLoading(true);
     try {
+      let imageUrl = editPackage.image;
+      if (editImageFile) {
+        const uploadResponse = await apiClient.uploadPackageImage(
+          editImageFile
+        );
+        imageUrl = uploadResponse.imageUrl;
+      }
+
       const updatedPackage = await apiClient.updatePackage(selectedPackage.id, {
         ...editPackage,
         features,
+        image: imageUrl,
       });
       setPackages((prev) =>
         prev.map((p) => (p.id === selectedPackage.id ? updatedPackage : p))
@@ -322,6 +359,7 @@ export default function PackagesPage() {
       setIsEditModalOpen(false);
       setSelectedPackage(null);
       setEditFeaturesInput("");
+      setEditImageFile(null);
       toast({
         title: "Success",
         description: "Package updated successfully",
@@ -698,7 +736,16 @@ export default function PackagesPage() {
                     </p>
                   </div>
                 </div>
-
+                {selectedPackage.image && (
+                  <div>
+                    <h3 className="font-lora text-foreground mb-2">Image</h3>
+                    <img
+                      src={selectedPackage.image}
+                      alt={selectedPackage.name}
+                      className="w-full h-48 object-cover rounded-md border border-gold-accent/20"
+                    />
+                  </div>
+                )}
                 <div>
                   <h3 className="font-lora text-foreground mb-2">
                     Description
@@ -707,7 +754,6 @@ export default function PackagesPage() {
                     {selectedPackage.description}
                   </p>
                 </div>
-
                 <div>
                   <h3 className="font-lora text-foreground mb-2">Features</h3>
                   <ul className="space-y-1">
@@ -722,7 +768,6 @@ export default function PackagesPage() {
                     ))}
                   </ul>
                 </div>
-
                 <div className="border-t border-gold-accent/20 pt-4">
                   <h3 className="font-lora text-foreground mb-2">
                     Package Information
@@ -877,6 +922,24 @@ export default function PackagesPage() {
                     disabled={isActionLoading}
                   />
                 </div>
+              </div>
+              <div>
+                <Label htmlFor="image" className="font-lora text-foreground">
+                  Package Image
+                </Label>
+                <Input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  disabled={isActionLoading}
+                />
+                {imageFile && (
+                  <p className="text-sm font-lora text-muted-foreground mt-1">
+                    Selected: {imageFile.name}
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="features" className="font-lora text-foreground">
@@ -1070,6 +1133,32 @@ export default function PackagesPage() {
                     disabled={isActionLoading}
                   />
                 </div>
+              </div>
+              <div>
+                <Label
+                  htmlFor="editImage"
+                  className="font-lora text-foreground"
+                >
+                  Package Image
+                </Label>
+                <Input
+                  id="editImage"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleEditImageChange}
+                  className="bg-primary/10 border-gold-accent/20 text-foreground font-lora"
+                  disabled={isActionLoading}
+                />
+                {editPackage.image && !editImageFile && (
+                  <p className="text-sm font-lora text-muted-foreground mt-1">
+                    Current: {editPackage.image}
+                  </p>
+                )}
+                {editImageFile && (
+                  <p className="text-sm font-lora text-muted-foreground mt-1">
+                    Selected: {editImageFile.name}
+                  </p>
+                )}
               </div>
               <div>
                 <Label

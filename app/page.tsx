@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,9 +19,17 @@ import {
   Shield,
 } from "lucide-react";
 
+interface Package {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+}
+
 export default function Home() {
   const { toast } = useToast();
   const [services, setServices] = useState<Service[]>([]);
+  const [packages, setPackages] = useState<Package[]>([]);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPreloaderVisible, setIsPreloaderVisible] = useState(true);
@@ -41,9 +50,20 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const servicesData = await apiClient.getServices({ limit: 3 });
+        const [servicesData, packagesData, galleryData] = await Promise.all([
+          apiClient.getServices({ limit: 3 }),
+          apiClient.getPackages(),
+          apiClient.getGallery({ limit: 10 }),
+        ]);
         setServices(servicesData);
-        const galleryData = await apiClient.getGallery({ limit: 10 });
+        setPackages(
+          packagesData.map((pkg: any) => ({
+            id: pkg.id,
+            name: pkg.name,
+            description: pkg.description,
+            image: pkg.image || "/images/default-membership.jpg",
+          }))
+        );
         setGalleryImages(galleryData);
       } catch (error: any) {
         console.error("Error fetching data:", error);
@@ -100,11 +120,20 @@ export default function Home() {
       title: "Vetting, Scheduling, & Managing Luxury Vendors",
       icon: <Briefcase className="w-8 h-8 gold-accent" />,
     },
-    {
-      title: "Crisis Response & High-Stakes Logistics",
-      icon: <Shield className="w-8 h-8 gold-accent" />,
-    },
   ];
+
+  const getPackageIcon = (name: string) => {
+    switch (name.toLowerCase()) {
+      case "sorted lifestyle":
+        return <Star className="w-5 h-5 text-secondary mr-2" />;
+      case "sorted experiences":
+        return <Users className="w-5 h-5 text-secondary mr-2" />;
+      case "sorted heritage":
+        return <Shield className="w-5 h-5 text-secondary mr-2" />;
+      default:
+        return <Star className="w-5 h-5 text-secondary mr-2" />;
+    }
+  };
 
   return (
     <>
@@ -213,8 +242,7 @@ export default function Home() {
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg elegant-shadow">
                 <Image
                   loading="lazy"
-                  // src="/luxury-jet-interior.jpg"
-                  src={"/image16.png"}
+                  src="/image16.png"
                   alt="Seamless travel experience"
                   width={600}
                   height={450}
@@ -248,7 +276,8 @@ export default function Home() {
               </p>
               <Button
                 asChild
-                className="gold-gradient px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow w-fit"
+                variant="outline"
+                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow w-fit"
               >
                 <Link href="/about">Discover Our Approach</Link>
               </Button>
@@ -289,29 +318,27 @@ export default function Home() {
               handled.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button
-                asChild
-                variant="outline"
-                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
-              >
-                <Link href="/services/sorted-lifestyle">Sorted Lifestyle</Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
-              >
-                <Link href="/services/sorted-experiences">
-                  Sorted Experiences
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
-              >
-                <Link href="/services/sorted-heritage">Sorted Heritage</Link>
-              </Button>
+              {isLoading ? (
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-secondary border-t-transparent"></div>
+              ) : packages.length > 0 ? (
+                packages.map((pkg) => (
+                  <Button
+                    key={pkg.id}
+                    asChild
+                    variant="outline"
+                    className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow flex items-center"
+                  >
+                    <Link href={`/services/${pkg.id}`}>
+                      {getPackageIcon(pkg.name)}
+                      {pkg.name}
+                    </Link>
+                  </Button>
+                ))
+              ) : (
+                <p className="text-sm font-lora text-gray-300">
+                  No memberships available.
+                </p>
+              )}
             </div>
           </motion.div>
         </div>
@@ -642,7 +669,8 @@ export default function Home() {
           >
             <Button
               asChild
-              className="gold-gradient px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+              variant="outline"
+              className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
             >
               <Link href="/services">See Our Signature Services</Link>
             </Button>
@@ -677,7 +705,8 @@ export default function Home() {
             </p>
             <Button
               asChild
-              className="gold-gradient px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+              variant="outline"
+              className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
             >
               <Link href="/services">Apply for Membership</Link>
             </Button>
@@ -758,7 +787,7 @@ export default function Home() {
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
               24/7
             </h3>
-            <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
+            <p className="text-xs sm:text-sm font-lora uppercase tracking-widest text-gray-300">
               Concierge Support
             </p>
           </div>

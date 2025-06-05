@@ -142,7 +142,7 @@ export default function AdminSidebar() {
           className="w-full justify-start gap-2"
           onClick={() => {
             localStorage.removeItem("adminToken");
-            window.location.href = "/admin/auth";
+            window.location.href = "/auth/login";
           }}
         >
           <LogOut className="h-4 w-4" />

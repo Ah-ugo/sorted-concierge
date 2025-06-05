@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   CheckCircle,
@@ -13,19 +13,22 @@ import {
   Clock,
 } from "lucide-react";
 import Link from "next/link";
+import { apiClient } from "@/lib/api";
+
+interface Package {
+  id: string;
+  title: string;
+  description: string;
+  features: string[];
+  popular: boolean;
+  type: string;
+}
 
 const PackageCard = ({
   package: pkg,
   index,
 }: {
-  package: {
-    id: string;
-    title: string;
-    description: string;
-    features: string[];
-    popular: boolean;
-    type: string;
-  };
+  package: Package;
   index: number;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -120,13 +123,13 @@ const PackageCard = ({
               : "bg-gray-700/50 text-gray-200 hover:bg-gray-600/50 border border-gray-600/50"
           }`}
         >
-          <a
+          <Link
             href={`/services/${pkg.id}`}
             className="relative z-10 flex items-center justify-center gap-2 text-sm font-medium uppercase tracking-wider"
           >
             Join Now
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </a>
+          </Link>
         </motion.button>
       </div>
     </motion.div>
@@ -150,58 +153,38 @@ const StatCard = ({ icon: Icon, number, label, delay }: any) => (
 );
 
 export default function ServicesPage() {
-  const [openFaq, setOpenFaq] = useState(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
   const heroY = useTransform(scrollY, [0, 400], [0, -100]);
 
-  const packages = [
-    {
-      id: "sorted-lifestyle",
-      title: "Sorted Lifestyle",
-      description:
-        "This membership is for the movers, the founders, creatives, families, and global citizens who want to live well without the weight of managing it all.",
-      features: [
-        "Luxury Event Curation",
-        "Destination Planning",
-        "Group Travel & Experiences",
-        "24/7 Lifestyle Management",
-        "Personal Concierge Services",
-      ],
-      popular: true,
-      type: "Membership",
-    },
-    {
-      id: "sorted-experiences",
-      title: "Sorted Experiences",
-      description:
-        "For those who crave unforgettable moments, we craft bespoke experiences that align with your vision, from milestone celebrations to exclusive events.",
-      features: [
-        "Luxury Event Curation",
-        "Destination Planning",
-        "Group Travel & Experiences",
-        "Milestone Celebrations",
-        "Exclusive Access Network",
-      ],
-      popular: false,
-      type: "Membership",
-    },
-    {
-      id: "sorted-heritage",
-      title: "Sorted Heritage",
-      description:
-        "Securing Your Legacy. From financial structuring to global mobility and real estate, we manage your long-term vision.",
-      features: [
-        "Legacy & Financial Structuring",
-        "Global Mobility Solutions",
-        "Global Real Estate Sourcing & Advisory",
-        "Full Family Office Support",
-        "Private Procurement",
-      ],
-      popular: false,
-      type: "Membership",
-    },
-  ];
+  useEffect(() => {
+    const fetchPackages = async () => {
+      setIsLoading(true);
+      try {
+        const packagesData = await apiClient.getPackages();
+        const mappedPackages: Package[] = packagesData.map((pkg: any) => ({
+          id: pkg.id,
+          title: pkg.name,
+          description: pkg.description,
+          features: pkg.features,
+          popular: pkg.isPopular,
+          type: pkg.type,
+        }));
+        setPackages(mappedPackages);
+      } catch (err: any) {
+        console.error("Failed to fetch packages:", err.message);
+        setError("Failed to load packages. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPackages();
+  }, []);
 
   const faqs = [
     {
@@ -264,11 +247,7 @@ export default function ServicesPage() {
               backgroundImage: "url('/image6.png')",
             }}
           />
-          {/* Multi-layered overlay for depth */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/80" />
-          {/* <div className="absolute inset-0 bg-gray-900/85" /> */}
-          {/* <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-900/70 to-gray-800/80" /> */}
-          {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_70%,rgba(255,255,255,0.03),transparent_60%)]" /> */}
         </div>
 
         <motion.div
@@ -419,11 +398,19 @@ export default function ServicesPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {packages.map((pkg, index) => (
-              <PackageCard key={pkg.id} package={pkg} index={index} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <div className="h-12 w-12 animate-spin rounded-full border-4 border-secondary border-t-transparent"></div>
+            </div>
+          ) : error ? (
+            <div className="text-center text-red-400 text-lg">{error}</div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {packages.map((pkg, index) => (
+                <PackageCard key={pkg.id} package={pkg} index={index} />
+              ))}
+            </div>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -533,12 +520,7 @@ export default function ServicesPage() {
               backgroundImage: "url('/image7.png')",
             }}
           />
-          {/* Multi-layered overlay */}
-
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-          {/* <div className="absolute inset-0 bg-gray-900/80" /> */}
-          {/* <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-gray-800/75 to-gray-900/90" /> */}
-          {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.04),transparent_60%)]" /> */}
         </div>
 
         <div className="container relative z-10 mx-auto px-6 text-center">

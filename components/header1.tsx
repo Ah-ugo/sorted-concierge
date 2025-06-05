@@ -20,11 +20,21 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
+import { apiClient } from "@/lib/api";
+
+interface MembershipTier {
+  name: string;
+  href: string;
+  bgImage: string;
+  description: string;
+}
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [membershipTiers, setMembershipTiers] = useState<MembershipTier[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const servicesRef = useRef<HTMLLIElement>(null);
@@ -68,36 +78,42 @@ export default function Header() {
     };
   }, []);
 
+  // Fetch packages from API
+  useEffect(() => {
+    const fetchPackages = async () => {
+      setIsLoading(true);
+      try {
+        const packages = await apiClient.getPackages();
+        const tiers: MembershipTier[] = packages.map((pkg: any) => ({
+          name: pkg.name,
+          href: `/services/${pkg.id}`, // Use ID-based routing
+          bgImage: pkg.image || "/images/default-membership.jpg", // Fallback image
+          description:
+            pkg.description.split(".")[0] ||
+            "Explore this exclusive membership.", // Fallback description
+        }));
+        setMembershipTiers(tiers);
+      } catch (error: any) {
+        console.error("Failed to fetch packages:", error.message);
+        setMembershipTiers([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPackages();
+  }, []);
+
   const mainCategories = [
     { name: "HOME", href: "/" },
     { name: "ABOUT", href: "/about" },
-    { name: "SERVICES", href: "/services/sorted-lifestyle", hasDropdown: true },
+    {
+      name: "SERVICES",
+      href: "/membership/6829b41919d4815586fee5f8",
+      hasDropdown: true,
+    }, // Default to Sorted Lifestyle ID
     { name: "BLOG", href: "/blog" },
     { name: "CONTACT", href: "/contact" },
-  ];
-
-  const membershipTiers = [
-    {
-      name: "Sorted Lifestyle",
-      href: "/services/sorted-lifestyle",
-      bgImage:
-        "https://i.pinimg.com/736x/5e/f5/57/5ef5571362147ccfae934f029254c08a.jpg",
-      description: "Essential lifestyle management",
-    },
-    {
-      name: "Sorted Experiences",
-      href: "/services/sorted-experiences",
-      bgImage:
-        "https://i.pinimg.com/736x/28/9f/c9/289fc91f89ff0cabee6b82543c58d79e.jpg",
-      description: "Comprehensive concierge services",
-    },
-    {
-      name: "Sorted Heritage",
-      href: "/services/sorted-heritage",
-      bgImage:
-        "https://i.pinimg.com/736x/79/ae/a8/79aea8b777afb3553832790eac339876.jpg",
-      description: "Luxury lifestyle curation",
-    },
   ];
 
   const isActive = (href: string) => {
@@ -190,6 +206,7 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center space-x-2">
+            {/* <ModeToggle /> */}
             {user ? (
               <Link href="/profile">
                 <Button
@@ -245,31 +262,37 @@ export default function Header() {
                   View All Services
                 </Link>
               </div>
-              <div className="grid grid-cols-3 gap-6">
-                {membershipTiers.map((tier) => (
-                  <Link
-                    key={tier.name}
-                    href={tier.href}
-                    className="group block"
-                    onClick={() => setIsServicesOpen(false)}
-                  >
-                    <div
-                      className="relative h-40 bg-cover bg-center rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-105"
-                      style={{ backgroundImage: `url(${tier.bgImage})` }}
+              {isLoading ? (
+                <div className="flex justify-center py-4">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-secondary border-t-transparent"></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-6">
+                  {membershipTiers.map((tier) => (
+                    <Link
+                      key={tier.name}
+                      href={tier.href}
+                      className="group block"
+                      onClick={() => setIsServicesOpen(false)}
                     >
-                      {/* <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" /> */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-4">
-                        <h3 className="text-xl font-cinzel font-bold tracking-wider mb-2">
-                          {tier.name}
-                        </h3>
-                        <p className="text-sm font-lora opacity-90">
-                          {tier.description}
-                        </p>
+                      <div
+                        className="relative h-40 bg-cover bg-center rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                        style={{ backgroundImage: `url(${tier.bgImage})` }}
+                      >
+                        <div className="absolute inset-0 bg-black/60 group-hover:bg-black/70 transition-colors duration-300" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-4">
+                          <h3 className="text-xl font-cinzel font-bold tracking-wider mb-2">
+                            {tier.name}
+                          </h3>
+                          <p className="text-sm font-lora opacity-90">
+                            {tier.description}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -311,22 +334,28 @@ export default function Header() {
                     </Link>
                     {category.name === "SERVICES" && (
                       <ul className="ml-4 mt-3 space-y-3">
-                        {membershipTiers.map((tier) => (
-                          <li key={tier.name}>
-                            <Link
-                              href={tier.href}
-                              className="block p-3 rounded-lg border border-border hover:border-secondary transition-colors"
-                              onClick={() => setIsMenuOpen(false)}
-                            >
-                              <div className="text-base font-cinzel font-semibold text-foreground mb-1">
-                                {tier.name}
-                              </div>
-                              <div className="text-sm font-lora text-muted-foreground">
-                                {tier.description}
-                              </div>
-                            </Link>
+                        {isLoading ? (
+                          <li className="text-sm font-lora text-muted-foreground">
+                            Loading services...
                           </li>
-                        ))}
+                        ) : (
+                          membershipTiers.map((tier) => (
+                            <li key={tier.name}>
+                              <Link
+                                href={tier.href}
+                                className="block p-3 rounded-lg border border-border hover:border-secondary transition-colors"
+                                onClick={() => setIsMenuOpen(false)}
+                              >
+                                <div className="text-base font-cinzel font-semibold text-foreground mb-1">
+                                  {tier.name}
+                                </div>
+                                <div className="text-sm font-lora text-muted-foreground">
+                                  {tier.description}
+                                </div>
+                              </Link>
+                            </li>
+                          ))
+                        )}
                       </ul>
                     )}
                   </li>
