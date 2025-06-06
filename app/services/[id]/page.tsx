@@ -476,9 +476,9 @@ export default function MembershipDetails() {
       </section>
 
       {/* Overview Section with Parallax Cards */}
-      <section className="py-8 sm:py-12 relative">
+      <section className="py-8 sm:pt-12 relative">
         <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10 sm:mb-16">
+          <div className="text-center mb-10 sm:mb-10">
             <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
               <Diamond className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
               <span className="text-xs sm:text-sm text-secondary font-medium">
@@ -496,7 +496,7 @@ export default function MembershipDetails() {
       </section>
 
       {/* Services Section with Interactive Cards */}
-      <section className="py-8 sm:py-12 relative">
+      <section className="py-8 sm:pb-12 relative">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-10 sm:mb-16">
             <div className="inline-flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6 px-4 py-1 sm:px-6 sm:py-2 rounded-full bg-gray-800/50 border border-gray-700/50">
