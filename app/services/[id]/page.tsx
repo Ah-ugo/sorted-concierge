@@ -409,7 +409,7 @@ export default function MembershipDetails() {
                 className="group text-sm sm:text-base text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all duration-300 border border-gray-700/50 hover:border-secondary/50 rounded-xl px-4 py-2 sm:px-6 sm:py-3 relative flex items-center"
               >
                 <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2 transition-transform group-hover:-translate-x-1 duration-300" />
-                Back to Memberships
+                Back to Services
                 <div className="absolute inset-0 bg-gradient-to-r from-secondary/0 via-secondary/5 to-secondary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl" />
               </Button>
             </Link>
@@ -419,7 +419,7 @@ export default function MembershipDetails() {
           <div className="mb-4 sm:mb-6 inline-flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-full bg-gradient-to-r from-secondary/20 to-secondary/20 border border-secondary/30 backdrop-blur-sm">
             <MembershipIcon className="w-4 h-4 sm:w-5 sm:h-5 text-secondary" />
             <span className="text-xs sm:text-sm text-secondary font-medium tracking-wide uppercase">
-              Membership Tier
+              Service Tier
             </span>
           </div>
 
@@ -448,7 +448,7 @@ export default function MembershipDetails() {
           <Link href="/membership-booking">
             <Button className="group relative px-8 py-4 sm:px-12 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-widest bg-secondary text-black hover:bg-secondary/80 transition-all duration-300 rounded-2xl overflow-hidden shadow-2xl hover:shadow-secondary/25 transform hover:scale-105">
               <span className="relative z-10 flex items-center gap-2 text-black sm:gap-3">
-                Join This Membership
+                Join This Service
                 <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 transition-transform group-hover:translate-x-2 duration-300" />
               </span>
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

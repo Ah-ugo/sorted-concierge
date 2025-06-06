@@ -387,7 +387,7 @@ export default function ServicesPage() {
               className="text-3xl md:text-5xl font-bold mb-6 text-white"
               style={{ fontFamily: "serif" }}
             >
-              Our Membership Tiers
+              Our Service Tiers
             </h2>
             <div className="w-24 h-1 bg-secondary rounded-full mx-auto mb-6" />
             <p className="text-lg text-gray-300 leading-relaxed">
