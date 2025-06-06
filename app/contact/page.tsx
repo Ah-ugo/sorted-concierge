@@ -396,7 +396,7 @@ export default function ContactPage() {
               asChild
               className="bg-secondary px-6 sm:px-8 py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
             >
-              <a href="/booking">Book Now</a>
+              <a href="/membership-booking">Book Now</a>
             </Button>
           </motion.div>
         </div>

@@ -445,7 +445,7 @@ export default function MembershipDetails() {
           </p>
 
           {/* CTA Button with Filled Style */}
-          <Link href="/booking">
+          <Link href="/membership-booking">
             <Button className="group relative px-8 py-4 sm:px-12 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-widest bg-secondary text-black hover:bg-secondary/80 transition-all duration-300 rounded-2xl overflow-hidden shadow-2xl hover:shadow-secondary/25 transform hover:scale-105">
               <span className="relative z-10 flex items-center gap-2 text-black sm:gap-3">
                 Join This Membership
@@ -675,7 +675,7 @@ export default function MembershipDetails() {
             </div>
 
             {/* CTA Button with Outline Style */}
-            <Link href="/apply">
+            <Link href="/contact">
               <Button
                 variant="outline"
                 className="group relative px-8 py-4 sm:px-8 sm:py-6 text-sm sm:text-lg font-medium uppercase tracking-wide border-secondary text-secondary hover:bg-secondary/10 hover:border-secondary/80 transition-all duration-300 rounded-lg overflow-hidden shadow-lg hover:shadow-secondary/20 transform hover:scale-105"

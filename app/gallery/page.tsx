@@ -167,7 +167,7 @@ export default function Gallery() {
               asChild
               className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:from-secondary/80 hover:to-primary/80"
             >
-              <Link href="/booking">Book an Experience</Link>
+              <Link href="/membership-booking">Book an Experience</Link>
             </Button>
           </motion.div>
         </div>
@@ -338,7 +338,7 @@ export default function Gallery() {
               asChild
               className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:from-secondary/80 hover:to-primary/80"
             >
-              <Link href="/booking">Book Now</Link>
+              <Link href="/membership-booking">Book Now</Link>
             </Button>
           </motion.div>
         </div>

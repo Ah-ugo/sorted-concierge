@@ -1,27 +1,31 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Check } from "lucide-react"
-import Link from "next/link"
-import { useCurrency } from "@/lib/currency-context"
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Check } from "lucide-react";
+import Link from "next/link";
+import { useCurrency } from "@/lib/currency-context";
 
 interface PackageProps {
   package: {
-    id: string | number
-    title: string
-    description: string
-    price: string | number
-    features: string[]
-    popular: boolean
-    type: string
-  }
+    id: string | number;
+    title: string;
+    description: string;
+    price: string | number;
+    features: string[];
+    popular: boolean;
+    type: string;
+  };
 }
 
 export default function PackageCard({ package: pkg }: PackageProps) {
-  const { formatPrice } = useCurrency()
+  const { formatPrice } = useCurrency();
 
   return (
-    <Card className={`h-full flex flex-col relative ${pkg.popular ? "border-primary shadow-lg" : ""}`}>
+    <Card
+      className={`h-full flex flex-col relative ${
+        pkg.popular ? "border-primary shadow-lg" : ""
+      }`}
+    >
       {pkg.popular && (
         <div className="absolute top-0 right-0 bg-primary text-white px-4 py-1 text-sm font-medium rounded-bl-lg rounded-tr-lg">
           Most Popular
@@ -45,12 +49,14 @@ export default function PackageCard({ package: pkg }: PackageProps) {
         <Button
           asChild
           className={`w-full ${
-            pkg.popular ? "bg-primary hover:bg-primary/90 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+            pkg.popular
+              ? "bg-primary hover:bg-primary/90 text-white"
+              : "bg-gray-100 hover:bg-gray-200 text-gray-900"
           }`}
         >
           <Link href="/booking">Subscribe Now</Link>
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

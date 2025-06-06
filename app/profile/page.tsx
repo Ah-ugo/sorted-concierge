@@ -465,7 +465,7 @@ export default function ProfilePage() {
                           asChild
                           className="bg-secondary px-6 sm:px-8 py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
                         >
-                          <Link href="/booking">Book a Service</Link>
+                          <Link href="/membership-booking">Book a Service</Link>
                         </Button>
                       </div>
                     ) : (
@@ -600,7 +600,7 @@ export default function ProfilePage() {
               asChild
               className="bg-secondary px-6 sm:px-8 py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
             >
-              <Link href="/booking">Book Now</Link>
+              <Link href="/membership-booking">Book Now</Link>
             </Button>
           </motion.div>
         </div>

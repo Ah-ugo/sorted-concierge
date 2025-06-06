@@ -307,7 +307,7 @@ export default function ServicesPage() {
               transition={{ delay: 0.8, duration: 0.8 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <Link href={"/booking"}>
+              <Link href={"/membership-booking"}>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -536,7 +536,7 @@ export default function ServicesPage() {
               in every aspect of their lifestyle.
             </p>
 
-            <Link href={"/booking"}>
+            <Link href={"/membership-booking"}>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
