@@ -560,7 +560,7 @@ export default function MembershipDetails() {
                       </div>
 
                       {/* Animated Chevron */}
-                      <div
+                      {/* <button
                         className={`ml-2 sm:ml-6 p-1 sm:p-2 rounded-full transition-all duration-500 ${
                           isExpanded
                             ? "bg-secondary text-gray-900 rotate-180"
@@ -568,7 +568,7 @@ export default function MembershipDetails() {
                         }`}
                       >
                         <ChevronDown className="w-4 h-4 sm:w-6 sm:h-6" />
-                      </div>
+                      </button> */}
                     </div>
                   </button>
 
