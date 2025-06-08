@@ -181,7 +181,7 @@ export default function MembershipBookingPage() {
       if (!formData.packageId) {
         toast({
           title: "Missing Information",
-          description: "Please select a membership package.",
+          description: "Please select a service package.",
           variant: "destructive",
         });
         return;
@@ -203,7 +203,7 @@ export default function MembershipBookingPage() {
     if (!isAuthenticated || !token || !user) {
       toast({
         title: "Authentication Required",
-        description: "Please log in to subscribe to a membership.",
+        description: "Please log in to subscribe to a service.",
         variant: "destructive",
       });
       router.push("/auth/login");
@@ -271,11 +271,11 @@ export default function MembershipBookingPage() {
               Join Now
             </Badge>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold tracking-widest text-overlay mb-4 sm:mb-6">
-              Become a Member
+              Book a Service
             </h1>
             <p className="text-sm sm:text-base md:text-lg font-lora text-overlay mb-6 sm:mb-8">
-              Select a membership package and enjoy exclusive benefits. Complete
-              the form below to start your subscription.
+              Select a service package and enjoy exclusive benefits. Complete
+              the form below to start your booking.
             </p>
           </div>
         </div>
@@ -448,7 +448,7 @@ export default function MembershipBookingPage() {
                       transition={{ duration: 0.3 }}
                     >
                       <h2 className="text-xl sm:text-2xl md:text-3xl font-cinzel font-bold uppercase tracking-widest text-foreground mb-4 sm:mb-6">
-                        Select Membership Package
+                        Select Service Package
                       </h2>
 
                       <div className="space-y-3 sm:space-y-4">
@@ -567,7 +567,7 @@ export default function MembershipBookingPage() {
                       transition={{ duration: 0.3 }}
                     >
                       <h2 className="text-xl sm:text-2xl md:text-3xl font-cinzel font-bold uppercase tracking-widest text-foreground mb-4 sm:mb-6">
-                        Confirm Your Membership
+                        Confirm Your Service
                       </h2>
 
                       <div className="space-y-4 sm:space-y-6">
@@ -735,17 +735,17 @@ export default function MembershipBookingPage() {
                 Frequently Asked Questions
               </h2>
               <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
-                Find answers to common questions about our membership packages.
+                Find answers to common questions about our service packages.
               </p>
             </div>
 
             <div className="space-y-3 sm:space-y-4">
               <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm">
                 <h3 className="font-lora text-base sm:text-lg text-foreground mb-2">
-                  What are the benefits of a membership?
+                  What are the benefits of a service?
                 </h3>
                 <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                  Membership packages offer exclusive benefits such as priority
+                  Service packages offer exclusive benefits such as priority
                   booking, discounted services, and access to special events.
                   Each package has unique features tailored to your needs.
                 </p>
@@ -753,10 +753,10 @@ export default function MembershipBookingPage() {
 
               <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm">
                 <h3 className="font-lora text-base sm:text-lg text-foreground mb-2">
-                  Can I cancel my membership?
+                  Can I cancel my service?
                 </h3>
                 <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                  Yes, you can cancel your membership by contacting our support
+                  Yes, you can cancel your service by contacting our support
                   team. Cancellation policies vary by package, and some may
                   include a minimum commitment period.
                 </p>
@@ -764,10 +764,10 @@ export default function MembershipBookingPage() {
 
               <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm">
                 <h3 className="font-lora text-base sm:text-lg text-foreground mb-2">
-                  How do I upgrade or downgrade my membership?
+                  How do I upgrade or downgrade my service?
                 </h3>
                 <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                  You can upgrade or downgrade your membership by contacting our
+                  You can upgrade or downgrade your service by contacting our
                   concierge team. Changes take effect at the start of the next
                   billing cycle.
                 </p>
@@ -778,7 +778,7 @@ export default function MembershipBookingPage() {
                   What payment methods are accepted?
                 </h3>
                 <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                  We accept credit/debit cards and bank transfers for membership
+                  We accept credit/debit cards and bank transfers for service
                   subscriptions. Payments are processed securely through our
                   payment gateway.
                 </p>
