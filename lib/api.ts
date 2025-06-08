@@ -738,6 +738,24 @@ export const apiClient = {
     }
   },
 
+  async getConvertedPrice(
+    packageId: string,
+    currency: string
+  ): Promise<{ convertedPrice: number }> {
+    try {
+      const response = await api.get(`/packages/${packageId}/convert`, {
+        params: { currency },
+      });
+      console.log(response.data, "converted price");
+      return response.data;
+    } catch (error: any) {
+      throw new APIError(
+        error.response?.status || 500,
+        error.response?.data?.detail || "Failed to fetch converted price"
+      );
+    }
+  },
+
   async updatePackage(
     packageId: string,
     update: PackageUpdate

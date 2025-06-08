@@ -8,6 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/lib/auth-context";
@@ -17,14 +24,21 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 
+interface ConvertedPackage extends Package {
+  convertedPrice: number;
+  currency: string;
+}
+
 export default function MembershipBookingPage() {
   const { toast } = useToast();
   const { user, token, isAuthenticated } = useAuth();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, changeCurrency, currentCurrency, currencies } =
+    useCurrency();
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
+  const [packages, setPackages] = useState<ConvertedPackage[]>([]);
+  const [selectedPackage, setSelectedPackage] =
+    useState<ConvertedPackage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,16 +47,71 @@ export default function MembershipBookingPage() {
     email: "",
     phone: "",
     packageId: "",
-    preferredCurrency: "USD",
     paymentMethod: "card",
   });
 
+  // Fetch packages and convert prices based on selected currency
   useEffect(() => {
-    // Fetch packages
     const fetchPackages = async () => {
       try {
+        setIsLoading(true);
         const data = await apiClient.getPackages();
-        setPackages(data);
+        console.log("Fetched packages:", data);
+
+        // Convert prices to current currency
+        const convertedPackages = await Promise.all(
+          data.map(async (pkg: Package) => {
+            let convertedPrice = pkg.price;
+            console.log(
+              `Processing package: ${pkg.name}, Base Price: ${pkg.price} NGN`
+            );
+
+            if (currentCurrency.code !== "NGN") {
+              try {
+                const response = await apiClient.getConvertedPrice(
+                  pkg.id,
+                  currentCurrency.code
+                );
+                convertedPrice = response.convertedPrice;
+                console.log(
+                  `Backend converted price for ${pkg.name} to ${currentCurrency.code}: ${convertedPrice}`
+                );
+              } catch (error) {
+                console.error(
+                  `Price conversion failed for ${pkg.name}:`,
+                  error
+                );
+                // Fallback to CurrencyProvider rate
+                const targetCurrency = currencies.find(
+                  (c) => c.code === currentCurrency.code
+                );
+                if (targetCurrency) {
+                  convertedPrice = pkg.price * targetCurrency.rate;
+                  console.log(
+                    `Fallback conversion for ${pkg.name} to ${currentCurrency.code}: ${convertedPrice}`
+                  );
+                }
+              }
+            }
+
+            // Ensure convertedPrice is a valid number
+            if (isNaN(convertedPrice) || convertedPrice <= 0) {
+              console.warn(
+                `Invalid converted price for ${pkg.name}, using original: ${pkg.price}`
+              );
+              convertedPrice = pkg.price;
+            }
+
+            return {
+              ...pkg,
+              convertedPrice,
+              currency: currentCurrency.code,
+            };
+          })
+        );
+
+        setPackages(convertedPackages);
+        console.log("Converted packages:", convertedPackages);
       } catch (error: unknown) {
         console.error("Error fetching packages:", error);
         toast({
@@ -69,13 +138,14 @@ export default function MembershipBookingPage() {
         phone: user.phone || "",
       }));
     }
-  }, [user, toast]);
+  }, [user, toast, currentCurrency.code, currencies]);
 
   // Update selected package when packageId changes
   useEffect(() => {
     if (formData.packageId && packages.length > 0) {
       const pkg = packages.find((p) => p.id === formData.packageId) || null;
       setSelectedPackage(pkg);
+      console.log("Selected package:", pkg);
     } else {
       setSelectedPackage(null);
     }
@@ -88,8 +158,9 @@ export default function MembershipBookingPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleCurrencyChange = (value: string) => {
+    console.log(`Changing currency to: ${value}`);
+    changeCurrency(value);
   };
 
   const handleRadioChange = (value: string) => {
@@ -145,8 +216,9 @@ export default function MembershipBookingPage() {
       const subscriptionData: SubscriptionInitiate = {
         userId: user.id,
         packageId: formData.packageId,
-        preferredCurrency: formData.preferredCurrency,
+        preferredCurrency: currentCurrency.code,
       };
+      console.log("Initiating subscription:", subscriptionData);
 
       // Initiate subscription payment
       const { payment_url } = await apiClient.initiateSubscriptionPayment(
@@ -397,7 +469,10 @@ export default function MembershipBookingPage() {
                                     : "border-border"
                                 } cursor-pointer hover:border-secondary/50 transition-colors`}
                                 onClick={() =>
-                                  handleSelectChange("packageId", pkg.id)
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    packageId: pkg.id,
+                                  }))
                                 }
                               >
                                 <CardContent className="p-4">
@@ -407,8 +482,11 @@ export default function MembershipBookingPage() {
                                         {pkg.name}
                                       </h3>
                                       <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                                        {formatPrice(pkg.price)} /{" "}
-                                        {pkg.duration}
+                                        {formatPrice(
+                                          pkg.convertedPrice,
+                                          pkg.currency
+                                        )}{" "}
+                                        / {pkg.duration}
                                       </p>
                                       <p className="text-xs sm:text-sm font-lora text-muted-foreground mt-2">
                                         {pkg.description}
@@ -438,22 +516,25 @@ export default function MembershipBookingPage() {
 
                         <div>
                           <Label
-                            htmlFor="preferredCurrency"
+                            htmlFor="currency"
                             className="text-xs sm:text-sm font-lora text-foreground"
                           >
                             Preferred Currency *
                           </Label>
-                          <select
-                            id="preferredCurrency"
-                            name="preferredCurrency"
-                            value={formData.preferredCurrency}
-                            onChange={handleChange}
-                            className="w-full border-border bg-card text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora rounded-md p-2"
+                          <Select
+                            value={currentCurrency.code}
+                            onValueChange={handleCurrencyChange}
                           >
-                            <option value="USD">USD</option>
-                            <option value="NGN">NGN</option>
-                            <option value="EUR">EUR</option>
-                          </select>
+                            <SelectTrigger className="border-border bg-card text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora">
+                              <SelectValue placeholder="Select currency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="NGN">NGN</SelectItem>
+                              <SelectItem value="USD">USD</SelectItem>
+                              <SelectItem value="EUR">EUR</SelectItem>
+                              <SelectItem value="GBP">GBP</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
 
@@ -540,8 +621,11 @@ export default function MembershipBookingPage() {
                                 Price
                               </p>
                               <p className="text-sm sm:text-base font-lora">
-                                {formatPrice(selectedPackage?.price || 0)} /{" "}
-                                {selectedPackage?.duration}
+                                {formatPrice(
+                                  selectedPackage?.convertedPrice || 0,
+                                  selectedPackage?.currency
+                                )}{" "}
+                                / {selectedPackage?.duration}
                               </p>
                             </div>
                             <div>
@@ -549,7 +633,7 @@ export default function MembershipBookingPage() {
                                 Currency
                               </p>
                               <p className="text-sm sm:text-base font-lora">
-                                {formData.preferredCurrency}
+                                {currentCurrency.code}
                               </p>
                             </div>
                           </div>
