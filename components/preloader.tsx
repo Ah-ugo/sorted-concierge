@@ -7,10 +7,7 @@ export default function Preloader() {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Prevent body scroll during preloader
     document.body.classList.add("preloader-active");
-
-    // Remove body scroll lock and hide preloader after animation
     const timer = setTimeout(() => {
       document.body.classList.remove("preloader-active");
       setIsVisible(false);
@@ -26,7 +23,6 @@ export default function Preloader() {
 
   return (
     <div className="preloader-container">
-      {/* Slide In from Left */}
       <motion.div
         initial={{ x: "-100%" }}
         animate={{ x: 0 }}
@@ -37,7 +33,6 @@ export default function Preloader() {
         className="fixed inset-0 z-[60] bg-black flex items-center justify-center"
       >
         <div className="text-center">
-          {/* Animated logo/brand */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -54,32 +49,17 @@ export default function Preloader() {
                 duration: 2.5,
                 ease: "easeInOut",
               }}
-              className="text-5xl md:text-6xl font-cinzel font-bold gold-accent tracking-widest"
+              className="text-5xl md:text-6xl font-semibold text-secondary-light tracking-widest"
             >
-              {/* SORTED */}
               SC
             </motion.h1>
           </motion.div>
-
-          {/* Animated line */}
           <motion.div
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: "200px", opacity: 1 }}
             transition={{ duration: 1.2, delay: 0.8, ease: "easeInOut" }}
-            className="h-0.5 bg-gradient-to-r from-transparent via-gold-accent to-transparent mx-auto mb-6"
+            className="h-0.5 bg-gradient-to-r from-transparent via-secondary-light to-transparent mx-auto mb-6"
           />
-
-          {/* Subtitle */}
-          {/* <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-            className="text-sm md:text-base font-lora uppercase tracking-[0.3em] text-gray-300"
-          >
-            Concierge Experience
-          </motion.p> */}
-
-          {/* Loading indicator */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -98,8 +78,6 @@ export default function Preloader() {
           </motion.div>
         </div>
       </motion.div>
-
-      {/* Slide Out to Right */}
       <motion.div
         initial={{ x: "-100%" }}
         animate={{ x: "100%" }}
@@ -108,10 +86,8 @@ export default function Preloader() {
           delay: 2.5,
           ease: [0.76, 0, 0.24, 1],
         }}
-        className="fixed inset-0 z-[59] bg-gradient-to-r from-black via-gray-900 to-black"
+        className="fixed inset-0 z-[59] bg-gradient-to-r from-black via-muted/20 to-black"
       />
-
-      {/* Final reveal panel */}
       <motion.div
         initial={{ x: "-100%" }}
         animate={{ x: "100%" }}

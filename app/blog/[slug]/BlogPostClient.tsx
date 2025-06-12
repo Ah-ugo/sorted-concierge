@@ -81,7 +81,7 @@ export default function BlogPostClient({ post }: { post: BlogPostUI }) {
         title: "Success!",
         description: "Thank you for subscribing to our newsletter!",
         variant: "default",
-        className: "bg-green-500 text-white border-green-600",
+        className: "bg-secondary-light text-black border-secondary-dark", // Updated to secondary.light and secondary.dark
         duration: 3000,
       });
       setEmail("");
@@ -101,9 +101,13 @@ export default function BlogPostClient({ post }: { post: BlogPostUI }) {
   };
 
   return (
-    <div className="min-h-screen pb-12 md:pb-16">
+    <div className="min-h-screen pb-12 md:pb-16 bg-black">
+      {" "}
+      {/* Updated to black (background) */}
       {/* Hero section with image */}
-      <div className="relative h-[50vh] md:h-[60vh] bg-background">
+      <div className="relative h-[50vh] md:h-[60vh] bg-black">
+        {" "}
+        {/* Updated to black */}
         <Image
           src={post.image}
           alt={post.title}
@@ -112,20 +116,25 @@ export default function BlogPostClient({ post }: { post: BlogPostUI }) {
           priority
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />{" "}
+        {/* Updated to black */}
         <div className="absolute inset-0 flex flex-col justify-end p-4 md:p-12">
           <div className="container mx-auto max-w-4xl">
             <Link
               href="/blog"
-              className="flex items-center text-overlay mb-4 hover:text-secondary transition-colors text-sm sm:text-base"
+              className="flex items-center text-white mb-4 hover:text-secondary-light transition-colors text-sm sm:text-base" // Updated to white and secondary.light
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Blog
             </Link>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-overlay mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+              {" "}
+              {/* Updated to white */}
               {post.title}
             </h1>
-            <div className="flex flex-wrap items-center text-overlay/80 gap-4 md:gap-6 text-xs sm:text-sm">
+            <div className="flex flex-wrap items-center text-white/80 gap-4 md:gap-6 text-xs sm:text-sm">
+              {" "}
+              {/* Updated to white */}
               <div className="flex items-center">
                 <Calendar className="mr-2 h-4 w-4" />
                 <span>{post.date}</span>
@@ -142,38 +151,55 @@ export default function BlogPostClient({ post }: { post: BlogPostUI }) {
           </div>
         </div>
       </div>
-
       {/* Main content */}
       <div className="container mx-auto max-w-4xl px-4 py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
             {/* Blog content */}
             <div
-              className="prose prose-base sm:prose-lg dark:prose-invert max-w-none"
+              className="prose prose-base sm:prose-lg prose-invert max-w-none text-white" // Updated to prose-invert and text-white
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
             {/* Share section */}
-            <div className="mt-8 md:mt-12 border-t border-border pt-6">
-              <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 flex items-center">
+            <div className="mt-8 md:mt-12 border-t border-muted pt-6">
+              {" "}
+              {/* Updated to muted */}
+              <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 flex items-center text-white">
+                {" "}
+                {/* Updated to white */}
                 <Share2 className="mr-2 h-5 w-5" />
                 Share this article
               </h3>
               <div className="flex space-x-4">
-                <Button variant="outline" size="icon">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="border-muted text-white hover:bg-secondary-light hover:text-black" // Updated to muted, white, secondary.light, and black
+                >
                   <Facebook className="h-5 w-5" />
                 </Button>
-                <Button variant="outline" size="icon">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="border-muted text-white hover:bg-secondary-light hover:text-black" // Updated to muted, white, secondary.light, and black
+                >
                   <Twitter className="h-5 w-5" />
                 </Button>
-                <Button variant="outline" size="icon">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="border-muted text-white hover:bg-secondary-light hover:text-black" // Updated to muted, white, secondary.light, and black
+                >
                   <Linkedin className="h-5 w-5" />
                 </Button>
               </div>
             </div>
 
             {/* Author bio */}
-            <div className="mt-8 md:mt-12 border-t border-border pt-6">
+            <div className="mt-8 md:mt-12 border-t border-muted pt-6">
+              {" "}
+              {/* Updated to muted */}
               <div className="flex items-start space-x-4">
                 <Image
                   src={post.author.image}
@@ -184,7 +210,9 @@ export default function BlogPostClient({ post }: { post: BlogPostUI }) {
                   sizes="(max-width: 768px) 20vw, 80px"
                 />
                 <div>
-                  <h3 className="text-base sm:text-lg md:text-xl font-semibold">
+                  <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white">
+                    {" "}
+                    {/* Updated to white */}
                     {post.author.name}
                   </h3>
                   <p className="text-sm sm:text-base text-muted-foreground mt-1">
@@ -198,9 +226,13 @@ export default function BlogPostClient({ post }: { post: BlogPostUI }) {
           {/* Sidebar */}
           <div className="space-y-8">
             {/* Newsletter subscription */}
-            <Card>
+            <Card className="bg-card">
+              {" "}
+              {/* Ensured bg-card (#2B2B2B) */}
               <CardContent className="pt-6">
-                <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">
+                <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 text-white">
+                  {" "}
+                  {/* Updated to white */}
                   Subscribe to our Newsletter
                 </h3>
                 <p className="text-sm sm:text-base text-muted-foreground mb-4">
@@ -212,13 +244,13 @@ export default function BlogPostClient({ post }: { post: BlogPostUI }) {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="text-sm sm:text-base"
+                    className="text-sm sm:text-base text-white bg-muted placeholder:text-muted-foreground" // Updated to white and muted
                     disabled={isSubscribing}
                     aria-label="Email address for newsletter subscription"
                   />
                   <Button
                     type="submit"
-                    className="w-full bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground"
+                    className="w-full bg-gold-gradient hover:bg-secondary-light/90 text-xs sm:text-sm text-black" // Updated to gold-gradient and secondary.light
                     disabled={isSubscribing}
                   >
                     {isSubscribing ? (
@@ -232,7 +264,9 @@ export default function BlogPostClient({ post }: { post: BlogPostUI }) {
 
             {/* Related posts */}
             <div>
-              <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4">
+              <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 text-white">
+                {" "}
+                {/* Updated to white */}
                 Related Posts
               </h3>
               <div className="space-y-4">
@@ -253,7 +287,9 @@ export default function BlogPostClient({ post }: { post: BlogPostUI }) {
                         />
                       </div>
                       <div>
-                        <h4 className="text-sm sm:text-base font-medium group-hover:text-secondary transition-colors">
+                        <h4 className="text-sm sm:text-base font-medium text-white group-hover:text-secondary-light transition-colors">
+                          {" "}
+                          {/* Updated to white and secondary.light */}
                           {relatedPost.title}
                         </h4>
                       </div>

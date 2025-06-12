@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
 import {
   Menu,
   X,
@@ -59,7 +58,6 @@ export default function Header() {
     };
   }, [isMenuOpen]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -78,7 +76,6 @@ export default function Header() {
     };
   }, []);
 
-  // Fetch packages from API
   useEffect(() => {
     const fetchPackages = async () => {
       setIsLoading(true);
@@ -86,15 +83,14 @@ export default function Header() {
         const packages = await apiClient.getPackages();
         const tiers: MembershipTier[] = packages.map((pkg: any) => ({
           name: pkg.name,
-          href: `/services/${pkg.id}`, // Use ID-based routing
-          bgImage: pkg.image || "/images/default-membership.jpg", // Fallback image
+          href: `/services/${pkg.id}`,
+          bgImage: pkg.image || "/images/default-membership.jpg",
           description:
             pkg.description.split(".")[0] ||
-            "Explore this exclusive membership.", // Fallback description
+            "Explore this exclusive membership.",
         }));
         setMembershipTiers(tiers);
-      } catch (error: any) {
-        console.error("Failed to fetch packages:", error.message);
+      } catch {
         setMembershipTiers([]);
       } finally {
         setIsLoading(false);
@@ -111,7 +107,7 @@ export default function Header() {
       name: "SERVICES",
       href: "/services/6829b41919d4815586fee5f8",
       hasDropdown: true,
-    }, // Default to Sorted Lifestyle ID
+    },
     { name: "BLOG", href: "/blog" },
     { name: "CONTACT", href: "/contact" },
   ];
@@ -131,21 +127,20 @@ export default function Header() {
       <header
         className={cn(
           "fixed left-0 right-0 top-0 z-40 transition-all duration-300",
-          isScrolled ? "bg-background subtle-glow shadow-sm" : "bg-transparent"
+          isScrolled ? "bg-black shadow-sm" : "bg-transparent"
         )}
       >
         <div className="container flex h-16 items-center justify-between px-4 md:h-20">
           <Link href="/" className="flex items-center">
             <span
               className={cn(
-                "text-xl font-cinzel font-bold tracking-wider",
-                isScrolled ? "text-foreground" : "text-header"
+                "text-xl font-semibold tracking-wider",
+                isScrolled ? "text-white" : "text-white"
               )}
             >
               SORTED CONCIERGE
             </span>
           </Link>
-
           <nav className="hidden md:block">
             <ul className="flex space-x-6">
               {mainCategories.map((category) => (
@@ -169,12 +164,12 @@ export default function Header() {
                       }}
                       onClick={handleServicesClick}
                       className={cn(
-                        "flex items-center gap-1 text-sm font-lora uppercase tracking-widest transition-colors",
+                        "flex items-center gap-1 text-sm font-normal uppercase tracking-widest transition-colors",
                         isActive(category.href)
-                          ? "text-secondary"
+                          ? "text-secondary-light"
                           : isScrolled
-                          ? "text-foreground/80 hover:text-secondary"
-                          : "text-header hover:text-secondary"
+                          ? "text-white/80 hover:text-secondary-light"
+                          : "text-white hover:text-secondary-light"
                       )}
                     >
                       {category.name}
@@ -189,12 +184,12 @@ export default function Header() {
                     <Link
                       href={category.href}
                       className={cn(
-                        "text-sm font-lora uppercase tracking-widest",
+                        "text-sm font-normal uppercase tracking-widest",
                         isActive(category.href)
-                          ? "text-secondary"
+                          ? "text-secondary-light"
                           : isScrolled
-                          ? "text-foreground/80 hover:text-secondary"
-                          : "text-header hover:text-secondary"
+                          ? "text-white/80 hover:text-secondary-light"
+                          : "text-white hover:text-secondary-light"
                       )}
                     >
                       {category.name}
@@ -204,17 +199,15 @@ export default function Header() {
               ))}
             </ul>
           </nav>
-
           <div className="flex items-center space-x-2">
-            {/* <ModeToggle /> */}
             {user ? (
               <Link href="/profile">
                 <Button
                   variant="ghost"
                   size="icon"
                   className={cn(
-                    "hover:bg-secondary/10",
-                    isScrolled ? "text-foreground" : "text-header"
+                    "hover:bg-secondary-light/10",
+                    isScrolled ? "text-white" : "text-white"
                   )}
                 >
                   <User className="h-5 w-5" />
@@ -224,8 +217,8 @@ export default function Header() {
               <Link href="/auth/login">
                 <Button
                   className={cn(
-                    "text-sm font-lora uppercase tracking-widest bg-secondary text-secondary-foreground hover:bg-secondary/90",
-                    isScrolled ? "text-secondary-foreground" : "text-header"
+                    "text-sm font-normal uppercase tracking-widest bg-gold-gradient text-black hover:bg-secondary-light/80",
+                    isScrolled ? "text-black" : "text-white"
                   )}
                 >
                   Login
@@ -238,25 +231,23 @@ export default function Header() {
               onClick={() => setIsMenuOpen(true)}
               className={cn(
                 "md:hidden",
-                isScrolled ? "text-foreground" : "text-header"
+                isScrolled ? "text-white" : "text-white"
               )}
             >
               <Menu className="h-6 w-6" />
             </Button>
           </div>
         </div>
-
-        {/* Services Dropdown - Desktop */}
         {isServicesOpen && (
           <div
             ref={dropdownRef}
-            className="absolute left-0 right-0 top-full bg-background border-b border-border shadow-lg z-50 hidden md:block"
+            className="absolute left-0 right-0 top-full bg-black border-b border-muted/50 shadow-lg z-50 hidden md:block"
           >
             <div className="container mx-auto px-4 py-6">
               <div className="mb-4">
                 <Link
                   href="/services"
-                  className="text-lg font-lora text-foreground hover:text-secondary transition-colors"
+                  className="text-lg font-normal text-white hover:text-secondary-light transition-colors"
                   onClick={() => setIsServicesOpen(false)}
                 >
                   View All Services
@@ -264,7 +255,7 @@ export default function Header() {
               </div>
               {isLoading ? (
                 <div className="flex justify-center py-4">
-                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-secondary border-t-transparent"></div>
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-secondary-light border-t-transparent"></div>
                 </div>
               ) : (
                 <div className="grid grid-cols-3 gap-6">
@@ -281,10 +272,10 @@ export default function Header() {
                       >
                         <div className="absolute inset-0 bg-black/60 group-hover:bg-black/70 transition-colors duration-300" />
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-4">
-                          <h3 className="text-xl font-cinzel font-bold tracking-wider mb-2">
+                          <h3 className="text-xl font-semibold tracking-wider mb-2">
                             {tier.name}
                           </h3>
-                          <p className="text-sm font-lora opacity-90">
+                          <p className="text-sm font-normal opacity-90">
                             {tier.description}
                           </p>
                         </div>
@@ -297,24 +288,21 @@ export default function Header() {
           </div>
         )}
       </header>
-
-      {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-background subtle-glow md:hidden">
-          <div className="flex h-16 items-center justify-between border-b border-border px-4">
-            <span className="text-xl font-cinzel font-bold tracking-wider text-foreground">
+        <div className="fixed inset-0 z-50 flex flex-col bg-black shadow-lg md:hidden">
+          <div className="flex h-16 items-center justify-between border-b border-muted/50 px-4">
+            <span className="text-xl font-semibold tracking-wider text-white">
               SORTED CONCIERGE
             </span>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(false)}
-              className="text-foreground"
+              className="text-white"
             >
               <X className="h-6 w-6" />
             </Button>
           </div>
-
           <div className="flex-1 overflow-y-auto p-4">
             <nav className="mb-8">
               <ul className="space-y-6">
@@ -323,10 +311,10 @@ export default function Header() {
                     <Link
                       href={category.href}
                       className={cn(
-                        "text-xl font-lora uppercase tracking-widest",
+                        "text-xl font-normal uppercase tracking-widest",
                         isActive(category.href)
-                          ? "text-secondary"
-                          : "text-foreground hover:text-secondary"
+                          ? "text-secondary-light"
+                          : "text-white hover:text-secondary-light"
                       )}
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -335,7 +323,7 @@ export default function Header() {
                     {category.name === "SERVICES" && (
                       <ul className="ml-4 mt-3 space-y-3">
                         {isLoading ? (
-                          <li className="text-sm font-lora text-muted-foreground">
+                          <li className="text-sm font-normal text-muted-foreground">
                             Loading services...
                           </li>
                         ) : (
@@ -343,13 +331,13 @@ export default function Header() {
                             <li key={tier.name}>
                               <Link
                                 href={tier.href}
-                                className="block p-3 rounded-lg border border-border hover:border-secondary transition-colors"
+                                className="block p-3 rounded-lg border border-muted/50 hover:border-secondary-light transition-colors"
                                 onClick={() => setIsMenuOpen(false)}
                               >
-                                <div className="text-base font-cinzel font-semibold text-foreground mb-1">
+                                <div className="text-base font-semibold text-white mb-1">
                                   {tier.name}
                                 </div>
-                                <div className="text-sm font-lora text-muted-foreground">
+                                <div className="text-sm font-normal text-muted-foreground">
                                   {tier.description}
                                 </div>
                               </Link>
@@ -362,25 +350,23 @@ export default function Header() {
                 ))}
               </ul>
             </nav>
-
-            <div className="space-y-6 border-t border-border pt-6">
+            <div className="space-y-6 border-t border-muted/50 pt-6">
               <div className="space-y-2">
-                <h3 className="text-sm font-lora uppercase text-muted-foreground">
+                <h3 className="text-sm font-normal uppercase text-muted-foreground">
                   Contact Us
                 </h3>
-                <p className="flex items-center gap-2 text-sm font-lora text-foreground">
+                <p className="flex items-center gap-2 text-sm font-normal text-white">
                   <Phone className="h-4 w-4" /> +234 123 456 7890
                 </p>
-                <p className="flex items-center gap-2 text-sm font-lora text-foreground">
+                <p className="flex items-center gap-2 text-sm font-normal text-white">
                   <Mail className="h-4 w-4" /> info@sortedconcierge.com
                 </p>
-                <p className="flex items-center gap-2 text-sm font-lora text-foreground">
+                <p className="flex items-center gap-2 text-sm font-normal text-white">
                   <MapPin className="h-4 w-4" /> Lagos, Nigeria
                 </p>
               </div>
-
               <div className="space-y-2">
-                <h3 className="text-sm font-lora uppercase text-muted-foreground">
+                <h3 className="text-sm font-normal uppercase text-muted-foreground">
                   Follow Us
                 </h3>
                 <div className="flex gap-4">
@@ -392,7 +378,7 @@ export default function Header() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 text-foreground hover:bg-secondary/10"
+                      className="h-9 w-9 text-white hover:bg-secondary-light/10"
                     >
                       <Instagram className="h-5 w-5" />
                     </Button>
@@ -405,7 +391,7 @@ export default function Header() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 text-foreground hover:bg-secondary/10"
+                      className="h-9 w-9 text-white hover:bg-secondary-light/10"
                     >
                       <Facebook className="h-5 w-5" />
                     </Button>
@@ -418,14 +404,13 @@ export default function Header() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 text-foreground hover:bg-secondary/10"
+                      className="h-9 w-9 text-white hover:bg-secondary-light/10"
                     >
                       <Twitter className="h-5 w-5" />
                     </Button>
                   </Link>
                 </div>
               </div>
-
               {user ? (
                 <div className="pt-2">
                   <Button
@@ -434,7 +419,7 @@ export default function Header() {
                       setIsMenuOpen(false);
                     }}
                     variant="outline"
-                    className="w-full border-secondary text-foreground hover:bg-secondary hover:text-secondary-foreground"
+                    className="w-full border-secondary-light text-white hover:bg-secondary-light hover:text-black"
                   >
                     <LogOut className="mr-2 h-4 w-4" /> Logout
                   </Button>
@@ -443,7 +428,7 @@ export default function Header() {
                 <div className="flex flex-col gap-2 pt-2">
                   <Button
                     asChild
-                    className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90"
+                    className="w-full bg-gold-gradient text-black hover:bg-secondary-light/80"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Link href="/auth/login">Login</Link>
@@ -451,7 +436,7 @@ export default function Header() {
                   <Button
                     asChild
                     variant="outline"
-                    className="w-full border-secondary text-foreground hover:bg-secondary hover:text-secondary-foreground"
+                    className="w-full border-secondary-light text-white hover:bg-secondary-light hover:text-black"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Link href="/auth/register">Register</Link>

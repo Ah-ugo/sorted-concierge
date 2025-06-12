@@ -46,15 +46,15 @@ const PackageCard = ({
       onHoverEnd={() => setIsHovered(false)}
       className={`relative group overflow-hidden rounded-2xl transition-all duration-500 ${
         pkg.popular
-          ? "bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-secondary/50"
-          : "bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-gray-700/50"
-      } backdrop-blur-xl shadow-2xl hover:shadow-secondary/10`}
+          ? "bg-gold-gradient border-2 border-secondary-light/50"
+          : "bg-card border border-muted/50"
+      } backdrop-blur-xl shadow-2xl hover:shadow-secondary-light/10`}
     >
       {/* Glow effect */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isHovered ? 1 : 0 }}
-        className="absolute inset-0 bg-secondary/5 rounded-2xl"
+        className="absolute inset-0 bg-secondary-light/3 rounded-2xl" // Reduced opacity for better readability
       />
 
       {/* Popular badge */}
@@ -65,7 +65,7 @@ const PackageCard = ({
           transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
           className="absolute -top-2 -right-2 z-10"
         >
-          <div className="bg-secondary text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
+          <div className="bg-secondary-light text-black text-xs font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
             <Star className="w-3 h-3 fill-current" />
             MOST POPULAR
           </div>
@@ -76,18 +76,24 @@ const PackageCard = ({
         {/* Header */}
         <div className="mb-6">
           <motion.h3
-            className="text-2xl font-bold text-white mb-3 group-hover:text-secondary transition-colors duration-300"
+            className={`text-2xl font-bold mb-3 group-hover:text-secondary-light transition-colors duration-300 ${
+              pkg.popular ? "text-black" : "text-white"
+            }`} // Black for popular, white for others
             style={{ fontFamily: "serif" }}
           >
             {pkg.title}
           </motion.h3>
           <motion.div
-            className="w-12 h-1 bg-secondary rounded-full mb-4"
+            className="w-12 h-1 bg-secondary-light rounded-full mb-4"
             initial={{ width: 0 }}
             animate={{ width: 48 }}
             transition={{ delay: 0.5 + index * 0.1, duration: 0.8 }}
           />
-          <p className="text-gray-300 leading-relaxed text-sm">
+          <p
+            className={`leading-relaxed text-sm ${
+              pkg.popular ? "text-black/80" : "text-muted-foreground"
+            }`} // Black/80 for popular, muted-foreground for others
+          >
             {pkg.description}
           </p>
         </div>
@@ -101,12 +107,18 @@ const PackageCard = ({
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{
-                  delay: 0.6 + index * 0.1 + featureIndex * 0.1,
+                  delay: 0.65 + index * 0.1 + featureIndex * 0.05,
                   duration: 0.4,
                 }}
-                className="flex items-start gap-3 text-sm text-gray-200"
+                className={`flex items-start gap-3 text-sm ${
+                  pkg.popular ? "text-black" : "text-white"
+                }`} // Black for popular, white for others
               >
-                <CheckCircle className="w-5 h-5 text-secondary mt-0.5 flex-shrink-0" />
+                <CheckCircle
+                  className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
+                    pkg.popular ? "text-secondary-dark" : "text-secondary-light"
+                  }`} // Secondary-dark for popular, secondary-light for others
+                />
                 <span className="leading-relaxed">{feature}</span>
               </motion.li>
             ))}
@@ -119,8 +131,8 @@ const PackageCard = ({
           whileTap={{ scale: 0.98 }}
           className={`group relative overflow-hidden rounded-xl px-6 py-3 font-medium transition-all duration-300 ${
             pkg.popular
-              ? "bg-secondary text-white shadow-lg hover:bg-secondary/80"
-              : "bg-gray-700/50 text-gray-200 hover:bg-gray-600/50 border border-gray-600/50"
+              ? "bg-secondary-light text-black shadow-lg hover:bg-secondary-dark" // Updated hover to secondary-dark
+              : "bg-muted/50 text-white hover:bg-muted/80 border border-muted/50"
           }`}
         >
           <Link
@@ -142,11 +154,11 @@ const StatCard = ({ icon: Icon, number, label, delay }: any) => (
     whileInView={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.6, delay }}
     viewport={{ once: true }}
-    className="text-center p-6 rounded-xl bg-gray-800/30 backdrop-blur-sm border border-gray-700/30"
+    className="text-center p-6 rounded-xl bg-muted/30 backdrop-blur-sm border border-muted/30"
   >
-    <Icon className="w-8 h-8 text-secondary mx-auto mb-3" />
+    <Icon className="w-8 h-8 text-secondary-light mx-auto mb-3" />
     <div className="text-2xl font-bold text-white mb-1">{number}</div>
-    <div className="text-sm text-gray-400 uppercase tracking-wider">
+    <div className="text-sm text-muted-foreground uppercase tracking-wider">
       {label}
     </div>
   </motion.div>
@@ -236,7 +248,7 @@ export default function ServicesPage() {
   ];
 
   return (
-    <div className="bg-gray-900 text-white overflow-x-hidden">
+    <div className="bg-black text-white overflow-x-hidden">
       {/* Hero Section with Image Overlay */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image */}
@@ -247,7 +259,8 @@ export default function ServicesPage() {
               backgroundImage: "url('/image6.png')",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/80" />
+          {/* <div className="absolute inset-0 bg-gradient-to-b from-muted/60 via-muted/70 to-muted/80" /> */}
+          <div className="absolute inset-0 bg-black/70" />
         </div>
 
         <motion.div
@@ -270,7 +283,7 @@ export default function ServicesPage() {
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
               className="inline-block mb-6"
             >
-              <span className="px-4 py-2 bg-gray-800/70 border border-gray-700/70 rounded-full text-secondary text-sm font-medium uppercase tracking-wider backdrop-blur-sm">
+              <span className="px-4 py-2 bg-muted/70 border border-muted/70 rounded-full text-secondary-light text-sm font-medium uppercase tracking-wider backdrop-blur-sm">
                 Your Luxury, Our Expertise
               </span>
             </motion.div>
@@ -286,7 +299,7 @@ export default function ServicesPage() {
                 Sorted Concierge
               </span>
               <br />
-              <span className="text-2xl md:text-4xl text-secondary font-normal drop-shadow-lg">
+              <span className="text-2xl md:text-4xl text-secondary-light font-normal drop-shadow-lg">
                 Memberships
               </span>
             </motion.h1>
@@ -295,7 +308,7 @@ export default function ServicesPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="text-lg md:text-xl text-gray-200 mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-md"
+              className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-md"
             >
               High-trust lifestyle management for those who value time, privacy,
               and seamless experiences.
@@ -311,7 +324,7 @@ export default function ServicesPage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="group relative overflow-hidden px-8 py-4 bg-secondary rounded-xl text-black font-medium shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
+                  className="group relative overflow-hidden px-8 py-4 bg-gold-gradient rounded-xl text-black font-medium shadow-2xl hover:bg-secondary-light/80 transition-all duration-300 backdrop-blur-sm"
                 >
                   <span className="relative z-10 flex items-center gap-2 text-sm uppercase tracking-wider text-black">
                     Get Started
@@ -323,7 +336,7 @@ export default function ServicesPage() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 border border-gray-500/70 rounded-xl text-gray-200 font-medium hover:bg-gray-800/50 transition-all duration-300 text-sm uppercase tracking-wider backdrop-blur-sm"
+                  className="px-8 py-4 border border-muted/70 rounded-xl text-white font-medium hover:bg-muted/50 transition-all duration-300 text-sm uppercase tracking-wider backdrop-blur-sm"
                 >
                   Learn More
                 </motion.button>
@@ -342,18 +355,18 @@ export default function ServicesPage() {
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-6 h-10 border-2 border-gray-400/70 rounded-full flex justify-center backdrop-blur-sm"
+            className="w-6 h-10 border-2 border-muted/70 rounded-full flex justify-center backdrop-blur-sm"
           >
             <motion.div
               animate={{ y: [0, 12, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="w-1 h-3 bg-secondary rounded-full mt-2"
+              className="w-1 h-3 bg-secondary-light rounded-full mt-2"
             />
           </motion.div>
         </motion.div>
       </section>
       {/* Stats Section */}
-      <section className="py-12 sm:py-16 bg-gray-800/20">
+      <section className="py-12 sm:py-16 bg-muted/20">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <StatCard
@@ -374,7 +387,7 @@ export default function ServicesPage() {
         </div>
       </section>
       {/* Membership Tiers Section */}
-      <section className="py-12 sm:py-16 bg-gray-800/50">
+      <section className="py-12 sm:py-16 bg-black">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -389,8 +402,8 @@ export default function ServicesPage() {
             >
               Our Service Tiers
             </h2>
-            <div className="w-24 h-1 bg-secondary rounded-full mx-auto mb-6" />
-            <p className="text-lg text-gray-300 leading-relaxed">
+            <div className="w-24 h-1 bg-secondary-light rounded-full mx-auto mb-6" />
+            <p className="text-lg text-muted-foreground leading-relaxed">
               Three distinct paths built around how you live, travel, and plan
               for the future.
             </p>
@@ -398,10 +411,12 @@ export default function ServicesPage() {
 
           {isLoading ? (
             <div className="flex justify-center py-8">
-              <div className="h-12 w-12 animate-spin rounded-full border-4 border-secondary border-t-transparent"></div>
+              <div className="h-12 w-12 animate-spin rounded-full border-4 border-secondary-light border-t-transparent"></div>
             </div>
           ) : error ? (
-            <div className="text-center text-red-400 text-lg">{error}</div>
+            <div className="text-center text-secondary-dark text-lg">
+              {error}
+            </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
               {packages.map((pkg, index) => (
@@ -417,7 +432,7 @@ export default function ServicesPage() {
             viewport={{ once: true }}
             className="mt-16 text-center"
           >
-            <p className="text-gray-300 mb-8 text-lg">
+            <p className="text-muted-foreground mb-8 text-lg">
               Need a custom solution? We can tailor a membership to your unique
               lifestyle.
             </p>
@@ -425,7 +440,7 @@ export default function ServicesPage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 border border-secondary/50 rounded-xl text-secondary font-medium hover:bg-secondary/10 transition-all duration-300 text-sm uppercase tracking-wider"
+                className="px-8 py-4 border border-secondary-light/50 rounded-xl text-secondary-light font-medium hover:bg-secondary-light/10 transition-all duration-300 text-sm uppercase tracking-wider"
               >
                 Contact Us
               </motion.button>
@@ -434,7 +449,7 @@ export default function ServicesPage() {
         </div>
       </section>
       {/* FAQ Section */}
-      <section className="py-12 sm:py-16 bg-gray-900">
+      <section className="py-12 sm:py-16 bg-black">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -449,7 +464,7 @@ export default function ServicesPage() {
             >
               Frequently Asked Questions
             </h2>
-            <div className="w-24 h-1 bg-secondary rounded-full mx-auto" />
+            <div className="w-24 h-1 bg-secondary-light rounded-full mx-auto" />
           </motion.div>
 
           <div className="space-y-4 max-w-4xl mx-auto">
@@ -462,11 +477,11 @@ export default function ServicesPage() {
                 viewport={{ once: true }}
                 className="group"
               >
-                <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden transition-all duration-300 hover:border-secondary/30">
+                <div className="bg-muted/50 backdrop-blur-sm rounded-2xl border border-muted/50 overflow-hidden transition-all duration-300 hover:border-secondary-light/30">
                   <motion.button
-                    className="flex w-full items-center justify-between p-6 text-left focus:outline-none focus:ring-2 focus:ring-secondary/50 rounded-2xl"
+                    className="flex w-full items-center justify-between p-6 text-left focus:outline-none focus:ring-2 focus:ring-secondary-light/50 rounded-2xl"
                     onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                    whileHover={{ backgroundColor: "rgba(55, 65, 81, 0.1)" }}
+                    whileHover={{ backgroundColor: "rgba(43, 43, 43, 0.1)" }}
                   >
                     <h3
                       className="text-lg md:text-xl font-bold text-white pr-4 leading-relaxed"
@@ -479,10 +494,9 @@ export default function ServicesPage() {
                       transition={{ duration: 0.3 }}
                       className="flex-shrink-0"
                     >
-                      <ChevronDown className="w-6 h-6 text-secondary" />
+                      <ChevronDown className="w-6 h-6 text-secondary-light" />
                     </motion.div>
                   </motion.button>
-
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={
@@ -494,8 +508,8 @@ export default function ServicesPage() {
                     className="overflow-hidden"
                   >
                     <div className="px-6 pb-6">
-                      <div className="w-full h-px bg-gray-600/50 mb-4" />
-                      <p className="text-gray-300 leading-relaxed whitespace-pre-line">
+                      <div className="w-full h-px bg-muted/50 mb-4" />
+                      <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                         {faq.answer}
                       </p>
                     </div>
@@ -506,7 +520,6 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
-
       <section className="relative py-12 sm:py-16 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div
@@ -515,7 +528,7 @@ export default function ServicesPage() {
               backgroundImage: "url('/image7.png')",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-muted/70 to-transparent" />
         </div>
         <div className="container relative z-10 mx-auto px-6 text-center">
           <motion.div
@@ -531,25 +544,26 @@ export default function ServicesPage() {
             >
               Ready to Live Sorted?
             </h2>
-            <p className="text-lg text-gray-200 mb-10 leading-relaxed drop-shadow-md">
+            <p className="text-lg text-muted-foreground mb-10 leading-relaxed drop-shadow-md">
               Join an exclusive community of individuals who demand excellence
               in every aspect of their lifestyle.
             </p>
-
-            <Link href={"/membership-booking"}>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative overflow-hidden px-10 py-5 bg-secondary rounded-2xl text-black font-bold shadow-2xl hover:bg-secondary/80 transition-all duration-300 backdrop-blur-sm"
-              >
-                <span className="relative z-10 flex items-center gap-3 text-lg uppercase tracking-wider text-black">
-                  Apply Now
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
-                </span>
-              </motion.button>
-            </Link>
           </motion.div>
+
+          <Link href={"/membership-booking"}>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group relative overflow-hidden px-10 py-5 bg-gold-gradient rounded-2xl text-black font-bold shadow-2xl hover:bg-secondary-light/80 transition-all duration-300 backdrop-blur-sm"
+            >
+              <span className="relative z-10 flex items-center gap-3 text-lg uppercase tracking-wider text-black">
+                Apply Now
+                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
+              </span>
+            </motion.button>
+          </Link>
         </div>
+        {/* </div> */}
       </section>
     </div>
   );

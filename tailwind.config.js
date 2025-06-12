@@ -24,17 +24,19 @@ module.exports = {
         secondary: {
           DEFAULT: "#d4af37", // Gold
           foreground: "#000000",
+          light: "#FAC364", // Added light gold
+          dark: "#CC913F", // Added dark gold
         },
         destructive: {
           DEFAULT: "hsl(0 60% 50%)",
           foreground: "#ffffff",
         },
         muted: {
-          DEFAULT: "#111111", // Very dark gray
+          DEFAULT: "#2B2B2B", // Updated to requested very dark gray
           foreground: "#cccccc",
         },
         accent: {
-          DEFAULT: "#111111",
+          DEFAULT: "#131313", // Updated to requested darker gray
           foreground: "#ffffff",
         },
         popover: {
@@ -42,9 +44,14 @@ module.exports = {
           foreground: "#ffffff",
         },
         card: {
-          DEFAULT: "#111111",
+          DEFAULT: "#2B2B2B", // Updated to requested very dark gray
           foreground: "#ffffff",
         },
+        white: "#FFFFFF", // Added pure white as a utility color
+      },
+      backgroundImage: {
+        "gold-gradient":
+          "linear-gradient(90deg, #FAC364 0%, #d4af37 50%, #CC913F 100%)", // Gold gradient
       },
       borderRadius: {
         lg: "0.75rem",

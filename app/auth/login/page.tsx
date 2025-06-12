@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,12 +65,8 @@ export default function LoginPage() {
     try {
       const success = await login(formData.email, formData.password);
       if (success) {
-        // Check user role from auth context
         const isAdmin = user?.role === "admin";
-
-        // Redirect based on role
         router.push(isAdmin ? "/admin/dashboard" : "/");
-
         toast({
           title: "Login Successful",
           description: `Welcome back! Redirecting to ${
@@ -88,7 +83,6 @@ export default function LoginPage() {
       }
     } catch (error: any) {
       let errorMessage = "Login failed";
-
       if (error instanceof APIError) {
         if (error.status === 422) {
           errorMessage =
@@ -102,7 +96,6 @@ export default function LoginPage() {
           errorMessage = error.message;
         }
       }
-
       toast({
         title: "Login Error",
         description: errorMessage,
@@ -115,19 +108,19 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black py-12 px-4 sm:px-6 lg:px-8">
-      <div className="grid md:grid-cols-2 max-w-4xl w-full bg-black border border-gray-800 rounded-xl overflow-hidden elegant-shadow">
-        <div className="hidden md:block relative bg-gradient-to-br from-black to-gray-900">
+      <div className="grid md:grid-cols-2 max-w-4xl w-full bg-black border border-muted/50 rounded-xl overflow-hidden shadow-lg">
+        <div className="hidden md:block relative bg-gradient-to-br from-black to-muted/20">
           <div className="absolute inset-0 p-12 flex flex-col justify-between z-10">
             <div>
-              <h1 className="text-3xl font-cinzel font-bold gold-accent tracking-wider">
+              <h1 className="text-3xl font-semibold text-secondary-light tracking-wider">
                 Welcome Back
               </h1>
-              <p className="mt-4 text-gray-300 font-lora">
+              <p className="mt-4 text-muted-foreground font-normal">
                 Login to access premium concierge services tailored just for
                 you.
               </p>
             </div>
-            <div className="text-sm text-gray-400 font-lora">
+            <div className="text-sm text-muted-foreground font-normal">
               <p>Don't have an account?</p>
               <p>Sign up to experience luxury concierge services in Lagos.</p>
             </div>
@@ -139,10 +132,8 @@ export default function LoginPage() {
             height={800}
             className="w-full h-full object-cover opacity-20"
           />
-          {/* Luxury overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
         </div>
-
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -150,17 +141,16 @@ export default function LoginPage() {
           className="p-8 sm:p-12 bg-black"
         >
           <div className="mb-8 text-center">
-            <h1 className="text-2xl font-cinzel font-bold text-white tracking-wider">
+            <h1 className="text-2xl font-semibold text-white tracking-wider">
               Sign In
             </h1>
-            <p className="mt-2 text-gray-400 font-lora">
+            <p className="mt-2 text-muted-foreground font-normal">
               Enter your credentials to access your account
             </p>
           </div>
-
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-white font-lora">
+              <Label htmlFor="email" className="text-white font-normal">
                 Email
               </Label>
               <Input
@@ -171,21 +161,20 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 disabled={isLoading}
-                className="h-12 bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-secondary focus:ring-secondary"
+                className="h-12 bg-card border-muted/50 text-white placeholder:text-muted-foreground focus:border-secondary-light focus:ring-secondary-light"
               />
               {errors.email && (
                 <p className="text-sm text-red-400">{errors.email}</p>
               )}
             </div>
-
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-white font-lora">
+                <Label htmlFor="password" className="text-white font-normal">
                   Password
                 </Label>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-sm gold-accent hover:opacity-80 font-lora link-underline"
+                  className="text-sm text-secondary-light hover:opacity-80 font-normal underline"
                 >
                   Forgot password?
                 </Link>
@@ -198,16 +187,15 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 disabled={isLoading}
-                className="h-12 bg-gray-900 border-gray-700 text-white placeholder:text-gray-500 focus:border-secondary focus:ring-secondary"
+                className="h-12 bg-card border-muted/50 text-white placeholder:text-muted-foreground focus:border-secondary-light focus:ring-secondary-light"
               />
               {errors.password && (
                 <p className="text-sm text-red-400">{errors.password}</p>
               )}
             </div>
-
             <Button
               type="submit"
-              className="w-full h-12 gold-gradient text-black font-lora uppercase tracking-wider hover:opacity-90 elegant-shadow"
+              className="w-full h-12 bg-gold-gradient text-black font-normal uppercase tracking-wider hover:bg-secondary-light/80"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -216,12 +204,11 @@ export default function LoginPage() {
                 "Sign In"
               )}
             </Button>
-
-            <div className="text-center text-sm text-gray-400 font-lora">
+            <div className="text-center text-sm text-muted-foreground font-normal">
               Don't have an account?{" "}
               <Link
                 href="/auth/register"
-                className="gold-accent hover:opacity-80 link-underline"
+                className="text-secondary-light hover:opacity-80 underline"
               >
                 Sign up
               </Link>

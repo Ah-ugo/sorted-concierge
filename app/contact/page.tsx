@@ -60,8 +60,11 @@ export default function ContactPage() {
         description:
           "We've received your message and will get back to you shortly.",
         action: (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/20">
-            <CheckCircle className="h-5 w-5 text-secondary" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary-light/20">
+            {" "}
+            {/* Updated to secondary.light */}
+            <CheckCircle className="h-5 w-5 text-secondary-light" />{" "}
+            {/* Updated to secondary.light */}
           </div>
         ),
       });
@@ -104,7 +107,8 @@ export default function ContactPage() {
             className="w-full h-full object-cover"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-black/70" />{" "}
+          {/* Updated to muted */}
         </motion.div>
 
         <div className="container relative z-10 mx-auto px-4 sm:px-6 text-center">
@@ -114,13 +118,19 @@ export default function ContactPage() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="mx-auto max-w-3xl"
           >
-            <p className="mb-4 text-center font-lora uppercase tracking-wider text-overlay text-xs sm:text-sm">
+            <p className="mb-4 text-center font-lora uppercase tracking-wider text-white text-xs sm:text-sm">
+              {" "}
+              {/* Updated to white */}
               REACH OUT TO US
             </p>
-            <h1 className="mb-6 text-center text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold uppercase tracking-widest text-overlay">
+            <h1 className="mb-6 text-center text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold uppercase tracking-widest text-white">
+              {" "}
+              {/* Updated to white */}
               GET IN TOUCH
             </h1>
-            <p className="text-sm sm:text-base md:text-lg font-lora text-overlay">
+            <p className="text-sm sm:text-base md:text-lg font-lora text-white">
+              {" "}
+              {/* Updated to white */}
               Have questions or need assistance? Our team is here to help you
               with any inquiries.
             </p>
@@ -129,7 +139,9 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Form Section */}
-      <section className="bg-background py-16 sm:py-24 md:py-32">
+      <section className="bg-black py-16 sm:py-24 md:py-32">
+        {" "}
+        {/* Updated to black (background) */}
         <div className="container mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
             {/* Contact Information */}
@@ -141,7 +153,9 @@ export default function ContactPage() {
               }
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-foreground">
+              <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+                {" "}
+                {/* Updated to white */}
                 Contact Information
               </h2>
               <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
@@ -152,11 +166,16 @@ export default function ContactPage() {
 
               <div className="space-y-6">
                 <div className="flex items-start space-x-4 sm:space-x-6">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary/10">
-                    <MapPin className="h-6 w-6 text-secondary" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-light/10">
+                    {" "}
+                    {/* Updated to secondary.light */}
+                    <MapPin className="h-6 w-6 text-secondary-light" />{" "}
+                    {/* Updated to secondary.light */}
                   </div>
                   <div>
-                    <h3 className="mb-2 text-lg sm:text-xl md:text-2xl font-cinzel font-bold uppercase tracking-wider text-foreground">
+                    <h3 className="mb-2 text-lg sm:text-xl md:text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
+                      {" "}
+                      {/* Updated to white */}
                       Our Location
                     </h3>
                     <p className="text-sm sm:text-base font-lora text-muted-foreground">
@@ -166,11 +185,16 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start space-x-4 sm:space-x-6">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary/10">
-                    <Phone className="h-6 w-6 text-secondary" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-light/10">
+                    {" "}
+                    {/* Updated to secondary.light */}
+                    <Phone className="h-6 w-6 text-secondary-light" />{" "}
+                    {/* Updated to secondary.light */}
                   </div>
                   <div>
-                    <h3 className="mb-2 text-lg sm:text-xl md:text-2xl font-cinzel font-bold uppercase tracking-wider text-foreground">
+                    <h3 className="mb-2 text-lg sm:text-xl md:text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
+                      {" "}
+                      {/* Updated to white */}
                       Phone Number
                     </h3>
                     <p className="text-sm sm:text-base font-lora text-muted-foreground">
@@ -183,11 +207,16 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start space-x-4 sm:space-x-6">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary/10">
-                    <Mail className="h-6 w-6 text-secondary" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-light/10">
+                    {" "}
+                    {/* Updated to secondary.light */}
+                    <Mail className="h-6 w-6 text-secondary-light" />{" "}
+                    {/* Updated to secondary.light */}
                   </div>
                   <div>
-                    <h3 className="mb-2 text-lg sm:text-xl md:text-2xl font-cinzel font-bold uppercase tracking-wider text-foreground">
+                    <h3 className="mb-2 text-lg sm:text-xl md:text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
+                      {" "}
+                      {/* Updated to white */}
                       Email Address
                     </h3>
                     <p className="text-sm sm:text-base font-lora text-muted-foreground">
@@ -200,11 +229,16 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start space-x-4 sm:space-x-6">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary/10">
-                    <Clock className="h-6 w-6 text-secondary" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-light/10">
+                    {" "}
+                    {/* Updated to secondary.light */}
+                    <Clock className="h-6 w-6 text-secondary-light" />{" "}
+                    {/* Updated to secondary.light */}
                   </div>
                   <div>
-                    <h3 className="mb-2 text-lg sm:text-xl md:text-2xl font-cinzel font-bold uppercase tracking-wider text-foreground">
+                    <h3 className="mb-2 text-lg sm:text-xl md:text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
+                      {" "}
+                      {/* Updated to white */}
                       Working Hours
                     </h3>
                     <p className="text-sm sm:text-base font-lora text-muted-foreground">
@@ -240,9 +274,13 @@ export default function ContactPage() {
               }
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             >
-              <Card className="overflow-hidden border-border bg-card shadow-lg">
+              <Card className="overflow-hidden border-muted bg-card shadow-lg">
+                {" "}
+                {/* Updated to muted */}
                 <CardContent className="p-6 sm:p-8">
-                  <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-foreground">
+                  <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+                    {" "}
+                    {/* Updated to white */}
                     Send Us a Message
                   </h2>
                   <form
@@ -252,7 +290,7 @@ export default function ContactPage() {
                     <div>
                       <Label
                         htmlFor="name"
-                        className="mb-2 block text-xs sm:text-sm font-lora uppercase tracking-wider text-foreground"
+                        className="mb-2 block text-xs sm:text-sm font-lora uppercase tracking-wider text-white" // Updated to white
                       >
                         Full Name *
                       </Label>
@@ -264,14 +302,14 @@ export default function ContactPage() {
                         placeholder="Enter your full name"
                         required
                         disabled={isSubmitting}
-                        className="border-border bg-card py-4 sm:py-6 text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                        className="border-muted bg-muted/10 py-4 sm:py-6 text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-lora" // Updated to muted, muted/10, white, and secondary.light
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="email"
-                        className="mb-2 block text-xs sm:text-sm font-lora uppercase tracking-wider text-foreground"
+                        className="mb-2 block text-xs sm:text-sm font-lora uppercase tracking-wider text-white" // Updated to white
                       >
                         Email Address *
                       </Label>
@@ -284,14 +322,14 @@ export default function ContactPage() {
                         placeholder="Enter your email address"
                         required
                         disabled={isSubmitting}
-                        className="border-border bg-card py-4 sm:py-6 text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                        className="border-muted bg-muted/10 py-4 sm:py-6 text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-lora" // Updated to muted, muted/10, white, and secondary.light
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="phone"
-                        className="mb-2 block text-xs sm:text-sm font-lora uppercase tracking-wider text-foreground"
+                        className="mb-2 block text-xs sm:text-sm font-lora uppercase tracking-wider text-white" // Updated to white
                       >
                         Phone Number
                       </Label>
@@ -302,14 +340,14 @@ export default function ContactPage() {
                         onChange={handleChange}
                         placeholder="Enter your phone number"
                         disabled={isSubmitting}
-                        className="border-border bg-card py-4 sm:py-6 text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                        className="border-muted bg-muted/10 py-4 sm:py-6 text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-lora" // Updated to muted, muted/10, white, and secondary.light
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="subject"
-                        className="mb-2 block text-xs sm:text-sm font-lora uppercase tracking-wider text-foreground"
+                        className="mb-2 block text-xs sm:text-sm font-lora uppercase tracking-wider text-white" // Updated to white
                       >
                         Subject *
                       </Label>
@@ -321,14 +359,14 @@ export default function ContactPage() {
                         placeholder="Enter the subject of your message"
                         required
                         disabled={isSubmitting}
-                        className="border-border bg-card py-4 sm:py-6 text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                        className="border-muted bg-muted/10 py-4 sm:py-6 text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-lora" // Updated to muted, muted/10, white, and secondary.light
                       />
                     </div>
 
                     <div>
                       <Label
                         htmlFor="message"
-                        className="mb-2 block text-xs sm:text-sm font-lora uppercase tracking-wider text-foreground"
+                        className="mb-2 block text-xs sm:text-sm font-lora uppercase tracking-wider text-white" // Updated to white
                       >
                         Message *
                       </Label>
@@ -341,13 +379,13 @@ export default function ContactPage() {
                         rows={6}
                         required
                         disabled={isSubmitting}
-                        className="border-border bg-card text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                        className="border-muted bg-muted/10 text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-lora" // Updated to muted, muted/10, white, and secondary.light
                       />
                     </div>
 
                     <Button
                       type="submit"
-                      className="w-full bg-secondary py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
+                      className="w-full bg-gold-gradient py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:bg-secondary-light/90" // Updated to gold-gradient and secondary.light
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -380,7 +418,8 @@ export default function ContactPage() {
           className="w-full h-full object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-muted/60 to-transparent" />{" "}
+        {/* Updated to muted */}
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 sm:p-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -389,12 +428,14 @@ export default function ContactPage() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-overlay">
+            <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+              {" "}
+              {/* Updated to white */}
               Begin Your Journey
             </h2>
             <Button
               asChild
-              className="bg-secondary px-6 sm:px-8 py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
+              className="bg-gold-gradient px-6 sm:px-8 py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:bg-secondary-light/90" // Updated to gold-gradient and secondary.light
             >
               <a href="/membership-booking">Book Now</a>
             </Button>

@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -9,7 +10,6 @@ import { X, ChevronLeft, ChevronRight, Instagram } from "lucide-react";
 import { apiClient, type GalleryImage } from "@/lib/api";
 import { useToast } from "@/components/ui/use-toast";
 
-// Static Instagram images with Unsplash URLs
 const instagramImages = [
   {
     id: "1",
@@ -76,11 +76,10 @@ export default function Gallery() {
       try {
         const galleryData = await apiClient.getGallery({});
         setGalleryImages(galleryData);
-      } catch (error: any) {
-        console.error("Error fetching gallery:", error);
+      } catch {
         toast({
           title: "Error",
-          description: error.message || "Failed to load gallery images.",
+          description: "Failed to load gallery images.",
           variant: "destructive",
         });
       } finally {
@@ -127,7 +126,6 @@ export default function Gallery() {
 
   return (
     <>
-      {/* Hero Section */}
       <section
         ref={heroRef}
         className="relative flex min-h-[60vh] items-center justify-center pt-10 overflow-hidden"
@@ -153,19 +151,19 @@ export default function Gallery() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="mx-auto max-w-3xl"
           >
-            <p className="mb-4 font-lora text-sm sm:text-base md:text-lg italic tracking-wider text-secondary">
+            <p className="mb-4 font-normal text-sm sm:text-base md:text-lg italic tracking-wider text-secondary-light">
               EXPLORE OUR MOMENTS
             </p>
-            <h1 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold uppercase tracking-widest text-white">
+            <h1 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-semibold uppercase tracking-widest text-white">
               OUR GALLERY
             </h1>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-200">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-normal text-muted-foreground">
               Discover the luxury experiences we curate, from exclusive events
               to seamless travel.
             </p>
             <Button
               asChild
-              className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:from-secondary/80 hover:to-primary/80"
+              className="bg-gold-gradient px-8 py-6 text-xs sm:text-sm font-normal uppercase tracking-widest text-black hover:bg-secondary-light/80"
             >
               <Link href="/membership-booking">Book an Experience</Link>
             </Button>
@@ -173,8 +171,7 @@ export default function Gallery() {
         </div>
       </section>
 
-      {/* Main Gallery Section */}
-      <section className="bg-gray-900 py-16 md:py-32" ref={galleryRef}>
+      <section className="bg-black py-16 md:py-32" ref={galleryRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -184,12 +181,12 @@ export default function Gallery() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-8 md:mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+            <h2 className="mb-8 md:mb-16 text-2xl sm:text-3xl md:text-4xl font-semibold uppercase tracking-widest text-white">
               Curated Moments
             </h2>
           </motion.div>
           {isLoading ? (
-            <div className="text-center text-gray-300 font-lora">
+            <div className="text-center text-muted-foreground font-normal">
               Loading gallery...
             </div>
           ) : galleryImages.length > 0 ? (
@@ -214,7 +211,7 @@ export default function Gallery() {
                     )
                   }
                 >
-                  <div className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-md rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                  <div className="relative bg-card backdrop-blur-md rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
                     <Image
                       src={image.image_url}
                       alt={image.title}
@@ -223,7 +220,7 @@ export default function Gallery() {
                       className="w-full h-64 object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 text-center text-white font-lora text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-center text-white font-normal text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       {image.description || image.title}
                     </div>
                   </div>
@@ -231,15 +228,14 @@ export default function Gallery() {
               ))}
             </div>
           ) : (
-            <div className="text-center text-gray-300 font-lora">
+            <div className="text-center text-muted-foreground font-normal">
               No gallery images available.
             </div>
           )}
         </div>
       </section>
 
-      {/* Instagram Section */}
-      <section className="bg-gray-800/50 py-16 md:py-32" ref={instaRef}>
+      <section className="bg-muted/20 py-16 md:py-32" ref={instaRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -247,7 +243,7 @@ export default function Gallery() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-8 md:mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+            <h2 className="mb-8 md:mb-16 text-2xl sm:text-3xl md:text-4xl font-semibold uppercase tracking-widest text-white">
               Follow Us on Instagram
             </h2>
           </motion.div>
@@ -262,7 +258,7 @@ export default function Gallery() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="relative group"
               >
-                <div className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-md rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                <div className="relative bg-card backdrop-blur-md rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
                   <Image
                     src={image.src}
                     alt={image.alt}
@@ -271,7 +267,7 @@ export default function Gallery() {
                     className="w-full h-64 object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 text-center text-white font-lora text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-center text-white font-normal text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     {image.caption}
                     <a
                       href={image.link}
@@ -279,7 +275,7 @@ export default function Gallery() {
                       rel="noopener noreferrer"
                       className="block mt-2"
                     >
-                      <Instagram className="w-5 h-5 text-secondary mx-auto" />
+                      <Instagram className="w-5 h-5 text-secondary-light mx-auto" />
                     </a>
                   </div>
                 </div>
@@ -294,7 +290,7 @@ export default function Gallery() {
           >
             <Button
               asChild
-              className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:from-secondary/80 hover:to-primary/80"
+              className="bg-gold-gradient px-8 py-6 text-xs sm:text-sm font-normal uppercase tracking-widest text-black hover:bg-secondary-light/80"
             >
               <a
                 href="https://www.instagram.com/sortedconcierge"
@@ -308,7 +304,6 @@ export default function Gallery() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section
         className="relative aspect-[21/9] w-full"
         style={{ minHeight: "300px" }}
@@ -331,12 +326,12 @@ export default function Gallery() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
+            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-semibold uppercase tracking-widest text-white">
               Ready to Create Your Own Moments?
             </h2>
             <Button
               asChild
-              className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:from-secondary/80 hover:to-primary/80"
+              className="bg-gold-gradient px-8 py-6 text-xs sm:text-sm font-normal uppercase tracking-widest text-black hover:bg-secondary-light/80"
             >
               <Link href="/membership-booking">Book Now</Link>
             </Button>
@@ -344,7 +339,6 @@ export default function Gallery() {
         </div>
       </section>
 
-      {/* Image Preview Modal */}
       {selectedImage && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -355,23 +349,23 @@ export default function Gallery() {
           <div className="relative max-w-4xl w-full">
             <button
               onClick={closePreview}
-              className="absolute top-4 right-4 text-white hover:text-secondary"
+              className="absolute top-4 right-4 text-white hover:text-secondary-light"
             >
               <X className="w-8 h-8" />
             </button>
             <button
               onClick={prevImage}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-secondary"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-secondary-light"
             >
               <ChevronLeft className="w-8 h-8" />
             </button>
             <button
               onClick={nextImage}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-secondary"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-secondary-light"
             >
               <ChevronRight className="w-8 h-8" />
             </button>
-            <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-md rounded-xl overflow-hidden">
+            <div className="bg-card backdrop-blur-md rounded-xl overflow-hidden">
               <Image
                 src={selectedImage.src}
                 alt={selectedImage.alt}
@@ -379,7 +373,7 @@ export default function Gallery() {
                 height={600}
                 className="w-full h-auto object-contain"
               />
-              <div className="p-4 text-center text-white font-lora text-sm">
+              <div className="p-4 text-center text-white font-normal text-sm">
                 {selectedImage.caption}
               </div>
             </div>

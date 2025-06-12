@@ -12,36 +12,43 @@ export default function TermsPage() {
     threshold: 0.1,
   });
   const [contentRef, contentInView] = useInView({
+    triggerOnce: false,
+    threshold: 0.1,
+  });
+  const [ctaRef, ctaInView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
-  const [ctaRef, ctaInView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
   const termsContent = [
     {
       section: "Introduction",
-      text: "Welcome to Sorted Concierge Services. By using our website or services, you agree to these Terms and Conditions. These terms govern your use of our platform and the services we provide, including travel, event planning, and lifestyle management.",
+      description:
+        "Welcome to Sorted Concierge Services. By using our website or services, you agree to these Terms and Conditions. These terms govern your use of our platform and the services we provide, including travel, booking, and lifestyle management.",
     },
     {
       section: "User Responsibilities",
-      text: [
-        "Provide accurate and complete information when requesting services.",
-        "Comply with all applicable laws and regulations.",
-        "Respect the privacy and rights of other users and our staff.",
-        "Notify us promptly of any issues with our services.",
+      description: [
+        "You will provide accurate and complete information when requesting services.",
+        "You will comply with all applicable laws and regulations.",
+        "You must respect the privacy and rights of other users and our staff.",
+        "You must notify us promptly of any issues with our services.",
       ],
     },
     {
       section: "Service Limitations",
-      text: "We strive to deliver exceptional experiences, but we are not liable for delays, cancellations, or issues caused by third parties (e.g., airlines, venues). Services are subject to availability and may require advance notice.",
+      description:
+        "We strive to deliver exceptional experiences, but we are not liable for delays, cancellations, or issues caused by third parties (e.g., airlines, venues). Services are subject to availability and may require advance notice.",
     },
     {
       section: "Payment Terms",
-      text: "Payments must be made in full prior to service delivery unless otherwise agreed. All fees are non-refundable except as specified in our cancellation policy. Additional charges may apply for custom requests.",
+      description:
+        "Payments must be made in full prior to service delivery unless otherwise agreed. All fees are non-refundable except as specified in our cancellation policy. Additional charges may apply for custom requests.",
     },
     {
       section: "Changes to Terms",
-      text: "We may update these Terms and Conditions from time to time. Changes will be posted on this page, and continued use of our services constitutes acceptance of the updated terms.",
+      description:
+        "We may update these Terms and Conditions from time to time. Changes will be posted on this page, and continued use of our services constitutes acceptance of the updated terms.",
     },
   ];
 
@@ -50,7 +57,7 @@ export default function TermsPage() {
       {/* Hero Section */}
       <section
         ref={heroRef}
-        className="relative flex min-h-[50vh] items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 pt-10"
+        className="relative flex min-h-[50vh] items-center justify-center bg-black pt-10" // Updated to bg-black
       >
         <div className="container relative z-10 mx-auto my-16 px-6 text-center">
           <motion.div
@@ -62,7 +69,7 @@ export default function TermsPage() {
             <Button
               asChild
               variant="ghost"
-              className="mb-4 text-gray-200 hover:text-white hover:bg-secondary/20"
+              className="mb-4 text-muted-foreground hover:text-white hover:bg-muted/50 border border-muted/50 hover:border-secondary-light/50 rounded-xl" // Updated colors
             >
               <Link href="/">
                 <ArrowLeft className="w-5 h-5 mr-2" />
@@ -72,7 +79,7 @@ export default function TermsPage() {
             <h1 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold uppercase tracking-widest text-white">
               Terms and Conditions
             </h1>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-200">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
               Please review our terms to understand your responsibilities and
               our service policies.
             </p>
@@ -81,7 +88,7 @@ export default function TermsPage() {
       </section>
 
       {/* Content Section */}
-      <section className="bg-gray-900 py-16 md:py-32" ref={contentRef}>
+      <section className="bg-black py-16 md:py-32" ref={contentRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -91,7 +98,7 @@ export default function TermsPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-4xl"
           >
-            <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-md rounded-xl p-8 shadow-lg">
+            <div className="bg-card backdrop-blur-md rounded-xl p-8 shadow-lg">
               {termsContent.map((section, index) => (
                 <motion.div
                   key={index}
@@ -105,21 +112,31 @@ export default function TermsPage() {
                   <h2 className="text-xl sm:text-2xl font-cinzel font-bold text-white mb-4">
                     {section.section}
                   </h2>
-                  {Array.isArray(section.text) ? (
+                  {Array.isArray(section.description) ? (
                     <ul className="space-y-2">
-                      {section.text.map((item, i) => (
-                        <li
+                      {section.description.map((item, i) => (
+                        <motion.li
                           key={i}
-                          className="text-sm sm:text-base font-lora text-gray-200 flex items-start"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={
+                            contentInView
+                              ? { opacity: 1, x: 0 }
+                              : { opacity: 0, x: -10 }
+                          }
+                          transition={{
+                            duration: 0.3,
+                            delay: index * 0.1 + i * 0.05,
+                          }} // Added stagger
+                          className="text-sm sm:text-base font-lora text-muted-foreground flex items-start" // Updated to muted-foreground
                         >
-                          <span className="mr-2 text-secondary">•</span>
+                          <span className="mr-2 text-secondary-light">•</span>{" "}
                           {item}
-                        </li>
+                        </motion.li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-sm sm:text-base font-lora text-gray-200">
-                      {section.text}
+                    <p className="text-sm sm:text-base font-lora text-muted-foreground">
+                      {section.description}
                     </p>
                   )}
                 </motion.div>
@@ -130,7 +147,7 @@ export default function TermsPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gray-800/50 py-16 md:py-32" ref={ctaRef}>
+      <section className="bg-muted/20 py-16 md:py-32" ref={ctaRef}>
         <div className="container mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -140,12 +157,12 @@ export default function TermsPage() {
             <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               Have Questions?
             </h2>
-            <p className="mb-8 text-sm sm:text-base font-lora text-gray-200">
+            <p className="mb-8 text-sm sm:text-base font-lora text-muted-foreground">
               Contact us for more information about our services or policies.
             </p>
             <Button
               asChild
-              className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:from-secondary/80 hover:to-primary/80"
+              className="bg-gold-gradient text-black px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest hover:bg-secondary-light/80" // Updated to gold-gradient
             >
               <Link href="/contact">Get in Touch</Link>
             </Button>

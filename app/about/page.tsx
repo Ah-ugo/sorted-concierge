@@ -85,19 +85,19 @@ export default function AboutPage() {
 
   const values = [
     {
-      icon: <Shield className="h-6 w-6 gold-accent" />,
+      icon: <Shield className="h-6 w-6 text-secondary-light" />, // Updated to secondary.light (#FAC364)
       title: "Privacy First",
       description:
         "Every Sorted client is protected by strict confidentiality and NDAs. What we do for you stays between us.",
     },
     {
-      icon: <Award className="h-6 w-6 gold-accent" />,
+      icon: <Award className="h-6 w-6 text-secondary-light" />, // Updated to secondary.light (#FAC364)
       title: "Excellence & Trust",
       description:
         "We don’t believe in 'good enough.' We treat every task like it matters because to you, it does.",
     },
     {
-      icon: <Globe className="h-6 w-6 gold-accent" />,
+      icon: <Globe className="h-6 w-6 text-secondary-light" />, // Updated to secondary.light (#FAC364)
       title: "Global, But Personal",
       description:
         "We’re built to support you across borders. Whether in Lagos, London, or Dubai, our team moves with you, adapts to your style, and respects your rhythm.",
@@ -109,35 +109,35 @@ export default function AboutPage() {
       title: "Private Clients & HNW Families",
       description:
         "Tailored solutions for high-net-worth individuals seeking discreet, seamless luxury.",
-      icon: <Users className="h-6 w-6 gold-accent" />,
+      icon: <Users className="h-6 w-6 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
     {
       title: "Entertainment Professionals & Talent Teams",
       description:
         "Effortless coordination for artists and teams with demanding schedules.",
-      icon: <Star className="h-6 w-6 gold-accent" />,
+      icon: <Star className="h-6 w-6 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
     {
       title: "Luxury Brand Directors",
       description: "Exclusive access and flawless execution for brand leaders.",
-      icon: <Briefcase className="h-6 w-6 gold-accent" />,
+      icon: <Briefcase className="h-6 w-6 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
     {
       title: "Executive Assistants, Chiefs of Staff, and Private Office Teams",
       description: "Trusted support for those managing elite lifestyles.",
-      icon: <Building className="h-6 w-6 gold-accent" />,
+      icon: <Building className="h-6 w-6 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
     {
       title: "Diaspora and International Clients",
       description:
         "Smooth transitions for those visiting or relocating globally.",
-      icon: <Plane className="h-6 w-6 gold-accent" />,
+      icon: <Plane className="h-6 w-6 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
     {
       title: "Family Offices",
       description:
         "Comprehensive lifestyle and travel support for family offices.",
-      icon: <Globe2 className="h-6 w-6 gold-accent" />,
+      icon: <Globe2 className="h-6 w-6 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
   ];
 
@@ -153,7 +153,9 @@ export default function AboutPage() {
     {
       title: "How We Work With Clients",
       content: (
-        <ul className="text-sm sm:text-base font-lora text-gray-300 list-disc list-inside">
+        <ul className="text-sm sm:text-base font-lora text-muted-foreground list-disc list-inside">
+          {" "}
+          {/* Updated to muted.foreground */}
           <li>
             Sorted is a private, membership-based service. To maintain the
             highest level of care, we work with a limited number of clients.
@@ -173,7 +175,9 @@ export default function AboutPage() {
     {
       title: "Confidentiality",
       content: (
-        <p className="text-sm sm:text-base font-lora text-gray-300">
+        <p className="text-sm sm:text-base font-lora text-muted-foreground">
+          {" "}
+          {/* Updated to muted.foreground */}
           Strict confidentiality protocols and NDAs protect client data and
           activity. We do not disclose, promote, or reference client names,
           photos, or stories unless explicitly permitted.
@@ -183,7 +187,9 @@ export default function AboutPage() {
     {
       title: "Vendor Network",
       content: (
-        <p className="text-sm sm:text-base font-lora text-gray-300">
+        <p className="text-sm sm:text-base font-lora text-muted-foreground">
+          {" "}
+          {/* Updated to muted.foreground */}
           We work with a curated list of vetted vendors and service providers
           across travel, hospitality, security, wellness, and logistics. All
           vendors are vetted for professionalism, reliability, and discretion.
@@ -193,7 +199,9 @@ export default function AboutPage() {
     {
       title: "Global Access",
       content: (
-        <p className="text-sm sm:text-base font-lora text-gray-300">
+        <p className="text-sm sm:text-base font-lora text-muted-foreground">
+          {" "}
+          {/* Updated to muted.foreground */}
           Sorted currently supports clients across: 🇬🇧 London | 🇳🇬 Lagos | 🇦🇪
           Dubai | 🇫🇷 Paris | 🇺🇸 New York | 🇬🇭 Accra etc
           <br />
@@ -210,7 +218,8 @@ export default function AboutPage() {
   if (isLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black">
-        <div className="h-16 w-16 animate-spin rounded-full border-4 border-black border-t-gold-accent"></div>
+        <div className="h-16 w-16 animate-spin rounded-full border-4 border-muted border-t-secondary-light"></div>{" "}
+        {/* Updated to muted and secondary.light */}
       </div>
     );
   }
@@ -232,6 +241,7 @@ export default function AboutPage() {
             sizes="100vw"
           />
           <div className="absolute inset-0 bg-black/50" />
+          {/* Updated to muted */}
         </div>
 
         <div className="container relative z-10 mx-auto px-6 text-center">
@@ -244,7 +254,9 @@ export default function AboutPage() {
             <h1 className="mb-8 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-cinzel font-bold uppercase tracking-widest text-white">
               Born in Lagos. Built for the World.
             </h1>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+              {" "}
+              {/* Updated to muted.foreground */}
               Sorted Concierge was founded to make life easier for those who
               live fast, travel often, and can’t afford chaos.
             </p>
@@ -264,29 +276,41 @@ export default function AboutPage() {
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
               className="flex flex-col justify-center order-2 md:order-1"
             >
-              <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest gold-accent">
+              <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-secondary-light">
+                {" "}
+                {/* Updated to secondary.light */}
                 Our Origins
               </h2>
               <div className="space-y-4">
-                <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+                <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+                  {" "}
+                  {/* Updated to muted.foreground */}
                   Sorted started with one goal: to make life easier for people
                   who live fast, travel often, and can’t afford chaos.
                 </p>
-                <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+                <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+                  {" "}
+                  {/* Updated to muted.foreground */}
                   Our founder, a corporate strategist and lifestyle consultant,
                   saw clients facing the same issue: access to luxury without
                   ease.
                 </p>
-                <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+                <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+                  {" "}
+                  {/* Updated to muted.foreground */}
                   What began in Lagos serving executives and diaspora clients
                   has grown into a trusted global service across cities like
                   London, Dubai, and Paris.
                 </p>
-                <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+                <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+                  {" "}
+                  {/* Updated to muted.foreground */}
                   We built our name by turning complicated situations into
                   seamless experiences.
                 </p>
-                <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+                <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+                  {" "}
+                  {/* Updated to muted.foreground */}
                   We stay small to serve a select group of clients exceptionally
                   well, prioritizing quality over quantity.
                 </p>
@@ -327,7 +351,9 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest gold-accent">
+            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-secondary-light">
+              {" "}
+              {/* Updated to secondary.light */}
               Founder’s Profile
             </h2>
           </motion.div>
@@ -362,14 +388,16 @@ export default function AboutPage() {
               <h3 className="mb-1 text-lg sm:text-xl md:text-2xl font-cinzel font-bold text-white">
                 {founder.name}
               </h3>
-              <p className="mb-4 text-xs sm:text-sm font-lora uppercase tracking-wider gold-accent">
+              <p className="mb-4 text-xs sm:text-sm font-lora uppercase tracking-wider text-secondary-light">
+                {" "}
+                {/* Updated to secondary.light */}
                 {founder.role}
               </p>
               <div className="space-y-3 mb-4">
                 {founder.bio.map((sentence, index) => (
                   <p
                     key={index}
-                    className="text-sm sm:text-base font-lora text-gray-300"
+                    className="text-sm sm:text-base font-lora text-muted-foreground" // Updated to muted.foreground
                   >
                     {sentence}
                   </p>
@@ -379,7 +407,7 @@ export default function AboutPage() {
                 {founder.quote.map((line, index) => (
                   <p
                     key={index}
-                    className="text-sm sm:text-base font-lora italic text-gray-300"
+                    className="text-sm sm:text-base font-lora italic text-muted-foreground" // Updated to muted.foreground
                   >
                     {line}
                   </p>
@@ -401,14 +429,20 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest gold-accent">
+            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-secondary-light">
+              {" "}
+              {/* Updated to secondary.light */}
               Who We Serve
             </h2>
-            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+              {" "}
+              {/* Updated to muted.foreground */}
               We work with a small, highly selective group of clients who value
               their privacy, their time, and doing things right the first time.
             </p>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300 italic">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground italic">
+              {" "}
+              {/* Updated to muted.foreground */}
               We’re not for everyone, and that’s intentional.
             </p>
           </motion.div>
@@ -426,15 +460,21 @@ export default function AboutPage() {
                   delay: index * 0.1,
                   ease: "easeOut",
                 }}
-                className="group bg-black/50 p-6 rounded-lg border border-gray-800 hover:border-secondary elegant-shadow hover:shadow-2xl transition-all duration-300"
+                className="group bg-card p-6 rounded-lg border border-muted hover:border-secondary elegant-shadow hover:shadow-2xl transition-all duration-300" // Updated to card and muted
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-gold-accent/10 group-hover:bg-gold-accent/20 transition-colors duration-300">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-secondary-light/10 group-hover:bg-secondary-light/20 transition-colors duration-300">
+                  {" "}
+                  {/* Updated to secondary.light */}
                   {client.icon}
                 </div>
-                <h3 className="mb-2 text-base sm:text-lg font-cinzel font-bold tracking-wider text-white group-hover:gold-accent transition-colors duration-300">
+                <h3 className="mb-2 text-base sm:text-lg font-cinzel font-bold tracking-wider text-white group-hover:text-secondary-light transition-colors duration-300">
+                  {" "}
+                  {/* Updated to secondary.light */}
                   {client.title}
                 </h3>
-                <p className="text-sm font-lora text-gray-300">
+                <p className="text-sm font-lora text-muted-foreground">
+                  {" "}
+                  {/* Updated to muted.foreground */}
                   {client.description}
                 </p>
               </motion.div>
@@ -454,10 +494,14 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest gold-accent">
+            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-secondary-light">
+              {" "}
+              {/* Updated to secondary.light */}
               How We Work
             </h2>
-            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+              {" "}
+              {/* Updated to muted.foreground */}
               Every Sorted engagement is personal. There are no cookie-cutter
               packages. No generic templates.
             </p>
@@ -480,10 +524,14 @@ export default function AboutPage() {
                 }}
                 className="flex items-start mb-6"
               >
-                <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gold-accent/20 border border-gold-accent text-gold-accent font-cinzel font-bold text-sm mr-4">
+                <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-secondary-light/20 border border-secondary-light text-secondary-light font-cinzel font-bold text-sm mr-4">
+                  {" "}
+                  {/* Updated to secondary.light */}
                   {index + 1}
                 </div>
-                <p className="text-sm sm:text-base font-lora text-gray-300">
+                <p className="text-sm sm:text-base font-lora text-muted-foreground">
+                  {" "}
+                  {/* Updated to muted.foreground */}
                   {step}
                 </p>
               </motion.div>
@@ -496,13 +544,15 @@ export default function AboutPage() {
               transition={{ duration: 0.8, delay: 1 }}
               className="mt-12 text-center"
             >
-              <p className="mb-6 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              <p className="mb-6 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+                {" "}
+                {/* Updated to muted.foreground */}
                 We focus on building relationships, not just service plans. The
                 longer we work with you, the better we anticipate your needs.
               </p>
               <Button
                 asChild
-                className="px-8 py-4 border-secondary border text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:opacity-90 elegant-shadow"
+                className="px-8 py-4 border-secondary border text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:bg-secondary hover:text-black elegant-shadow" // Updated hover state
               >
                 <Link href="/contact">Get Started</Link>
               </Button>
@@ -522,7 +572,9 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest gold-accent">
+            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-secondary-light">
+              {" "}
+              {/* Updated to secondary.light */}
               Our Values
             </h2>
           </motion.div>
@@ -540,15 +592,19 @@ export default function AboutPage() {
                   delay: index * 0.1,
                   ease: "easeOut",
                 }}
-                className="bg-black/50 p-6 md:p-8 shadow-sm rounded-lg border border-gray-800 hover:border-secondary elegant-shadow"
+                className="bg-card p-6 md:p-8 shadow-sm rounded-lg border border-muted hover:border-secondary elegant-shadow" // Updated to card and muted
               >
-                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-gold-accent/10">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-secondary-light/10">
+                  {" "}
+                  {/* Updated to secondary.light */}
                   {value.icon}
                 </div>
                 <h3 className="mb-4 text-lg sm:text-xl md:text-2xl font-cinzel font-bold tracking-wider text-white">
                   {value.title}
                 </h3>
-                <p className="text-sm sm:text-base font-lora text-gray-300">
+                <p className="text-sm sm:text-base font-lora text-muted-foreground">
+                  {" "}
+                  {/* Updated to muted.foreground */}
                   {value.description}
                 </p>
               </motion.div>
@@ -568,11 +624,16 @@ export default function AboutPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest gold-accent flex items-center justify-center">
-              <Globe className="h-8 w-8 mr-2 gold-accent" />
+            <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-secondary-light flex items-center justify-center">
+              {" "}
+              {/* Updated to secondary.light */}
+              <Globe className="h-8 w-8 mr-2 text-secondary-light" />{" "}
+              {/* Updated to secondary.light */}
               Our Policies & Approach
             </h2>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+              {" "}
+              {/* Updated to muted.foreground */}
               Discover the principles that guide our global, discreet, and
               exceptional service.
             </p>
@@ -595,11 +656,11 @@ export default function AboutPage() {
               >
                 <button
                   onClick={() => toggleAccordion(index)}
-                  className={`w-full flex justify-between items-center bg-black/50 p-4 rounded-lg border ${
+                  className={`w-full flex justify-between items-center bg-muted/50 p-4 rounded-lg border ${
                     openAccordion === index
                       ? "border-secondary"
-                      : "border-gray-800"
-                  } hover:border-secondary shadow-none focus:outline-none focus:ring-2 focus:border-secondary `}
+                      : "border-muted"
+                  } hover:border-secondary shadow-none focus:outline-none focus:ring-2 focus:ring-secondary`} // Updated to muted
                   aria-expanded={openAccordion === index}
                   aria-controls={`policy-${index}`}
                 >
@@ -607,7 +668,7 @@ export default function AboutPage() {
                     {policy.title}
                   </h3>
                   {openAccordion === index ? (
-                    <ChevronUp className={`h-5 w-5 text-white`} />
+                    <ChevronUp className="h-5 w-5 text-white" />
                   ) : (
                     <ChevronDown className="h-5 w-5 text-white" />
                   )}
@@ -623,7 +684,9 @@ export default function AboutPage() {
                   transition={{ duration: 0.3, ease: "easeOut" }}
                   className="overflow-hidden"
                 >
-                  <div className="p-4 bg-secondary/20 rounded-b-lg">
+                  <div className="p-4 bg-secondary-light/20 rounded-b-lg">
+                    {" "}
+                    {/* Updated to secondary.light */}
                     {policy.content}
                   </div>
                 </motion.div>
@@ -645,7 +708,9 @@ export default function AboutPage() {
             <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               Join the Sorted Circle
             </h2>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+              {" "}
+              {/* Updated to muted.foreground */}
               Experience a lifestyle where every detail is handled with
               discretion and excellence. Apply for membership or contact us to
               learn more.
@@ -654,13 +719,13 @@ export default function AboutPage() {
               <Button
                 asChild
                 variant="outline"
-                className="border-gold-accent px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest bg-black text-white hover:bg-secondary hover:text-black elegant-shadow"
+                className="border-secondary-light px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest bg-black text-white hover:bg-secondary hover:text-black elegant-shadow" // Updated to secondary.light
               >
                 <Link href="/membership-booking">Apply for Membership</Link>
               </Button>
               <Button
                 asChild
-                className="bg-secondary border px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black border-secondary hover:bg-none hover:border-secondary hover:text-white elegant-shadow"
+                className="bg-gold-gradient border px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black border-secondary-light hover:bg-none hover:border-secondary-light hover:text-white elegant-shadow" // Updated to gold-gradient and secondary.light
               >
                 <Link href="/contact">Contact Us</Link>
               </Button>

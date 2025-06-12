@@ -98,27 +98,27 @@ export default function Home() {
   const serviceItems = [
     {
       title: "Global Travel & Aviation Planning",
-      icon: <Plane className="w-8 h-8 gold-accent" />,
+      icon: <Plane className="w-8 h-8 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
     {
       title: "Luxury Transportation & Secure Mobility",
-      icon: <Car className="w-8 h-8 gold-accent" />,
+      icon: <Car className="w-8 h-8 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
     {
       title: "Private Event Production",
-      icon: <Calendar className="w-8 h-8 gold-accent" />,
+      icon: <Calendar className="w-8 h-8 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
     {
       title: "Personal Affairs & Lifestyle Management",
-      icon: <Users className="w-8 h-8 gold-accent" />,
+      icon: <Users className="w-8 h-8 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
     {
       title: "Access to Rare Experiences & Cultural Moments",
-      icon: <Star className="w-8 h-8 gold-accent" />,
+      icon: <Star className="w-8 h-8 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
     {
       title: "Vetting, Scheduling, & Managing Luxury Vendors",
-      icon: <Briefcase className="w-8 h-8 gold-accent" />,
+      icon: <Briefcase className="w-8 h-8 text-secondary-light" />, // Updated to secondary.light (#FAC364)
     },
   ];
 
@@ -182,20 +182,20 @@ export default function Home() {
             <h1 className="mb-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cinzel font-bold uppercase tracking-widest text-white drop-shadow-lg">
               Luxury, handled.
             </h1>
-            <p className="mb-12 font-lora text-sm sm:text-base md:text-lg tracking-wider text-gray-300">
+            <p className="mb-12 font-lora text-sm sm:text-base md:text-lg tracking-wider text-muted-foreground">
               With absolute discretion for those who demand the exceptional
             </p>
             <div className="mt-16 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button
                 asChild
                 variant="outline"
-                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow backdrop-blur-sm"
+                className="border-secondary text-white hover:bg-secondary hover:text-muted-foreground px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow backdrop-blur-sm"
               >
                 <Link href="/services">What We Handle</Link>
               </Button>
               <Button
                 asChild
-                className="gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+                className="bg-gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
               >
                 <Link href="/contact">Request Private Access</Link>
               </Button>
@@ -211,7 +211,8 @@ export default function Home() {
             ease: "easeInOut",
           }}
         >
-          <ChevronDown className="h-8 w-8 gold-accent opacity-70 drop-shadow-md" />
+          <ChevronDown className="h-8 w-8 text-secondary-light opacity-70 drop-shadow-md" />{" "}
+          {/* Updated to secondary.light */}
         </motion.div>
       </section>
 
@@ -259,14 +260,14 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
               className="flex flex-col justify-center space-y-6"
             >
-              <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
                 At Sorted Concierge, we understand your time is your most
                 valuable asset. That's why we go beyond simply meeting
                 expectations; we anticipate them, eliminate friction, and
                 orchestrate seamless experiences that empower you to move
                 through the world with unparalleled ease.
               </p>
-              <p className="text-sm sm:text-base md:text-lg font-lora text-gray-300">
+              <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
                 Our promise is to provide more than just a service; it's to
                 deliver a lifestyle where the extraordinary becomes your
                 everyday standard. Whether securing a private jet for a
@@ -277,7 +278,7 @@ export default function Home() {
               <Button
                 asChild
                 variant="outline"
-                className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow w-fit"
+                className="border-secondary text-white hover:bg-secondary hover:text-muted-foreground px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow w-fit"
               >
                 <Link href="/about">Discover Our Approach</Link>
               </Button>
@@ -300,18 +301,18 @@ export default function Home() {
             <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               Who We Serve
             </h2>
-            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
               We're more than a concierge. We're your lifestyle architect, your
               trusted fixer, and your inside line to the extraordinary.
             </p>
-            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
               Whether you think of us as bespoke travel designers, luxury
               lifestyle managers, or your executive team, Sorted is whatever you
               need us to be. How we show up remains constant: with quiet
               excellence, relentless attention to detail, and the ability to
               make your vision real, anywhere in the world.
             </p>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
               We work across three key verticals, serving private clients,
               families, and elite global citizens who demand more than service;
               they demand certainty. And they know: with Sorted, it’s always
@@ -326,7 +327,7 @@ export default function Home() {
                     key={pkg.id}
                     asChild
                     variant="outline"
-                    className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow flex items-center"
+                    className="border-secondary text-white hover:bg-secondary hover:text-muted-foreground px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow flex items-center"
                   >
                     <Link href={`/services/${pkg.id}`}>
                       {getPackageIcon(pkg.name)}
@@ -335,7 +336,7 @@ export default function Home() {
                   </Button>
                 ))
               ) : (
-                <p className="text-sm font-lora text-gray-300">
+                <p className="text-sm font-lora text-muted-foreground">
                   No memberships available.
                 </p>
               )}
@@ -358,13 +359,13 @@ export default function Home() {
             <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               What We Do
             </h2>
-            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
               Whether you're orchestrating a multi-continent business tour,
               hosting an intimate gathering in an unfamiliar city, or managing
               the intricate demands of a high-profile lifestyle, we are the
               invisible force ensuring perfection at every turn.
             </p>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
               We don't just handle requests, we anticipate needs, solve problems
               before they surface, and deliver outcomes that exceed
               expectations. You envision, we execute.
@@ -418,9 +419,10 @@ export default function Home() {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         sizes="400px"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-muted/80 via-muted/20 to-transparent" />{" "}
+                      {/* Updated to use muted */}
                       <div className="absolute inset-0 flex flex-col justify-end p-6">
-                        <p className="text-xs sm:text-sm font-lora uppercase tracking-widest gold-accent mb-2">
+                        <p className="text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary-light mb-2">
                           TRAVEL
                         </p>
                         <h3 className="text-xl sm:text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
@@ -451,9 +453,10 @@ export default function Home() {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         sizes="320px"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-muted/80 via-muted/20 to-transparent" />{" "}
+                      {/* Updated to use muted */}
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
-                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
+                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest text-secondary-light mb-1">
                           EVENTS
                         </p>
                         <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
@@ -484,9 +487,10 @@ export default function Home() {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         sizes="320px"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-muted/80 via-muted/20 to-transparent" />{" "}
+                      {/* Updated to use muted */}
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
-                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
+                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest text-secondary-light mb-1">
                           EXPERIENCES
                         </p>
                         <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
@@ -499,6 +503,8 @@ export default function Home() {
               </motion.div>
               <div className="absolute top-1/2 right-4 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="bg-black/50 backdrop-blur-sm rounded-full p-2">
+                  {" "}
+                  {/* Updated to use muted */}
                   <p className="text-[0.75rem] sm:text-xs text-white font-lora">
                     Drag to scroll
                   </p>
@@ -547,9 +553,10 @@ export default function Home() {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         sizes="400px"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-muted/80 via-muted/20 to-transparent" />{" "}
+                      {/* Updated to use muted */}
                       <div className="absolute inset-0 flex flex-col justify-end p-6">
-                        <p className="text-xs sm:text-sm font-lora uppercase tracking-widest gold-accent mb-2">
+                        <p className="text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary-light mb-2">
                           LIFESTYLE
                         </p>
                         <h3 className="text-xl sm:text-2xl font-cinzel font-bold uppercase tracking-wider text-white">
@@ -580,9 +587,10 @@ export default function Home() {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         sizes="320px"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-muted/80 via-muted/20 to-transparent" />{" "}
+                      {/* Updated to use muted */}
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
-                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
+                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest text-secondary-light mb-1">
                           MOBILITY
                         </p>
                         <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
@@ -613,9 +621,10 @@ export default function Home() {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         sizes="320px"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-muted/80 via-muted/20 to-transparent" />{" "}
+                      {/* Updated to use muted */}
                       <div className="absolute inset-0 flex flex-col justify-end p-4">
-                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest gold-accent mb-1">
+                        <p className="text-[0.75rem] sm:text-xs font-lora uppercase tracking-widest text-secondary-light mb-1">
                           LOGISTICS
                         </p>
                         <h3 className="text-lg sm:text-xl font-cinzel font-bold uppercase tracking-wider text-white">
@@ -641,7 +650,7 @@ export default function Home() {
                   delay: index * 0.1,
                   ease: "easeOut",
                 }}
-                className="group relative p-6 bg-black/50 border border-gray-800 rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 hover:border-gold-accent"
+                className="group relative p-6 bg-card border border-muted rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 hover:border-secondary" // Updated to use card and muted
                 whileHover={{ scale: 1.02 }}
               >
                 <div className="flex flex-col items-center text-center">
@@ -651,7 +660,7 @@ export default function Home() {
                   </h3>
                   <Button
                     asChild
-                    className="gold-gradient px-6 py-3 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    className="bg-gold-gradient px-6 py-3 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   >
                     <Link href="/services">Learn More</Link>
                   </Button>
@@ -670,7 +679,7 @@ export default function Home() {
             <Button
               asChild
               variant="outline"
-              className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
+              className="border-secondary text-white hover:bg-secondary hover:text-muted-foreground px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
             >
               <Link href="/services">See Our Signature Services</Link>
             </Button>
@@ -692,12 +701,12 @@ export default function Home() {
             <h2 className="mb-16 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               The Sorted Circle
             </h2>
-            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
               We work with a small, high-trust circle of clients who value
               privacy, polish, and the kind of service that never needs to be
               explained.
             </p>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
               With team members and partners across key global cities from New
               York to Dubai, London to Lagos, we offer an uncommon blend of
               cultural fluency and logistical mastery. This is concierge for
@@ -706,7 +715,7 @@ export default function Home() {
             <Button
               asChild
               variant="outline"
-              className="border-secondary text-white hover:bg-secondary hover:text-gray-400 px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
+              className="border-secondary text-white hover:bg-secondary hover:text-muted-foreground px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest elegant-shadow"
             >
               <Link href="/services">Apply for Membership</Link>
             </Button>
@@ -729,23 +738,27 @@ export default function Home() {
               What Our Clients Say
             </h2>
             <div className="grid gap-8 md:grid-cols-2">
-              <div className="luxury-card p-6 rounded-lg">
-                <p className="text-sm sm:text-base font-lora text-gray-300 italic">
+              <div className="bg-card p-6 rounded-lg elegant-shadow">
+                {" "}
+                {/* Updated to use card */}
+                <p className="text-sm sm:text-base font-lora text-muted-foreground italic">
                   "Sorted Concierge turned a complex multi-city itinerary into a
                   seamless experience. Their discretion and precision are
                   unparalleled."
                 </p>
-                <p className="mt-4 text-xs sm:text-sm font-lora uppercase tracking-wider gold-accent">
+                <p className="mt-4 text-xs sm:text-sm font-lora uppercase tracking-wider text-secondary-light">
                   - Private Client, New York
                 </p>
               </div>
-              <div className="luxury-card p-6 rounded-lg">
-                <p className="text-sm sm:text-base font-lora text-gray-300 italic">
+              <div className="bg-card p-6 rounded-lg elegant-shadow">
+                {" "}
+                {/* Updated to use card */}
+                <p className="text-sm sm:text-base font-lora text-muted-foreground italic">
                   "From exclusive cultural events to last-minute travel
                   solutions, Sorted delivers the extraordinary with effortless
                   ease."
                 </p>
-                <p className="mt-4 text-xs sm:text-sm font-lora uppercase tracking-wider gold-accent">
+                <p className="mt-4 text-xs sm:text-sm font-lora uppercase tracking-wider text-secondary-light">
                   - Elite Traveler, Dubai
                 </p>
               </div>
@@ -759,35 +772,43 @@ export default function Home() {
           transition={{ duration: 0.8, delay: 1 }}
           className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center mx-8"
         >
-          <div className="luxury-card p-6 rounded-lg">
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
+          <div className="bg-card p-6 rounded-lg elegant-shadow">
+            {" "}
+            {/* Updated to use card */}
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
               500+
             </h3>
-            <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
+            <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-muted-foreground">
               Curated Experiences
             </p>
           </div>
-          <div className="luxury-card p-6 rounded-lg">
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
+          <div className="bg-card p-6 rounded-lg elegant-shadow">
+            {" "}
+            {/* Updated to use card */}
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
               50+
             </h3>
-            <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
+            <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-muted-foreground">
               Global Cities
             </p>
           </div>
-          <div className="luxury-card p-6 rounded-lg">
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
+          <div className="bg-card p-6 rounded-lg elegant-shadow">
+            {" "}
+            {/* Updated to use card */}
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
               1000+
             </h3>
-            <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-gray-300">
+            <p className="text-xs sm:text-sm font-lora uppercase tracking-wider text-muted-foreground">
               Satisfied Clients
             </p>
           </div>
-          <div className="luxury-card p-6 rounded-lg">
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold gold-accent mb-2">
+          <div className="bg-card p-6 rounded-lg elegant-shadow">
+            {" "}
+            {/* Updated to use card */}
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
               24/7
             </h3>
-            <p className="text-xs sm:text-sm font-lora uppercase tracking-widest text-gray-300">
+            <p className="text-xs sm:text-sm font-lora uppercase tracking-widest text-muted-foreground">
               Concierge Support
             </p>
           </div>
@@ -808,7 +829,7 @@ export default function Home() {
             <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               Your World, Curated
             </h2>
-            <p className="mb-16 text-sm sm:text-base md:text-lg font-lora text-gray-300">
+            <p className="mb-16 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
               Explore a world of rare experiences and cultural moments,
               meticulously crafted for those who demand the exceptional.
             </p>
@@ -829,8 +850,8 @@ export default function Home() {
                   onClick={() => setSelectedCategory(category)}
                   className={`flex-shrink-0 px-6 py-2 text-xs sm:text-sm font-lora uppercase tracking-wider rounded-full transition-all duration-300 whitespace-nowrap ${
                     selectedCategory === category
-                      ? "gold-gradient text-black"
-                      : "bg-transparent border border-gray-600 text-gray-300 hover:border-secondary hover:text-secondary"
+                      ? "bg-gold-gradient text-black"
+                      : "bg-transparent border border-muted text-muted-foreground hover:border-secondary hover:text-secondary"
                   }`}
                 >
                   {category}
@@ -873,9 +894,10 @@ export default function Home() {
                         : "(max-width: 768px) 50vw, 25vw"
                     }
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-muted/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />{" "}
+                  {/* Updated to use muted */}
                   <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <span className="gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
+                    <span className="bg-gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
                       {item.category}
                     </span>
                   </div>
@@ -892,7 +914,7 @@ export default function Home() {
                 </motion.div>
               ))
             ) : (
-              <div className="col-span-full text-center text-gray-300 font-lora">
+              <div className="col-span-full text-center text-muted-foreground font-lora">
                 No images available for this category.
               </div>
             )}
@@ -905,14 +927,14 @@ export default function Home() {
           >
             <Button
               asChild
-              className="gold-gradient px-8 py-4 mb-5 sm:mb-0 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 mr-4 elegant-shadow"
+              className="bg-gold-gradient px-8 py-4 mb-5 sm:mb-0 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 mr-4 elegant-shadow"
             >
               <Link href="/gallery">View Full Gallery</Link>
             </Button>
             <Button
               asChild
               variant="outline"
-              className="border-secondary px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary hover:bg-secondary hover:text-gray-400 hover:border-gray-400 elegant-shadow"
+              className="border-secondary px-8 py-4 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary hover:bg-secondary hover:text-muted-foreground hover:border-secondary elegant-shadow"
             >
               <Link href="/contact">Request Private Access</Link>
             </Button>
@@ -930,7 +952,8 @@ export default function Home() {
           className="w-full h-full object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-muted/60 to-transparent" />{" "}
+        {/* Updated to use muted */}
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -944,7 +967,7 @@ export default function Home() {
             </h2>
             <Button
               asChild
-              className="gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+              className="bg-gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
             >
               <Link href="/contact">Request Private Access</Link>
             </Button>

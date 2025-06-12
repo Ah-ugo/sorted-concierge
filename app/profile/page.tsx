@@ -75,14 +75,10 @@ export default function ProfilePage() {
     try {
       const data = await apiClient.getBookings();
       setBookings(data);
-    } catch (error: unknown) {
-      console.error("Error fetching bookings:", error);
+    } catch (error) {
       toast({
         title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch your bookings. Please try again.",
+        description: "Failed to fetch your bookings. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -116,14 +112,10 @@ export default function ProfilePage() {
       } else {
         throw new Error("Failed to update profile");
       }
-    } catch (error: unknown) {
-      console.error("Error updating profile:", error);
+    } catch {
       toast({
         title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to update your profile. Please try again.",
+        description: "Failed to update your profile. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -146,14 +138,10 @@ export default function ProfilePage() {
       } else {
         throw new Error("Failed to upload profile picture");
       }
-    } catch (error: unknown) {
-      console.error("Error uploading profile picture:", error);
+    } catch {
       toast({
         title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to upload profile picture. Please try again.",
+        description: "Failed to upload profile picture. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -175,7 +163,7 @@ export default function ProfilePage() {
       case "completed":
         return "bg-green-600";
       case "confirmed":
-        return "bg-secondary";
+        return "bg-secondary-light";
       case "pending":
         return "bg-amber-600";
       case "cancelled":
@@ -187,27 +175,27 @@ export default function ProfilePage() {
 
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
+      <div className="flex min-h-screen items-center justify-center bg-black">
+        <Loader2 className="h-8 w-8 animate-spin text-secondary-light" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <Card className="max-w-md border-border bg-card p-8 shadow-sm">
+      <div className="flex min-h-screen items-center justify-center bg-black p-4">
+        <Card className="max-w-md border-muted/50 bg-card p-8 shadow-sm">
           <div className="text-center">
             <User className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-            <h2 className="mb-2 text-xl sm:text-2xl font-cinzel font-bold uppercase tracking-widest text-foreground">
+            <h2 className="mb-2 text-xl sm:text-2xl font-semibold uppercase tracking-widest text-white">
               Authentication Required
             </h2>
-            <p className="mb-6 text-sm sm:text-base font-lora text-muted-foreground">
+            <p className="mb-6 text-sm sm:text-base font-normal text-muted-foreground">
               Please log in to view your profile
             </p>
             <Button
               asChild
-              className="w-full bg-secondary py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
+              className="w-full bg-gold-gradient text-black py-4 sm:py-6 text-xs sm:text-sm font-normal uppercase tracking-widest hover:bg-secondary-light/80"
             >
               <Link href="/auth/login">Login</Link>
             </Button>
@@ -219,7 +207,6 @@ export default function ProfilePage() {
 
   return (
     <>
-      {/* Hero Section */}
       <section className="relative flex min-h-[40vh] items-center justify-center">
         <motion.div
           style={{ opacity: heroOpacity, scale: heroScale }}
@@ -243,21 +230,20 @@ export default function ProfilePage() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="mx-auto max-w-3xl"
           >
-            <p className="mb-4 text-center font-lora uppercase tracking-wider text-overlay text-xs sm:text-sm">
+            <p className="mb-4 text-center font-normal uppercase tracking-wider text-white text-xs sm:text-sm">
               YOUR ACCOUNT
             </p>
-            <h1 className="mb-6 text-center text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold uppercase tracking-widest text-overlay">
+            <h1 className="mb-6 text-center text-3xl sm:text-4xl md:text-5xl font-semibold uppercase tracking-widest text-white">
               MY PROFILE
             </h1>
-            <p className="text-sm sm:text-base md:text-lg font-lora text-overlay">
+            <p className="text-sm sm:text-base md:text-lg font-normal text-muted-foreground">
               Manage your account details and view your booking history
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Profile Content */}
-      <section className="bg-background py-16 sm:py-24 md:py-32">
+      <section className="bg-black py-16 sm:py-24 md:py-32">
         <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             ref={profileRef}
@@ -273,25 +259,25 @@ export default function ProfilePage() {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="mb-8 sm:mb-12 grid w-full grid-cols-2 bg-muted">
+              <TabsList className="mb-8 sm:mb-12 grid w-full grid-cols-2 bg-muted/50">
                 <TabsTrigger
                   value="profile"
-                  className="py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                  className="py-4 sm:py-6 text-xs sm:text-sm font-normal uppercase tracking-widest text-white data-[state=active]:bg-gold-gradient data-[state=active]:text-black"
                 >
                   Profile
                 </TabsTrigger>
                 <TabsTrigger
                   value="bookings"
-                  className="py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-foreground data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground"
+                  className="py-4 sm:py-6 text-xs sm:text-sm font-normal uppercase tracking-widest text-white data-[state=active]:bg-gold-gradient data-[state=active]:text-black"
                 >
                   My Bookings
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="profile">
-                <Card className="overflow-hidden border-border bg-card shadow-sm">
+                <Card className="overflow-hidden border-muted/50 bg-card shadow-sm">
                   <CardContent className="p-6 sm:p-8">
-                    <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-foreground">
+                    <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-semibold uppercase tracking-widest text-white">
                       Profile Information
                     </h2>
                     <form
@@ -299,7 +285,7 @@ export default function ProfilePage() {
                       className="space-y-6 sm:space-y-8"
                     >
                       <div className="flex items-center space-x-4 sm:space-x-6">
-                        <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-secondary/10">
+                        <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-secondary-light/10">
                           {user.profileImage ? (
                             <Image
                               src={
@@ -313,7 +299,7 @@ export default function ProfilePage() {
                               sizes="(max-width: 768px) 24vw, 96px"
                             />
                           ) : (
-                            <span className="text-xl sm:text-2xl font-semibold text-secondary">
+                            <span className="text-xl sm:text-2xl font-semibold text-secondary-light">
                               {getInitials(
                                 `${user.firstName} ${user.lastName}`
                               )}
@@ -325,7 +311,7 @@ export default function ProfilePage() {
                             htmlFor="profileImage"
                             className="cursor-pointer"
                           >
-                            <div className="flex items-center space-x-2 text-xs sm:text-sm font-lora uppercase tracking-wider text-secondary hover:text-secondary/80">
+                            <div className="flex items-center space-x-2 text-xs sm:text-sm font-normal uppercase tracking-wider text-secondary-light hover:text-secondary-light/80">
                               <Upload className="h-4 w-4" />
                               <span>Change Profile Picture</span>
                             </div>
@@ -345,7 +331,7 @@ export default function ProfilePage() {
                         <div className="space-y-2">
                           <Label
                             htmlFor="firstName"
-                            className="text-xs sm:text-sm font-lora uppercase tracking-wider text-foreground"
+                            className="text-xs sm:text-sm font-normal uppercase tracking-wider text-muted-foreground"
                           >
                             First Name
                           </Label>
@@ -355,13 +341,13 @@ export default function ProfilePage() {
                             value={formData.firstName}
                             onChange={handleChange}
                             disabled={isLoading}
-                            className="border-border bg-card py-4 sm:py-6 text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                            className="border-muted/50 bg-card py-4 sm:py-6 text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
                           />
                         </div>
                         <div className="space-y-2">
                           <Label
                             htmlFor="lastName"
-                            className="text-xs sm:text-sm font-lora uppercase tracking-wider text-foreground"
+                            className="text-xs sm:text-sm font-normal uppercase tracking-wider text-muted-foreground"
                           >
                             Last Name
                           </Label>
@@ -371,7 +357,7 @@ export default function ProfilePage() {
                             value={formData.lastName}
                             onChange={handleChange}
                             disabled={isLoading}
-                            className="border-border bg-card py-4 sm:py-6 text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                            className="border-muted/50 bg-card py-4 sm:py-6 text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
                           />
                         </div>
                       </div>
@@ -379,7 +365,7 @@ export default function ProfilePage() {
                       <div className="space-y-2">
                         <Label
                           htmlFor="email"
-                          className="text-xs sm:text-sm font-lora uppercase tracking-wider text-foreground"
+                          className="text-xs sm:text-sm font-normal uppercase tracking-wider text-muted-foreground"
                         >
                           Email
                         </Label>
@@ -390,14 +376,14 @@ export default function ProfilePage() {
                           value={formData.email}
                           onChange={handleChange}
                           disabled
-                          className="border-border bg-muted py-4 sm:py-6 text-sm sm:text-base text-muted-foreground focus:border-secondary focus:ring-secondary font-lora"
+                          className="border-muted/50 bg-muted/50 py-4 sm:py-6 text-sm sm:text-base text-muted-foreground focus:border-secondary-light focus:ring-secondary-light font-normal"
                         />
                       </div>
 
                       <div className="space-y-2">
                         <Label
                           htmlFor="phone"
-                          className="text-xs sm:text-sm font-lora uppercase tracking-wider text-foreground"
+                          className="text-xs sm:text-sm font-normal uppercase tracking-wider text-muted-foreground"
                         >
                           Phone
                         </Label>
@@ -407,14 +393,14 @@ export default function ProfilePage() {
                           value={formData.phone}
                           onChange={handleChange}
                           disabled={isLoading}
-                          className="border-border bg-card py-4 sm:py-6 text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                          className="border-muted/50 bg-card py-4 sm:py-6 text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
                         />
                       </div>
 
                       <div className="space-y-2">
                         <Label
                           htmlFor="address"
-                          className="text-xs sm:text-sm font-lora uppercase tracking-wider text-foreground"
+                          className="text-xs sm:text-sm font-normal uppercase tracking-wider text-muted-foreground"
                         >
                           Address
                         </Label>
@@ -424,13 +410,13 @@ export default function ProfilePage() {
                           value={formData.address}
                           onChange={handleChange}
                           disabled={isLoading}
-                          className="border-border bg-card py-4 sm:py-6 text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                          className="border-muted/50 bg-card py-4 sm:py-6 text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
                         />
                       </div>
 
                       <Button
                         type="submit"
-                        className="w-full bg-secondary py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
+                        className="w-full bg-gold-gradient text-black py-4 sm:py-6 text-xs sm:text-sm font-normal uppercase tracking-widest hover:bg-secondary-light/80"
                         disabled={isLoading}
                       >
                         {isLoading ? (
@@ -445,25 +431,25 @@ export default function ProfilePage() {
               </TabsContent>
 
               <TabsContent value="bookings">
-                <Card className="overflow-hidden border-border bg-card shadow-sm">
+                <Card className="overflow-hidden border-muted/50 bg-card shadow-sm">
                   <CardContent className="p-6 sm:p-8">
-                    <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-foreground">
+                    <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-semibold uppercase tracking-widest text-white">
                       Your Bookings
                     </h2>
 
                     {isLoadingBookings ? (
                       <div className="flex justify-center py-12">
-                        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
+                        <Loader2 className="h-8 w-8 animate-spin text-secondary-light" />
                       </div>
                     ) : bookings.length === 0 ? (
                       <div className="py-12 text-center">
                         <Calendar className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                        <p className="mb-6 text-sm sm:text-base font-lora text-muted-foreground">
+                        <p className="mb-6 text-sm sm:text-base font-normal text-muted-foreground">
                           You have no bookings yet.
                         </p>
                         <Button
                           asChild
-                          className="bg-secondary px-6 sm:px-8 py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
+                          className="bg-gold-gradient text-black px-6 sm:px-8 py-4 sm:py-6 text-xs sm:text-sm font-normal uppercase tracking-widest hover:bg-secondary-light/80"
                         >
                           <Link href="/membership-booking">Book a Service</Link>
                         </Button>
@@ -473,14 +459,14 @@ export default function ProfilePage() {
                         {bookings.map((booking) => (
                           <Card
                             key={booking.id}
-                            className="overflow-hidden border-border bg-card p-0 transition-all duration-300 hover:shadow-md"
+                            className="overflow-hidden border-muted/50 bg-card p-0 transition-all duration-300 hover:shadow-md"
                           >
                             <div className="grid grid-cols-1 md:grid-cols-4">
-                              <div className="bg-muted p-4 sm:p-6 md:col-span-1">
+                              <div className="bg-muted/50 p-4 sm:p-6 md:col-span-1">
                                 <div className="flex flex-col space-y-3 sm:space-y-4">
                                   <div className="flex items-center space-x-2">
-                                    <Calendar className="h-5 w-5 text-secondary" />
-                                    <span className="text-xs sm:text-sm text-muted-foreground font-lora">
+                                    <Calendar className="h-5 w-5 text-secondary-light" />
+                                    <span className="text-xs sm:text-sm text-muted-foreground font-normal">
                                       {format(
                                         new Date(booking.bookingDate),
                                         "PPP"
@@ -488,8 +474,8 @@ export default function ProfilePage() {
                                     </span>
                                   </div>
                                   <div className="flex items-center space-x-2">
-                                    <Clock className="h-5 w-5 text-secondary" />
-                                    <span className="text-xs sm:text-sm text-muted-foreground font-lora">
+                                    <Clock className="h-5 w-5 text-secondary-light" />
+                                    <span className="text-xs sm:text-sm text-muted-foreground font-normal">
                                       {format(
                                         new Date(booking.bookingDate),
                                         "p"
@@ -497,8 +483,8 @@ export default function ProfilePage() {
                                     </span>
                                   </div>
                                   <div className="flex items-center space-x-2">
-                                    <MapPin className="h-5 w-5 text-secondary" />
-                                    <span className="text-xs sm:text-sm text-muted-foreground font-lora">
+                                    <MapPin className="h-5 w-5 text-secondary-light" />
+                                    <span className="text-xs sm:text-sm text-muted-foreground font-normal">
                                       {booking.location || "Not specified"}
                                     </span>
                                   </div>
@@ -507,19 +493,19 @@ export default function ProfilePage() {
 
                               <div className="p-4 sm:p-6 md:col-span-3">
                                 <div className="mb-3 sm:mb-4 flex items-center justify-between">
-                                  <h3 className="text-lg sm:text-xl md:text-2xl font-cinzel font-bold uppercase tracking-wider text-foreground">
+                                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold uppercase tracking-wider text-white">
                                     {booking.service?.name || "Service"}
                                   </h3>
                                   <Badge
                                     className={`${getStatusColor(
                                       booking.status
-                                    )} px-2 sm:px-3 py-1 text-xs font-lora uppercase tracking-wider text-white`}
+                                    )} px-2 sm:px-3 py-1 text-xs font-normal uppercase tracking-wider text-white`}
                                   >
                                     {booking.status}
                                   </Badge>
                                 </div>
 
-                                <p className="mb-4 sm:mb-6 text-sm sm:text-base font-lora text-muted-foreground">
+                                <p className="mb-4 sm:mb-6 text-sm sm:text-base font-normal text-muted-foreground">
                                   {booking.specialRequests ||
                                     "No special requests"}
                                 </p>
@@ -527,7 +513,7 @@ export default function ProfilePage() {
                                 {booking.status.toLowerCase() === "pending" && (
                                   <Button
                                     variant="outline"
-                                    className="border-red-600 text-red-600 hover:bg-red-600/10 hover:text-red-700 text-xs sm:text-sm font-lora"
+                                    className="border-red-600 text-red-600 hover:bg-red-600/10 hover:text-red-700 text-xs sm:text-sm font-normal"
                                     onClick={async () => {
                                       try {
                                         await apiClient.updateBooking(
@@ -542,13 +528,11 @@ export default function ProfilePage() {
                                             "Your booking has been cancelled successfully.",
                                         });
                                         fetchBookings();
-                                      } catch (error: unknown) {
+                                      } catch {
                                         toast({
                                           title: "Error",
                                           description:
-                                            error instanceof Error
-                                              ? error.message
-                                              : "Failed to cancel booking.",
+                                            "Failed to cancel booking.",
                                           variant: "destructive",
                                         });
                                       }
@@ -571,7 +555,6 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section
         className="relative aspect-[21/9] w-full"
         style={{ minHeight: "300px" }}
@@ -593,12 +576,12 @@ export default function ProfilePage() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-overlay">
+            <h2 className="mb-6 text-2xl sm:text-3xl md:text-4xl font-semibold uppercase tracking-widest text-white">
               Experience Our Premium Services
             </h2>
             <Button
               asChild
-              className="bg-secondary px-6 sm:px-8 py-4 sm:py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-secondary-foreground hover:bg-secondary/90"
+              className="bg-gold-gradient text-black px-6 sm:px-8 py-4 sm:py-6 text-xs sm:text-sm font-normal uppercase tracking-widest hover:bg-secondary-light/80"
             >
               <Link href="/membership-booking">Book Now</Link>
             </Button>

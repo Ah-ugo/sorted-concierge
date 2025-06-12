@@ -115,8 +115,8 @@ export async function generateMetadata({
       // Twitter/X Card tags
       twitter: {
         card: "summary_large_image",
-        site: "@sortedconcierge", // Add your Twitter handle
-        creator: "@sortedconcierge", // Add author's Twitter handle if available
+        site: "@sortedconcierge",
+        creator: "@sortedconcierge",
         title: apiPost.title,
         description: apiPost.excerpt,
         images: [imageUrl],
@@ -137,11 +137,11 @@ export async function generateMetadata({
         "article:tag": apiPost.tags.join(", "),
 
         // Additional meta tags
-        "theme-color": "#000000", // Your brand color
-        "msapplication-TileColor": "#000000",
+        "theme-color": "#131313", // Updated to accent (#131313)
+        "msapplication-TileColor": "#131313", // Updated to accent (#131313)
 
         // Telegram specific
-        "telegram:channel": "@sortedconcierge", // If you have a Telegram channel
+        "telegram:channel": "@sortedconcierge",
       },
 
       // Verification tags (add if you have them)
@@ -235,9 +235,13 @@ export default async function BlogPostPage({
     return <BlogPostClient post={blogPost} />;
   } catch (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-black">
+        {" "}
+        {/* Updated to black (background) */}
         <div className="text-center max-w-md">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-white">
+            {" "}
+            {/* Updated to white */}
             Blog Post Not Found
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground mb-6">
@@ -246,7 +250,7 @@ export default async function BlogPostPage({
           </p>
           <a
             href="/blog"
-            className="inline-flex items-center justify-center bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground px-4 py-2 rounded-md"
+            className="inline-flex items-center justify-center bg-gold-gradient hover:bg-secondary-light/90 text-xs sm:text-sm text-black px-4 py-2 rounded-md" // Updated to gold-gradient and secondary.light
           >
             <span className="mr-2">←</span>
             Back to Blog

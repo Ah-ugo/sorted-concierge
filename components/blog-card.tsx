@@ -26,7 +26,9 @@ interface BlogCardProps {
 
 export default function BlogCard({ post }: BlogCardProps) {
   return (
-    <Card className="overflow-hidden transition-all duration-300 hover:shadow-md">
+    <Card className="overflow-hidden transition-all duration-300 hover:shadow-md bg-card">
+      {" "}
+      {/* Ensured bg-card (#2B2B2B) */}
       <div className="grid md:grid-cols-[2fr_3fr]">
         <div className="relative aspect-[4/3] md:h-full">
           <Image
@@ -42,16 +44,22 @@ export default function BlogCard({ post }: BlogCardProps) {
               <Badge
                 key={tag}
                 variant="secondary"
-                className="bg-teal-50 text-teal-600 hover:bg-teal-100"
+                className="bg-gold-gradient text-black hover:bg-secondary-light/90" // Updated to gold-gradient and black, hover to secondary.light
               >
                 {tag}
               </Badge>
             ))}
           </div>
-          <h2 className="text-xl font-semibold mb-2 line-clamp-2 hover:text-teal-600 transition-colors">
+          <h2 className="text-xl font-semibold mb-2 line-clamp-2 hover:text-secondary-light transition-colors">
+            {" "}
+            {/* Updated to secondary.light */}
             <Link href={`/blog/${post.slug}`}>{post.title}</Link>
           </h2>
-          <p className="text-neutral-600 mb-4 line-clamp-3">{post.excerpt}</p>
+          <p className="text-muted-foreground mb-4 line-clamp-3">
+            {" "}
+            {/* Updated to muted.foreground */}
+            {post.excerpt}
+          </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               {post.author.avatar && (
@@ -64,8 +72,14 @@ export default function BlogCard({ post }: BlogCardProps) {
                 />
               )}
               <div>
-                <p className="text-sm font-medium">{post.author.name}</p>
-                <div className="flex items-center text-xs text-neutral-500">
+                <p className="text-sm font-medium text-white">
+                  {" "}
+                  {/* Updated to white */}
+                  {post.author.name}
+                </p>
+                <div className="flex items-center text-xs text-muted-foreground">
+                  {" "}
+                  {/* Updated to muted.foreground */}
                   <Calendar className="mr-1 h-3 w-3" />
                   {post.date}
                 </div>
@@ -73,7 +87,7 @@ export default function BlogCard({ post }: BlogCardProps) {
             </div>
             <Link
               href={`/blog/${post.slug}`}
-              className="text-teal-600 hover:text-teal-700 inline-flex items-center text-sm font-medium"
+              className="text-secondary-light hover:text-secondary-dark inline-flex items-center text-sm font-medium" // Updated to secondary.light and secondary.dark
             >
               Read More <ArrowRight className="ml-1 h-4 w-4" />
             </Link>

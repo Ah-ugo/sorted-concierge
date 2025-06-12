@@ -140,7 +140,7 @@ export default function BlogPage() {
         title: "Success!",
         description: "Thank you for subscribing to our newsletter!",
         variant: "default",
-        className: "bg-green-500 text-white border-green-600",
+        className: "bg-secondary-light text-black border-secondary-dark", // Updated to secondary.light and secondary.dark
         duration: 3000,
       });
       setEmail("");
@@ -161,8 +161,11 @@ export default function BlogPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        {" "}
+        {/* Updated to black (background) */}
+        <Loader2 className="h-8 w-8 animate-spin text-secondary-light" />{" "}
+        {/* Updated to secondary.light */}
       </div>
     );
   }
@@ -180,17 +183,24 @@ export default function BlogPage() {
             className="w-full h-full object-cover"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-black/50" />{" "}
+          {/* Updated to muted */}
         </div>
         <div className="container relative z-10 mx-auto my-16 md:my-32 px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <Badge className="mb-4 bg-secondary/20 text-secondary px-4 py-1 text-xs sm:text-sm font-lora">
+            <Badge className="mb-4 bg-secondary-light/20 text-secondary-light px-4 py-1 text-xs sm:text-sm font-lora">
+              {" "}
+              {/* Updated to secondary.light */}
               Our Blog
             </Badge>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold tracking-widest text-overlay mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold tracking-widest text-white mb-6">
+              {" "}
+              {/* Updated to white */}
               Insights & Experiences
             </h1>
-            <p className="text-sm sm:text-base md:text-lg font-lora text-overlay mb-8">
+            <p className="text-sm sm:text-base md:text-lg font-lora text-white mb-8">
+              {" "}
+              {/* Updated to white */}
               Discover the latest trends, tips, and stories from our concierge
               team and lifestyle experts.
             </p>
@@ -200,7 +210,7 @@ export default function BlogPage() {
                 placeholder="Search articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-card/10 border-border text-foreground placeholder:text-muted-foreground focus:bg-card/20 text-sm sm:text-base font-lora"
+                className="pl-10 bg-muted/10 border-muted text-white placeholder:text-muted-foreground focus:bg-muted/20 text-sm sm:text-base font-lora" // Updated to muted and white
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             </div>
@@ -209,7 +219,9 @@ export default function BlogPage() {
       </section>
 
       {/* Blog Posts Section */}
-      <section className="py-12 md:py-20 bg-background" ref={ref}>
+      <section className="py-12 md:py-20 bg-black" ref={ref}>
+        {" "}
+        {/* Updated to black (background) */}
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Main Content */}
@@ -249,7 +261,7 @@ export default function BlogPage() {
                     <Button
                       onClick={() => setSearchQuery("")}
                       variant="outline"
-                      className="border-secondary text-xs sm:text-sm text-foreground hover:bg-secondary hover:text-secondary-foreground font-lora"
+                      className="border-secondary text-xs sm:text-sm text-white hover:bg-secondary hover:text-black font-lora" // Updated to white and black
                     >
                       Clear Search
                     </Button>
@@ -263,7 +275,9 @@ export default function BlogPage() {
               <div className="sticky top-24">
                 {/* Categories */}
                 <div className="bg-card p-6 rounded-lg mb-8 shadow-sm">
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-cinzel font-bold tracking-wider text-foreground mb-4">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-cinzel font-bold tracking-wider text-white mb-4">
+                    {" "}
+                    {/* Updated to white */}
                     Categories
                   </h3>
                   <ul className="space-y-2">
@@ -271,7 +285,7 @@ export default function BlogPage() {
                       <li key={tag}>
                         <Button
                           variant="ghost"
-                          className="w-full justify-start text-xs sm:text-sm text-foreground hover:text-secondary hover:bg-secondary/10 font-lora"
+                          className="w-full justify-start text-xs sm:text-sm text-white hover:text-secondary-light hover:bg-secondary-light/10 font-lora" // Updated to white and secondary.light
                           onClick={() => setSearchQuery(tag)}
                         >
                           <Tag className="mr-2 h-4 w-4" />
@@ -284,7 +298,9 @@ export default function BlogPage() {
 
                 {/* Recent Posts */}
                 <div className="bg-card p-6 rounded-lg mb-8 shadow-sm">
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-cinzel font-bold tracking-wider text-foreground mb-4">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-cinzel font-bold tracking-wider text-white mb-4">
+                    {" "}
+                    {/* Updated to white */}
                     Recent Posts
                   </h3>
                   <ul className="space-y-4">
@@ -306,7 +322,7 @@ export default function BlogPage() {
                         <div>
                           <Link
                             href={`/blog/${post.slug}`}
-                            className="text-sm sm:text-base font-lora font-medium hover:text-secondary transition-colors"
+                            className="text-sm sm:text-base font-lora font-medium text-white hover:text-secondary-light transition-colors" // Updated to white and secondary.light
                           >
                             {post.title}
                           </Link>
@@ -322,7 +338,9 @@ export default function BlogPage() {
 
                 {/* Newsletter */}
                 <div className="bg-card p-6 rounded-lg shadow-sm">
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-cinzel font-bold tracking-wider text-foreground mb-4">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-cinzel font-bold tracking-wider text-white mb-4">
+                    {" "}
+                    {/* Updated to white */}
                     Subscribe to Our Newsletter
                   </h3>
                   <p className="text-sm sm:text-base font-lora text-muted-foreground mb-4">
@@ -334,13 +352,13 @@ export default function BlogPage() {
                       placeholder="Your email address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="bg-muted text-sm sm:text-base text-foreground placeholder:text-muted-foreground font-lora"
+                      className="bg-muted text-sm sm:text-base text-white placeholder:text-muted-foreground font-lora" // Updated to white
                       disabled={isSubscribing}
                       aria-label="Email address for newsletter subscription"
                     />
                     <Button
                       type="submit"
-                      className="w-full bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground font-lora"
+                      className="w-full bg-gold-gradient hover:bg-gold-gradient/90 text-xs sm:text-sm text-black font-lora" // Updated to gold-gradient and black
                       disabled={isSubscribing}
                     >
                       {isSubscribing ? (

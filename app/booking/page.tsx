@@ -57,19 +57,14 @@ export default function BookingPage() {
   });
 
   useEffect(() => {
-    // Fetch services
     const fetchServices = async () => {
       try {
         const data = await apiClient.getServices();
         setServices(data);
-      } catch (error: unknown) {
-        console.error("Error fetching services:", error);
+      } catch {
         toast({
           title: "Error",
-          description:
-            error instanceof Error
-              ? error.message
-              : "Failed to load services. Please try again.",
+          description: "Failed to load services. Please try again.",
           variant: "destructive",
         });
       } finally {
@@ -79,7 +74,6 @@ export default function BookingPage() {
 
     fetchServices();
 
-    // Pre-fill user data if authenticated
     if (user) {
       setFormData((prev) => ({
         ...prev,
@@ -90,7 +84,6 @@ export default function BookingPage() {
     }
   }, [user, toast]);
 
-  // Update selected service when serviceId changes
   useEffect(() => {
     if (formData.serviceId && services.length > 0) {
       const service = services.find((s) => s.id === formData.serviceId) || null;
@@ -185,7 +178,6 @@ export default function BookingPage() {
     setIsSubmitting(true);
 
     try {
-      // Parse time string to get hours and minutes
       const timeMatch = formData.time.match(/(\d+):(\d+)\s*([AP]M)/);
       if (!timeMatch) {
         throw new Error("Invalid time format");
@@ -195,14 +187,12 @@ export default function BookingPage() {
       const minutes = Number.parseInt(timeMatch[2], 10);
       const period = timeMatch[3];
 
-      // Convert to 24-hour format
       if (period === "PM" && hours < 12) {
         hours += 12;
       } else if (period === "AM" && hours === 12) {
         hours = 0;
       }
 
-      // Create a new date object with the selected date and time
       const bookingDateTime = formData.date
         ? new Date(
             formData.date.getFullYear(),
@@ -222,19 +212,14 @@ export default function BookingPage() {
         status: "pending",
       };
 
-      // Create booking in the database
       await apiClient.createBooking(bookingData);
 
-      // Redirect to the confirmation page
       router.push("/booking/confirmation");
-    } catch (error: unknown) {
-      console.error("Error creating booking:", error);
+    } catch {
       toast({
         title: "Booking Failed",
         description:
-          error instanceof Error
-            ? error.message
-            : "There was an error processing your booking. Please try again.",
+          "There was an error processing your booking. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -244,15 +229,14 @@ export default function BookingPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <Loader2 className="h-8 w-8 animate-spin text-secondary-light" />
       </div>
     );
   }
 
   return (
     <>
-      {/* Hero Section */}
       <section className="relative flex min-h-[40vh] items-center justify-center">
         <div className="absolute inset-0">
           <Image
@@ -267,13 +251,13 @@ export default function BookingPage() {
         </div>
         <div className="container relative z-10 mx-auto my-24 sm:my-32 px-4 sm:px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <Badge className="mb-4 bg-secondary/20 text-secondary px-3 sm:px-4 py-1 text-xs sm:text-sm font-lora">
+            <Badge className="mb-4 bg-secondary-light/20 text-secondary-light px-3 sm:px-4 py-1 text-xs sm:text-sm font-normal">
               Book Now
             </Badge>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold tracking-widest text-overlay mb-4 sm:mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-widest text-white mb-4 sm:mb-6">
               Request Our Concierge Services
             </h1>
-            <p className="text-sm sm:text-base md:text-lg font-lora text-overlay mb-6 sm:mb-8">
+            <p className="text-sm sm:text-base md:text-lg font-normal text-muted-foreground mb-6 sm:mb-8">
               Complete the form below to request our services. Our team will
               contact you shortly to confirm your booking.
             </p>
@@ -281,84 +265,81 @@ export default function BookingPage() {
         </div>
       </section>
 
-      {/* Booking Form Section */}
-      <section className="py-12 sm:py-16 md:py-20 bg-background">
+      <section className="py-12 sm:py-16 md:py-20 bg-black">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="max-w-4xl mx-auto">
-            {/* Progress Steps */}
             <div className="mb-8 sm:mb-12">
               <div className="flex justify-between items-center">
                 <div
                   className={`flex flex-col items-center ${
-                    step >= 1 ? "text-secondary" : "text-muted-foreground"
+                    step >= 1 ? "text-secondary-light" : "text-muted-foreground"
                   }`}
                 >
                   <div
                     className={`w-8 sm:w-10 h-8 sm:h-10 rounded-full flex items-center justify-center mb-2 text-xs sm:text-sm ${
                       step >= 1
-                        ? "bg-secondary text-secondary-foreground"
+                        ? "bg-secondary-light text-black"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
                     1
                   </div>
-                  <span className="text-xs sm:text-sm font-lora">
+                  <span className="text-xs sm:text-sm font-normal">
                     Personal Info
                   </span>
                 </div>
                 <div
                   className={`flex-1 h-1 mx-2 sm:mx-4 ${
-                    step >= 2 ? "bg-secondary" : "bg-muted"
+                    step >= 2 ? "bg-secondary-light" : "bg-muted"
                   }`}
                 ></div>
                 <div
                   className={`flex flex-col items-center ${
-                    step >= 2 ? "text-secondary" : "text-muted-foreground"
+                    step >= 2 ? "text-secondary-light" : "text-muted-foreground"
                   }`}
                 >
                   <div
                     className={`w-8 sm:w-10 h-8 sm:h-10 rounded-full flex items-center justify-center mb-2 text-xs sm:text-sm ${
                       step >= 2
-                        ? "bg-secondary text-secondary-foreground"
+                        ? "bg-secondary-light text-black"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
                     2
                   </div>
-                  <span className="text-xs sm:text-sm font-lora">
+                  <span className="text-xs sm:text-sm font-normal">
                     Service Details
                   </span>
                 </div>
                 <div
                   className={`flex-1 h-1 mx-2 sm:mx-4 ${
-                    step >= 3 ? "bg-secondary" : "bg-muted"
+                    step >= 3 ? "bg-secondary-light" : "bg-muted"
                   }`}
                 ></div>
                 <div
                   className={`flex flex-col items-center ${
-                    step >= 3 ? "text-secondary" : "text-muted-foreground"
+                    step >= 3 ? "text-secondary-light" : "text-muted-foreground"
                   }`}
                 >
                   <div
                     className={`w-8 sm:w-10 h-8 sm:h-10 rounded-full flex items-center justify-center mb-2 text-xs sm:text-sm ${
                       step >= 3
-                        ? "bg-secondary text-secondary-foreground"
+                        ? "bg-secondary-light text-black"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
                     3
                   </div>
-                  <span className="text-xs sm:text-sm font-lora">
+                  <span className="text-xs sm:text-sm font-normal">
                     Confirmation
                   </span>
                 </div>
               </div>
             </div>
 
-            <Card className="border-border bg-card shadow-sm">
+            <Card className="border-muted/50 bg-card shadow-sm">
               <CardContent className="p-4 sm:p-6 md:p-8">
                 <form onSubmit={handleSubmit}>
-                  {/* Step 1: Personal Information */}
                   {step === 1 && (
                     <motion.div
                       initial={{ opacity: 0, x: 20 }}
@@ -366,15 +347,14 @@ export default function BookingPage() {
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <h2 className="text-xl sm:text-2xl md:text-3xl font-cinzel font-bold uppercase tracking-widest text-foreground mb-4 sm:mb-6">
+                      <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold uppercase tracking-widest text-white mb-4 sm:mb-6">
                         Personal Information
                       </h2>
-
                       <div className="space-y-3 sm:space-y-4">
                         <div>
                           <Label
                             htmlFor="name"
-                            className="text-xs sm:text-sm font-lora text-foreground"
+                            className="text-xs sm:text-sm font-normal text-muted-foreground"
                           >
                             Full Name *
                           </Label>
@@ -385,14 +365,13 @@ export default function BookingPage() {
                             onChange={handleChange}
                             placeholder="Enter your full name"
                             required
-                            className="border-border bg-card text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                            className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
                           />
                         </div>
-
                         <div>
                           <Label
                             htmlFor="email"
-                            className="text-xs sm:text-sm font-lora text-foreground"
+                            className="text-xs sm:text-sm font-normal text-muted-foreground"
                           >
                             Email Address *
                           </Label>
@@ -404,14 +383,13 @@ export default function BookingPage() {
                             onChange={handleChange}
                             placeholder="Enter your email address"
                             required
-                            className="border-border bg-card text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                            className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
                           />
                         </div>
-
                         <div>
                           <Label
                             htmlFor="phone"
-                            className="text-xs sm:text-sm font-lora text-foreground"
+                            className="text-xs sm:text-sm font-normal text-muted-foreground"
                           >
                             Phone Number *
                           </Label>
@@ -422,16 +400,15 @@ export default function BookingPage() {
                             onChange={handleChange}
                             placeholder="Enter your phone number"
                             required
-                            className="border-border bg-card text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                            className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
                           />
                         </div>
                       </div>
-
                       <div className="mt-6 sm:mt-8 flex justify-end">
                         <Button
                           type="button"
                           onClick={nextStep}
-                          className="bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground font-lora px-4 sm:px-6 py-2 sm:py-3"
+                          className="bg-gold-gradient hover:bg-secondary-light/80 text-black text-xs sm:text-sm font-normal px-4 sm:px-6 py-2 sm:py-3"
                         >
                           Next Step
                         </Button>
@@ -439,7 +416,6 @@ export default function BookingPage() {
                     </motion.div>
                   )}
 
-                  {/* Step 2: Service Details */}
                   {step === 2 && (
                     <motion.div
                       initial={{ opacity: 0, x: 20 }}
@@ -447,15 +423,14 @@ export default function BookingPage() {
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <h2 className="text-xl sm:text-2xl md:text-3xl font-cinzel font-bold uppercase tracking-widest text-foreground mb-4 sm:mb-6">
+                      <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold uppercase tracking-widest text-white mb-4 sm:mb-6">
                         Service Details
                       </h2>
-
                       <div className="space-y-3 sm:space-y-4">
                         <div>
                           <Label
                             htmlFor="serviceId"
-                            className="text-xs sm:text-sm font-lora text-foreground"
+                            className="text-xs sm:text-sm font-normal text-muted-foreground"
                           >
                             Select Service *
                           </Label>
@@ -465,15 +440,15 @@ export default function BookingPage() {
                             }
                             value={formData.serviceId}
                           >
-                            <SelectTrigger className="border-border bg-card text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora">
+                            <SelectTrigger className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal">
                               <SelectValue placeholder="Select a service" />
                             </SelectTrigger>
-                            <SelectContent className="bg-card text-foreground border-border">
+                            <SelectContent className="bg-card text-white border-muted/50">
                               {services.map((service) => (
                                 <SelectItem
                                   key={service.id}
                                   value={service.id}
-                                  className="text-sm sm:text-base font-lora"
+                                  className="text-sm sm:text-base font-normal"
                                 >
                                   {service.name} - {formatPrice(service.price)}
                                 </SelectItem>
@@ -481,10 +456,9 @@ export default function BookingPage() {
                             </SelectContent>
                           </Select>
                         </div>
-
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                           <div>
-                            <Label className="text-xs sm:text-sm font-lora text-foreground">
+                            <Label className="text-xs sm:text-sm font-normal text-muted-foreground">
                               Date *
                             </Label>
                             <Popover>
@@ -492,7 +466,7 @@ export default function BookingPage() {
                                 <Button
                                   variant={"outline"}
                                   className={cn(
-                                    "w-full justify-start text-left font-lora border-border bg-card text-sm sm:text-base text-foreground",
+                                    "w-full justify-start text-left font-normal border-muted/50 bg-card text-sm sm:text-base text-white",
                                     !date && "text-muted-foreground"
                                   )}
                                 >
@@ -504,23 +478,22 @@ export default function BookingPage() {
                                   )}
                                 </Button>
                               </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0 bg-card border-border">
+                              <PopoverContent className="w-auto p-0 bg-card border-muted/50">
                                 <Calendar
                                   mode="single"
                                   selected={date}
                                   onSelect={handleDateChange}
                                   initialFocus
                                   disabled={(date) => date < new Date()}
-                                  className="bg-card text-foreground text-sm sm:text-base"
+                                  className="bg-card text-white text-sm sm:text-base"
                                 />
                               </PopoverContent>
                             </Popover>
                           </div>
-
                           <div>
                             <Label
                               htmlFor="time"
-                              className="text-xs sm:text-sm font-lora text-foreground"
+                              className="text-xs sm:text-sm font-normal text-muted-foreground"
                             >
                               Time *
                             </Label>
@@ -530,15 +503,15 @@ export default function BookingPage() {
                               }
                               value={formData.time}
                             >
-                              <SelectTrigger className="border-border bg-card text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora">
+                              <SelectTrigger className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal">
                                 <SelectValue placeholder="Select a time" />
                               </SelectTrigger>
-                              <SelectContent className="bg-card text-foreground border-border">
+                              <SelectContent className="bg-card text-white border-muted/50">
                                 {timeSlots.map((time) => (
                                   <SelectItem
                                     key={time}
                                     value={time}
-                                    className="text-sm sm:text-base font-lora"
+                                    className="text-sm sm:text-base font-normal"
                                   >
                                     {time}
                                   </SelectItem>
@@ -547,11 +520,10 @@ export default function BookingPage() {
                             </Select>
                           </div>
                         </div>
-
                         <div>
                           <Label
                             htmlFor="specialRequests"
-                            className="text-xs sm:text-sm font-lora text-foreground"
+                            className="text-xs sm:text-sm font-normal text-muted-foreground"
                           >
                             Special Requests
                           </Label>
@@ -562,24 +534,23 @@ export default function BookingPage() {
                             onChange={handleChange}
                             placeholder="Any special requirements or additional information"
                             rows={4}
-                            className="border-border bg-card text-sm sm:text-base text-foreground focus:border-secondary focus:ring-secondary font-lora"
+                            className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
                           />
                         </div>
                       </div>
-
                       <div className="mt-6 sm:mt-8 flex justify-between">
                         <Button
                           type="button"
                           variant="outline"
                           onClick={prevStep}
-                          className="border-secondary text-xs sm:text-sm text-foreground hover:bg-secondary/10 hover:text-secondary font-lora px-4 sm:px-6 py-2 sm:py-3"
+                          className="border-secondary-light text-xs sm:text-sm text-white hover:bg-secondary-light/10 hover:text-secondary-light font-normal px-4 sm:px-6 py-2 sm:py-3"
                         >
                           Previous Step
                         </Button>
                         <Button
                           type="button"
                           onClick={nextStep}
-                          className="bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground font-lora px-4 sm:px-6 py-2 sm:py-3"
+                          className="bg-gold-gradient hover:bg-secondary-light/80 text-black text-xs sm:text-sm font-normal px-4 sm:px-6 py-2 sm:py-3"
                         >
                           Next Step
                         </Button>
@@ -587,7 +558,6 @@ export default function BookingPage() {
                     </motion.div>
                   )}
 
-                  {/* Step 3: Confirmation */}
                   {step === 3 && (
                     <motion.div
                       initial={{ opacity: 0, x: 20 }}
@@ -595,98 +565,94 @@ export default function BookingPage() {
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <h2 className="text-xl sm:text-2xl md:text-3xl font-cinzel font-bold uppercase tracking-widest text-foreground mb-4 sm:mb-6">
+                      <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold uppercase tracking-widest text-white mb-4 sm:mb-6">
                         Confirm Your Booking
                       </h2>
-
                       <div className="space-y-4 sm:space-y-6">
-                        <div className="bg-card p-3 sm:p-4 rounded-lg border-border">
-                          <h3 className="font-lora text-base sm:text-lg text-foreground mb-3 sm:mb-4">
+                        <div className="bg-card p-3 sm:p-4 rounded-lg border-muted/50">
+                          <h3 className="font-normal text-base sm:text-lg text-white mb-3 sm:mb-4">
                             Personal Information
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                              <p className="text-xs sm:text-sm text-muted-foreground font-lora">
+                              <p className="text-xs sm:text-sm text-muted-foreground font-normal">
                                 Name
                               </p>
-                              <p className="text-sm sm:text-base font-lora">
+                              <p className="text-sm sm:text-base font-normal">
                                 {formData.name}
                               </p>
                             </div>
                             <div>
-                              <p className="text-xs sm:text-sm text-muted-foreground font-lora">
+                              <p className="text-xs sm:text-sm text-muted-foreground font-normal">
                                 Email
                               </p>
-                              <p className="text-sm sm:text-base font-lora">
+                              <p className="text-sm sm:text-base font-normal">
                                 {formData.email}
                               </p>
                             </div>
                             <div>
-                              <p className="text-xs sm:text-sm text-muted-foreground font-lora">
+                              <p className="text-xs sm:text-sm text-muted-foreground font-normal">
                                 Phone
                               </p>
-                              <p className="text-sm sm:text-base font-lora">
+                              <p className="text-sm sm:text-base font-normal">
                                 {formData.phone}
                               </p>
                             </div>
                           </div>
                         </div>
-
-                        <div className="bg-card p-3 sm:p-4 rounded-lg border-border">
-                          <h3 className="font-lora text-base sm:text-lg text-foreground mb-3 sm:mb-4">
+                        <div className="bg-card p-3 sm:p-4 rounded-lg border-muted/50">
+                          <h3 className="font-normal text-base sm:text-lg text-white mb-3 sm:mb-4">
                             Service Details
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                             <div>
-                              <p className="text-xs sm:text-sm text-muted-foreground font-lora">
+                              <p className="text-xs sm:text-sm text-muted-foreground font-normal">
                                 Service
                               </p>
-                              <p className="text-sm sm:text-base font-lora">
+                              <p className="text-sm sm:text-base font-normal">
                                 {selectedService?.name}
                               </p>
                             </div>
                             <div>
-                              <p className="text-xs sm:text-sm text-muted-foreground font-lora">
+                              <p className="text-xs sm:text-sm text-muted-foreground font-normal">
                                 Price
                               </p>
-                              <p className="text-sm sm:text-base font-lora">
+                              <p className="text-sm sm:text-base font-normal">
                                 {formatPrice(selectedService?.price || 0)}
                               </p>
                             </div>
                             <div>
-                              <p className="text-xs sm:text-sm text-muted-foreground font-lora">
+                              <p className="text-xs sm:text-sm text-muted-foreground font-normal">
                                 Date
                               </p>
-                              <p className="text-sm sm:text-base font-lora">
+                              <p className="text-sm sm:text-base font-normal">
                                 {formData.date
                                   ? format(formData.date, "PPP")
                                   : ""}
                               </p>
                             </div>
                             <div>
-                              <p className="text-xs sm:text-sm text-muted-foreground font-lora">
+                              <p className="text-xs sm:text-sm text-muted-foreground font-normal">
                                 Time
                               </p>
-                              <p className="text-sm sm:text-base font-lora">
+                              <p className="text-sm sm:text-base font-normal">
                                 {formData.time}
                               </p>
                             </div>
                           </div>
-
                           {formData.specialRequests && (
                             <div className="mt-3 sm:mt-4">
-                              <p className="text-xs sm:text-sm text-muted-foreground font-lora">
+                              <p className="text-xs sm:text-sm text-muted-foreground font-normal">
                                 Special Requests
                               </p>
-                              <p className="text-sm sm:text-base font-lora">
+                              <p className="text-sm sm:text-base font-normal">
                                 {formData.specialRequests}
                               </p>
                             </div>
                           )}
                         </div>
-
                         <div>
-                          <h3 className="font-lora text-base sm:text-lg text-foreground mb-3 sm:mb-4">
+                          <h3 className="font-normal text-base sm:text-lg text-white mb-3 sm:mb-4">
                             Payment Method
                           </h3>
                           <RadioGroup
@@ -698,11 +664,11 @@ export default function BookingPage() {
                               <RadioGroupItem
                                 value="card"
                                 id="card"
-                                className="text-secondary focus:ring-secondary"
+                                className="text-secondary-light focus:ring-secondary-light"
                               />
                               <Label
                                 htmlFor="card"
-                                className="text-xs sm:text-sm font-lora text-foreground"
+                                className="text-xs sm:text-sm font-normal text-white"
                               >
                                 Credit/Debit Card
                               </Label>
@@ -711,11 +677,11 @@ export default function BookingPage() {
                               <RadioGroupItem
                                 value="transfer"
                                 id="transfer"
-                                className="text-secondary focus:ring-secondary"
+                                className="text-secondary-light focus:ring-secondary-light"
                               />
                               <Label
                                 htmlFor="transfer"
-                                className="text-xs sm:text-sm font-lora text-foreground"
+                                className="text-xs sm:text-sm font-normal text-white"
                               >
                                 Bank Transfer
                               </Label>
@@ -724,11 +690,11 @@ export default function BookingPage() {
                               <RadioGroupItem
                                 value="cash"
                                 id="cash"
-                                className="text-secondary focus:ring-secondary"
+                                className="text-secondary-light focus:ring-secondary-light"
                               />
                               <Label
                                 htmlFor="cash"
-                                className="text-xs sm:text-sm font-lora text-foreground"
+                                className="text-xs sm:text-sm font-normal text-white"
                               >
                                 Cash on Delivery
                               </Label>
@@ -736,19 +702,18 @@ export default function BookingPage() {
                           </RadioGroup>
                         </div>
                       </div>
-
                       <div className="mt-6 sm:mt-8 flex justify-between">
                         <Button
                           type="button"
                           variant="outline"
                           onClick={prevStep}
-                          className="border-secondary text-xs sm:text-sm text-foreground hover:bg-secondary/10 hover:text-secondary font-lora px-4 sm:px-6 py-2 sm:py-3"
+                          className="border-secondary-light text-xs sm:text-sm text-white hover:bg-secondary-light/10 hover:text-secondary-light font-normal px-4 sm:px-6 py-2 sm:py-3"
                         >
                           Previous Step
                         </Button>
                         <Button
                           type="submit"
-                          className="bg-secondary hover:bg-secondary/90 text-xs sm:text-sm text-secondary-foreground font-lora px-4 sm:px-6 py-2 sm:py-3"
+                          className="bg-gold-gradient hover:bg-secondary-light/80 text-black text-xs sm:text-sm font-normal px-4 sm:px-6 py-2 sm:py-3"
                           disabled={isSubmitting}
                         >
                           {isSubmitting ? (
@@ -770,62 +735,57 @@ export default function BookingPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-12 sm:py-16 md:py-20 bg-muted">
+      <section className="py-12 sm:py-16 md:py-20 bg-muted/20">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-8 sm:mb-12">
-              <Badge className="mb-3 sm:mb-4 bg-secondary/20 text-secondary px-3 sm:px-4 py-1 text-xs sm:text-sm font-lora">
+              <Badge className="mb-3 sm:mb-4 bg-secondary-light/20 text-secondary-light px-3 sm:px-4 py-1 text-xs sm:text-sm font-normal">
                 FAQs
               </Badge>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-foreground mb-3 sm:mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold uppercase tracking-widest text-white mb-3 sm:mb-4">
                 Frequently Asked Questions
               </h2>
-              <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+              <p className="text-sm sm:text-base md:text-lg font-normal text-muted-foreground">
                 Find answers to common questions about our booking process and
                 services.
               </p>
             </div>
-
             <div className="space-y-3 sm:space-y-4">
-              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm">
-                <h3 className="font-lora text-base sm:text-lg text-foreground mb-2">
+              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm border-muted/50">
+                <h3 className="font-normal text-base sm:text-lg text-white mb-2">
                   How far in advance should I book?
                 </h3>
-                <p className="text-sm sm:text-base font-lora text-muted-foreground">
+                <p className="text-sm sm:text-base font-normal text-muted-foreground">
                   We recommend booking at least 24-48 hours in advance for most
                   services. For special events or during peak seasons, earlier
                   booking is advised.
                 </p>
               </div>
-
-              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm">
-                <h3 className="font-lora text-base sm:text-lg text-foreground mb-2">
+              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm border-muted/50">
+                <h3 className="font-normal text-base sm:text-lg text-white mb-2">
                   What is your cancellation policy?
                 </h3>
-                <p className="text-sm sm:text-base font-lora text-muted-foreground">
+                <p className="text-sm sm:text-base font-normal text-muted-foreground">
                   Cancellations made 24 hours or more before the scheduled
                   service will receive a full refund. Cancellations within 24
                   hours may be subject to a cancellation fee.
                 </p>
               </div>
-
-              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm">
-                <h3 className="font-lora text-base sm:text-lg text-foreground mb-2">
+              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm border-muted/50">
+                <h3 className="font-normal text-base sm:text-lg text-white mb-2">
                   Can I modify my booking after confirmation?
                 </h3>
-                <p className="text-sm sm:text-base font-lora text-muted-foreground">
+                <p className="text-sm sm:text-base font-normal text-muted-foreground">
                   Yes, you can modify your booking by contacting our concierge
                   team. Changes are subject to availability and may affect
                   pricing.
                 </p>
               </div>
-
-              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm">
-                <h3 className="font-lora text-base sm:text-lg text-foreground mb-2">
+              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm border-muted/50">
+                <h3 className="font-normal text-base sm:text-lg text-white mb-2">
                   How do I pay for services?
                 </h3>
-                <p className="text-sm sm:text-base font-lora text-muted-foreground">
+                <p className="text-sm sm:text-base font-normal text-muted-foreground">
                   We accept credit/debit cards, bank transfers, and cash
                   payments. For most services, a deposit or full payment is
                   required at the time of booking.

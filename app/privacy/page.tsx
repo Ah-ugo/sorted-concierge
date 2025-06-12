@@ -12,19 +12,23 @@ export default function PrivacyPage() {
     threshold: 0.1,
   });
   const [contentRef, contentInView] = useInView({
+    triggerOnce: false,
+    threshold: 0.1,
+  });
+  const [ctaRef, ctaInView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
-  const [ctaRef, ctaInView] = useInView({ triggerOnce: true, threshold: 0.1 });
 
   const privacyContent = [
     {
       section: "Introduction",
-      text: "At Sorted Concierge Services, we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your personal information when you use our website or services.",
+      description:
+        "At Sorted Concierge Services, we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your personal information when you use our website or services.",
     },
     {
       section: "Information We Collect",
-      text: [
+      description: [
         "Personal details (e.g., name, email, phone number) provided during booking or inquiries.",
         "Payment information processed through secure third-party providers.",
         "Usage data (e.g., website interactions) collected via cookies and analytics tools.",
@@ -33,7 +37,7 @@ export default function PrivacyPage() {
     },
     {
       section: "How We Use Your Information",
-      text: [
+      description: [
         "To process bookings and deliver services.",
         "To communicate with you about your requests or updates.",
         "To improve our website and services through analytics.",
@@ -42,11 +46,13 @@ export default function PrivacyPage() {
     },
     {
       section: "Data Sharing",
-      text: "We do not sell your personal information. We may share data with trusted partners (e.g., travel providers, payment processors) to fulfill services, or as required by law.",
+      description:
+        "We do not sell your personal information. We may share data with trusted partners (e.g., travel providers, payment processors) to fulfill services, or as required by law.",
     },
     {
       section: "Your Rights",
-      text: "You may request access, correction, or deletion of your personal data. To exercise these rights, contact us at privacy@sortedconcierge.com.",
+      description:
+        "You may request access, correction, or deletion of your personal data. To exercise these rights, contact us at privacy@sortedconcierge.com.",
     },
   ];
 
@@ -55,7 +61,7 @@ export default function PrivacyPage() {
       {/* Hero Section */}
       <section
         ref={heroRef}
-        className="relative flex min-h-[50vh] items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 pt-10"
+        className="relative flex min-h-[50vh] items-center justify-center bg-black pt-10" // Updated to bg-black
       >
         <div className="container relative z-10 mx-auto my-16 px-6 text-center">
           <motion.div
@@ -67,7 +73,7 @@ export default function PrivacyPage() {
             <Button
               asChild
               variant="ghost"
-              className="mb-4 text-gray-200 hover:text-white hover:bg-secondary/20"
+              className="mb-4 text-muted-foreground hover:text-white hover:bg-muted/50 border border-muted/50 hover:border-secondary-light/50 rounded-xl" // Updated to muted-foreground, muted, secondary-light
             >
               <Link href="/">
                 <ArrowLeft className="w-5 h-5 mr-2" />
@@ -77,7 +83,7 @@ export default function PrivacyPage() {
             <h1 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-cinzel font-bold uppercase tracking-widest text-white">
               Privacy Policy
             </h1>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-gray-200">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
               Learn how we protect your personal information and ensure your
               privacy.
             </p>
@@ -86,7 +92,7 @@ export default function PrivacyPage() {
       </section>
 
       {/* Content Section */}
-      <section className="bg-gray-900 py-16 md:py-32" ref={contentRef}>
+      <section className="bg-black py-16 md:py-32" ref={contentRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -96,7 +102,7 @@ export default function PrivacyPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="mx-auto max-w-4xl"
           >
-            <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-md rounded-xl p-8 shadow-lg">
+            <div className="bg-card backdrop-blur-md rounded-xl p-8 shadow-lg border border-muted/50">
               {privacyContent.map((section, index) => (
                 <motion.div
                   key={index}
@@ -110,21 +116,31 @@ export default function PrivacyPage() {
                   <h2 className="text-xl sm:text-2xl font-cinzel font-bold text-white mb-4">
                     {section.section}
                   </h2>
-                  {Array.isArray(section.text) ? (
+                  {Array.isArray(section.description) ? (
                     <ul className="space-y-2">
-                      {section.text.map((item, i) => (
-                        <li
+                      {section.description.map((item, i) => (
+                        <motion.li
                           key={i}
-                          className="text-sm sm:text-base font-lora text-gray-200 flex items-start"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={
+                            contentInView
+                              ? { opacity: 1, x: 0 }
+                              : { opacity: 0, x: -10 }
+                          }
+                          transition={{
+                            duration: 0.3,
+                            delay: index * 0.1 + i * 0.05,
+                          }} // Added stagger for list items
+                          className="text-sm sm:text-base font-lora text-muted-foreground flex items-start" // Updated to muted-foreground
                         >
-                          <span className="mr-2 text-secondary">•</span>
+                          <span className="mr-2 text-secondary-light">•</span>{" "}
                           {item}
-                        </li>
+                        </motion.li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-sm sm:text-base font-lora text-gray-200">
-                      {section.text}
+                    <p className="text-sm sm:text-base font-lora text-muted-foreground">
+                      {section.description}
                     </p>
                   )}
                 </motion.div>
@@ -135,7 +151,7 @@ export default function PrivacyPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gray-800/50 py-16 md:py-32" ref={ctaRef}>
+      <section className="bg-muted/20 py-16 md:py-32" ref={ctaRef}>
         <div className="container mx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -145,12 +161,12 @@ export default function PrivacyPage() {
             <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               Have Questions?
             </h2>
-            <p className="mb-8 text-sm sm:text-base font-lora text-gray-200">
+            <p className="mb-8 text-sm sm:text-base font-lora text-muted-foreground">
               Contact us for more information about our services or policies.
             </p>
             <Button
               asChild
-              className="bg-secondary px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:from-secondary/80 hover:to-primary/80"
+              className="bg-gold-gradient text-black px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest hover:bg-secondary-light/80 shadow-lg hover:shadow-secondary-light/20" // Updated to gold-gradient, secondary-light
             >
               <Link href="/contact">Get in Touch</Link>
             </Button>
