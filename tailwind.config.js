@@ -49,9 +49,10 @@ module.exports = {
         },
         white: "#FFFFFF", // Added pure white as a utility color
       },
-      backgroundImage: {
-        "gold-gradient":
-          "linear-gradient(90deg, #FAC364 0%, #d4af37 50%, #CC913F 100%)", // Gold gradient
+      backgroundColor: {
+        // "gold-gradient":
+        // "linear-gradient(90deg, #FAC364 0%, #d4af37 50%, #CC913F 100%)", // Gold gradient
+        "gold-gradient": "#CC913F ",
       },
       borderRadius: {
         lg: "0.75rem",

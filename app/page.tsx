@@ -195,7 +195,7 @@ export default function Home() {
               </Button>
               <Button
                 asChild
-                className="bg-gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+                className="bg-gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:bg-secondary-light/80 elegant-shadow"
               >
                 <Link href="/contact">Request Private Access</Link>
               </Button>
@@ -660,7 +660,7 @@ export default function Home() {
                   </h3>
                   <Button
                     asChild
-                    className="bg-gold-gradient px-6 py-3 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    className="bg-gold-gradient px-6 py-3 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:bg-secondary-light/80 elegant-shadow opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   >
                     <Link href="/services">Learn More</Link>
                   </Button>
@@ -896,7 +896,7 @@ export default function Home() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-muted/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />{" "}
                   {/* Updated to use muted */}
-                  <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute top-2 left-2 opacity-0 group-hover:bg-secondary-light/80 transition-opacity duration-300">
                     <span className="bg-gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
                       {item.category}
                     </span>
@@ -927,7 +927,7 @@ export default function Home() {
           >
             <Button
               asChild
-              className="bg-gold-gradient px-8 py-4 mb-5 sm:mb-0 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 mr-4 elegant-shadow"
+              className="bg-gold-gradient px-8 py-4 mb-5 sm:mb-0 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:bg-secondary-light/80 mr-4 elegant-shadow"
             >
               <Link href="/gallery">View Full Gallery</Link>
             </Button>
@@ -967,7 +967,7 @@ export default function Home() {
             </h2>
             <Button
               asChild
-              className="bg-gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:opacity-90 elegant-shadow"
+              className="bg-gold-gradient px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black hover:bg-secondary-light/80 elegant-shadow"
             >
               <Link href="/contact">Request Private Access</Link>
             </Button>
