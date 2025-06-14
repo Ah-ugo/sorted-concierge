@@ -48,7 +48,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-black text-white font-lora text-base font-normal leading-relaxed;
+    @apply bg-black text-white font-archivo text-base font-normal leading-relaxed;
     background-color: #000000;
     color: #ffffff;
     overflow-x: hidden; /* Prevent horizontal scroll during preloader */

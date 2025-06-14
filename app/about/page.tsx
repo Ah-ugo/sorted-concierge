@@ -153,7 +153,7 @@ export default function AboutPage() {
     {
       title: "How We Work With Clients",
       content: (
-        <ul className="text-sm sm:text-base font-lora text-muted-foreground list-disc list-inside">
+        <ul className="text-sm sm:text-base font-archivo text-muted-foreground list-disc list-inside">
           {" "}
           {/* Updated to muted.foreground */}
           <li>
@@ -175,7 +175,7 @@ export default function AboutPage() {
     {
       title: "Confidentiality",
       content: (
-        <p className="text-sm sm:text-base font-lora text-muted-foreground">
+        <p className="text-sm sm:text-base font-archivo text-muted-foreground">
           {" "}
           {/* Updated to muted.foreground */}
           Strict confidentiality protocols and NDAs protect client data and
@@ -187,7 +187,7 @@ export default function AboutPage() {
     {
       title: "Vendor Network",
       content: (
-        <p className="text-sm sm:text-base font-lora text-muted-foreground">
+        <p className="text-sm sm:text-base font-archivo text-muted-foreground">
           {" "}
           {/* Updated to muted.foreground */}
           We work with a curated list of vetted vendors and service providers
@@ -199,7 +199,7 @@ export default function AboutPage() {
     {
       title: "Global Access",
       content: (
-        <p className="text-sm sm:text-base font-lora text-muted-foreground">
+        <p className="text-sm sm:text-base font-archivo text-muted-foreground">
           {" "}
           {/* Updated to muted.foreground */}
           Sorted currently supports clients across: 🇬🇧 London | 🇳🇬 Lagos | 🇦🇪
@@ -254,7 +254,7 @@ export default function AboutPage() {
             <h1 className="mb-8 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-cinzel font-bold uppercase tracking-widest text-white">
               Born in Lagos. Built for the World.
             </h1>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-archivo text-muted-foreground">
               {" "}
               {/* Updated to muted.foreground */}
               Sorted Concierge was founded to make life easier for those who
@@ -282,33 +282,33 @@ export default function AboutPage() {
                 Our Origins
               </h2>
               <div className="space-y-4">
-                <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+                <p className="text-sm sm:text-base md:text-lg font-archivo text-muted-foreground">
                   {" "}
                   {/* Updated to muted.foreground */}
                   Sorted started with one goal: to make life easier for people
                   who live fast, travel often, and can’t afford chaos.
                 </p>
-                <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+                <p className="text-sm sm:text-base md:text-lg font-archivo text-muted-foreground">
                   {" "}
                   {/* Updated to muted.foreground */}
                   Our founder, a corporate strategist and lifestyle consultant,
                   saw clients facing the same issue: access to luxury without
                   ease.
                 </p>
-                <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+                <p className="text-sm sm:text-base md:text-lg font-archivo text-muted-foreground">
                   {" "}
                   {/* Updated to muted.foreground */}
                   What began in Lagos serving executives and diaspora clients
                   has grown into a trusted global service across cities like
                   London, Dubai, and Paris.
                 </p>
-                <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+                <p className="text-sm sm:text-base md:text-lg font-archivo text-muted-foreground">
                   {" "}
                   {/* Updated to muted.foreground */}
                   We built our name by turning complicated situations into
                   seamless experiences.
                 </p>
-                <p className="text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+                <p className="text-sm sm:text-base md:text-lg font-archivo text-muted-foreground">
                   {" "}
                   {/* Updated to muted.foreground */}
                   We stay small to serve a select group of clients exceptionally
@@ -388,7 +388,7 @@ export default function AboutPage() {
               <h3 className="mb-1 text-lg sm:text-xl md:text-2xl font-cinzel font-bold text-white">
                 {founder.name}
               </h3>
-              <p className="mb-4 text-xs sm:text-sm font-lora uppercase tracking-wider text-secondary-light">
+              <p className="mb-4 text-xs sm:text-sm font-archivo uppercase tracking-wider text-secondary-light">
                 {" "}
                 {/* Updated to secondary.light */}
                 {founder.role}
@@ -397,7 +397,7 @@ export default function AboutPage() {
                 {founder.bio.map((sentence, index) => (
                   <p
                     key={index}
-                    className="text-sm sm:text-base font-lora text-muted-foreground" // Updated to muted.foreground
+                    className="text-sm sm:text-base font-archivo text-muted-foreground" // Updated to muted.foreground
                   >
                     {sentence}
                   </p>
@@ -407,7 +407,7 @@ export default function AboutPage() {
                 {founder.quote.map((line, index) => (
                   <p
                     key={index}
-                    className="text-sm sm:text-base font-lora italic text-muted-foreground" // Updated to muted.foreground
+                    className="text-sm sm:text-base font-archivo italic text-muted-foreground" // Updated to muted.foreground
                   >
                     {line}
                   </p>
@@ -434,13 +434,13 @@ export default function AboutPage() {
               {/* Updated to secondary.light */}
               Who We Serve
             </h2>
-            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-archivo text-muted-foreground">
               {" "}
               {/* Updated to muted.foreground */}
               We work with a small, highly selective group of clients who value
               their privacy, their time, and doing things right the first time.
             </p>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground italic">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-archivo text-muted-foreground italic">
               {" "}
               {/* Updated to muted.foreground */}
               We’re not for everyone, and that’s intentional.
@@ -472,7 +472,7 @@ export default function AboutPage() {
                   {/* Updated to secondary.light */}
                   {client.title}
                 </h3>
-                <p className="text-sm font-lora text-muted-foreground">
+                <p className="text-sm font-archivo text-muted-foreground">
                   {" "}
                   {/* Updated to muted.foreground */}
                   {client.description}
@@ -498,7 +498,7 @@ export default function AboutPage() {
               
               How We Work
             </h2>
-            <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+            <p className="mb-8 text-sm sm:text-base md:text-lg font-archivo text-muted-foreground">
               
               Every Sorted engagement is personal. There are no cookie-cutter
               packages. No generic templates.
@@ -526,7 +526,7 @@ export default function AboutPage() {
                   
                   {index + 1}
                 </div>
-                <p className="text-sm sm:text-base font-lora text-muted-foreground">
+                <p className="text-sm sm:text-base font-archivo text-muted-foreground">
                   
                   {step}
                 </p>
@@ -540,14 +540,14 @@ export default function AboutPage() {
               transition={{ duration: 0.8, delay: 1 }}
               className="mt-12 text-center"
             >
-              <p className="mb-6 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+              <p className="mb-6 text-sm sm:text-base md:text-lg font-archivo text-muted-foreground">
                 
                 We focus on building relationships, not just service plans. The
                 longer we work with you, the better we anticipate your needs.
               </p>
               <Button
                 asChild
-                className="px-8 py-4 border-secondary border text-xs sm:text-sm font-lora uppercase tracking-widest text-white hover:bg-secondary hover:text-black elegant-shadow" // Updated hover state
+                className="px-8 py-4 border-secondary border text-xs sm:text-sm font-archivo uppercase tracking-widest text-white hover:bg-secondary hover:text-black elegant-shadow" // Updated hover state
               >
                 <Link href="/contact">Get Started</Link>
               </Button>
@@ -597,7 +597,7 @@ export default function AboutPage() {
                 <h3 className="mb-4 text-lg sm:text-xl md:text-2xl font-cinzel font-bold tracking-wider text-white">
                   {value.title}
                 </h3>
-                <p className="text-sm sm:text-base font-lora text-muted-foreground">
+                <p className="text-sm sm:text-base font-archivo text-muted-foreground">
                   {" "}
                   {/* Updated to muted.foreground */}
                   {value.description}
@@ -626,7 +626,7 @@ export default function AboutPage() {
               {/* Updated to secondary.light */}
               Our Policies & Approach
             </h2>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-archivo text-muted-foreground">
               {" "}
               {/* Updated to muted.foreground */}
               Discover the principles that guide our global, discreet, and
@@ -703,7 +703,7 @@ export default function AboutPage() {
             <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white">
               Join the Sorted Circle
             </h2>
-            <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
+            <p className="mb-12 text-sm sm:text-base md:text-lg font-archivo text-muted-foreground">
               
               Experience a lifestyle where every detail is handled with
               discretion and excellence. Apply for membership or contact us to
@@ -713,13 +713,13 @@ export default function AboutPage() {
               <Button
                 asChild
                 variant="outline"
-                className="border-secondary-light px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest bg-black text-white hover:bg-secondary hover:text-black elegant-shadow" // Updated to secondary.light
+                className="border-secondary-light px-8 py-6 text-xs sm:text-sm font-archivo uppercase tracking-widest bg-black text-white hover:bg-secondary hover:text-black elegant-shadow" // Updated to secondary.light
               >
                 <Link href="/membership-booking">Apply for Membership</Link>
               </Button>
               <Button
                 asChild
-                className="bg-gold-gradient border px-8 py-6 text-xs sm:text-sm font-lora uppercase tracking-widest text-black border-secondary-light hover:bg-none hover:border-secondary-light hover:text-white elegant-shadow" // Updated to gold-gradient and secondary.light
+                className="bg-gold-gradient border px-8 py-6 text-xs sm:text-sm font-archivo uppercase tracking-widest text-black border-secondary-light hover:bg-none hover:border-secondary-light hover:text-white elegant-shadow" // Updated to gold-gradient and secondary.light
               >
                 <Link href="/contact">Contact Us</Link>
               </Button>

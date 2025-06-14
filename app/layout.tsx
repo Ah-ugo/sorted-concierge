@@ -1,6 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { Cinzel, Lato, Lora } from "next/font/google";
+import { Cinzel, Lato, Lora, Archivo } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
@@ -25,6 +25,12 @@ const lato = Lato({
   weight: ["400", "700"],
 });
 
+const archivo = Archivo({
+  subsets: ["latin"],
+  variable: "--font-archivo",
+  weight: ["400", "700"],
+});
+
 const lora = Lora({
   subsets: ["latin"],
   variable: "--font-lora",
@@ -45,7 +51,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${cinzel.variable} ${lato.variable} ${lora.variable}`}>
+      <body
+        className={`${cinzel.variable} ${lato.variable} ${lora.variable} ${archivo.variable}`}
+      >
         <AuthProvider>
           <CurrencyProvider>
             <ThemeProvider

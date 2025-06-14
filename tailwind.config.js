@@ -63,6 +63,7 @@ module.exports = {
         sans: ["var(--font-lato)", "sans-serif"],
         cinzel: ["var(--font-cinzel)", "serif"],
         lora: ["var(--font-lora)", "serif"],
+        archivo: ["var(--font-archivo)", "serif"],
       },
       keyframes: {
         "accordion-down": {
