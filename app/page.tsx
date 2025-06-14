@@ -288,7 +288,7 @@ export default function Home() {
       </section>
 
       {/* Who We Serve Section */}
-      <section className="bg-black py-12" ref={whoWeServeRef}>
+      {/* <section className="bg-black py-12" ref={whoWeServeRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -343,7 +343,7 @@ export default function Home() {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       {/* What We Do Section */}
       <section className="bg-black py-12" ref={servicesRef}>
@@ -502,13 +502,12 @@ export default function Home() {
                 ))}
               </motion.div>
               <div className="absolute top-1/2 right-4 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="bg-black/50 backdrop-blur-sm rounded-full p-2">
-                  {" "}
-                  {/* Updated to use muted */}
+                {/* <div className="bg-black/50 backdrop-blur-sm rounded-full p-2">
+                  
                   <p className="text-[0.75rem] sm:text-xs text-white font-lora">
                     Drag to scroll
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
             <div className="overflow-hidden relative">
@@ -637,7 +636,7 @@ export default function Home() {
               </motion.div>
             </div>
           </div>
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {serviceItems.map((item, index) => (
               <motion.div
                 key={index}
@@ -667,8 +666,8 @@ export default function Home() {
                 </div>
               </motion.div>
             ))}
-          </div>
-          <motion.div
+          </div> */}
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={
               servicesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
@@ -683,12 +682,12 @@ export default function Home() {
             >
               <Link href="/services">See Our Signature Services</Link>
             </Button>
-          </motion.div>
+          </motion.div> */}
         </div>
       </section>
 
       {/* The Sorted Circle Section */}
-      <section className="bg-black py-12" ref={circleRef}>
+      {/* <section className="bg-black py-12" ref={circleRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -721,7 +720,7 @@ export default function Home() {
             </Button>
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       {/* Testimonials Section */}
       <section className="bg-black py-12" ref={testimonialsRef}>
@@ -768,7 +767,7 @@ export default function Home() {
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={galleryInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1 }}
           className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center mx-8"
         >
@@ -816,7 +815,7 @@ export default function Home() {
       </section>
 
       {/* Gallery Section */}
-      <section className="bg-black py-12" ref={galleryRef}>
+      {/* <section className="bg-black py-12" ref={galleryRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -895,7 +894,7 @@ export default function Home() {
                     }
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-muted/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />{" "}
-                  {/* Updated to use muted */}
+                   
                   <div className="absolute top-2 left-2 opacity-0 group-hover:bg-secondary-light/80 transition-opacity duration-300">
                     <span className="bg-gold-gradient text-black px-2 py-1 rounded-full text-[0.75rem] sm:text-xs font-lora uppercase tracking-wider">
                       {item.category}
@@ -940,10 +939,10 @@ export default function Home() {
             </Button>
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       {/* Begin Your Journey Section */}
-      <section className="relative aspect-[21/9] w-full sm:py-0 py-32">
+      {/* <section className="relative aspect-[21/9] w-full sm:py-0 py-32">
         <Image
           loading="lazy"
           src="/image17.png"
@@ -953,7 +952,7 @@ export default function Home() {
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-muted/60 to-transparent" />{" "}
-        {/* Updated to use muted */}
+       
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -973,7 +972,7 @@ export default function Home() {
             </Button>
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       <div className="fixed bottom-6 right-6 z-40">
         {/* <CurrencySelector /> */}

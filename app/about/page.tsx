@@ -484,7 +484,7 @@ export default function AboutPage() {
       </section>
 
       {/* How We Work Section */}
-      <section className="bg-black py-12 md:py-16" ref={howWeWorkRef}>
+      {/* <section className="bg-black py-12 md:py-16" ref={howWeWorkRef}>
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -495,13 +495,11 @@ export default function AboutPage() {
             className="mx-auto max-w-3xl text-center"
           >
             <h2 className="mb-8 text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-secondary-light">
-              {" "}
-              {/* Updated to secondary.light */}
+              
               How We Work
             </h2>
             <p className="mb-8 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
-              {" "}
-              {/* Updated to muted.foreground */}
+              
               Every Sorted engagement is personal. There are no cookie-cutter
               packages. No generic templates.
             </p>
@@ -525,13 +523,11 @@ export default function AboutPage() {
                 className="flex items-start mb-6"
               >
                 <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-secondary-light/20 border border-secondary-light text-secondary-light font-cinzel font-bold text-sm mr-4">
-                  {" "}
-                  {/* Updated to secondary.light */}
+                  
                   {index + 1}
                 </div>
                 <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                  {" "}
-                  {/* Updated to muted.foreground */}
+                  
                   {step}
                 </p>
               </motion.div>
@@ -545,8 +541,7 @@ export default function AboutPage() {
               className="mt-12 text-center"
             >
               <p className="mb-6 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
-                {" "}
-                {/* Updated to muted.foreground */}
+                
                 We focus on building relationships, not just service plans. The
                 longer we work with you, the better we anticipate your needs.
               </p>
@@ -559,7 +554,7 @@ export default function AboutPage() {
             </motion.div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Our Values Section */}
       <section className="bg-black py-12 md:py-16" ref={valuesRef}>
@@ -697,7 +692,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-12 md:py-16 bg-black" ref={ctaRef}>
+      {/* <section className="relative py-12 md:py-16 bg-black" ref={ctaRef}>
         <div className="container relative z-10 mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -709,8 +704,7 @@ export default function AboutPage() {
               Join the Sorted Circle
             </h2>
             <p className="mb-12 text-sm sm:text-base md:text-lg font-lora text-muted-foreground">
-              {" "}
-              {/* Updated to muted.foreground */}
+              
               Experience a lifestyle where every detail is handled with
               discretion and excellence. Apply for membership or contact us to
               learn more.
@@ -732,7 +726,7 @@ export default function AboutPage() {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section> */}
     </>
   );
 }

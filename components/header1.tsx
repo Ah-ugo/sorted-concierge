@@ -130,7 +130,7 @@ export default function Header() {
           isScrolled ? "bg-black shadow-sm" : "bg-transparent"
         )}
       >
-        <div className="container flex h-16 items-center justify-between px-4 md:h-20">
+        <div className="flex h-16 items-center justify-between px-4 md:h-20">
           <Link href="/" className="flex items-center">
             <span
               className={cn(
