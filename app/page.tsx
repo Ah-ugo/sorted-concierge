@@ -763,55 +763,55 @@ export default function Home() {
               </div>
             </div>
           </motion.div>
-        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1 }}
-          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center mx-8"
-        >
-          <div className="bg-card p-6 rounded-lg elegant-shadow">
-            {" "}
-            {/* Updated to use card */}
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
-              500+
-            </h3>
-            <p className="text-xs sm:text-sm font-archivo uppercase tracking-wider text-muted-foreground">
-              Curated Experiences
-            </p>
-          </div>
-          <div className="bg-card p-6 rounded-lg elegant-shadow">
-            {" "}
-            {/* Updated to use card */}
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
-              50+
-            </h3>
-            <p className="text-xs sm:text-sm font-archivo uppercase tracking-wider text-muted-foreground">
-              Global Cities
-            </p>
-          </div>
-          <div className="bg-card p-6 rounded-lg elegant-shadow">
-            {" "}
-            {/* Updated to use card */}
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
-              1000+
-            </h3>
-            <p className="text-xs sm:text-sm font-archivo uppercase tracking-wider text-muted-foreground">
-              Satisfied Clients
-            </p>
-          </div>
-          <div className="bg-card p-6 rounded-lg elegant-shadow">
-            {" "}
-            {/* Updated to use card */}
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
-              24/7
-            </h3>
-            <p className="text-xs sm:text-sm font-archivo uppercase tracking-widest text-muted-foreground">
-              Concierge Support
-            </p>
-          </div>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1 }}
+            className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center mx-8"
+          >
+            <div className="bg-card p-6 rounded-lg elegant-shadow">
+              {" "}
+              {/* Updated to use card */}
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
+                500+
+              </h3>
+              <p className="text-xs sm:text-sm font-archivo uppercase tracking-wider text-muted-foreground">
+                Curated Experiences
+              </p>
+            </div>
+            <div className="bg-card p-6 rounded-lg elegant-shadow">
+              {" "}
+              {/* Updated to use card */}
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
+                50+
+              </h3>
+              <p className="text-xs sm:text-sm font-archivo uppercase tracking-wider text-muted-foreground">
+                Global Cities
+              </p>
+            </div>
+            <div className="bg-card p-6 rounded-lg elegant-shadow">
+              {" "}
+              {/* Updated to use card */}
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
+                1000+
+              </h3>
+              <p className="text-xs sm:text-sm font-archivo uppercase tracking-wider text-muted-foreground">
+                Satisfied Clients
+              </p>
+            </div>
+            <div className="bg-card p-6 rounded-lg elegant-shadow">
+              {" "}
+              {/* Updated to use card */}
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold text-secondary-light mb-2">
+                24/7
+              </h3>
+              <p className="text-xs sm:text-sm font-archivo uppercase tracking-widest text-muted-foreground">
+                Concierge Support
+              </p>
+            </div>
+          </motion.div>
+        </div>
       </section>
 
       {/* Gallery Section */}
