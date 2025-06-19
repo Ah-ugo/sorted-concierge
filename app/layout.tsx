@@ -48,6 +48,19 @@ export const metadata: Metadata = {
   description:
     "Curate extraordinary experiences in Lagos with our exclusive concierge services, tailored for the discerning.",
   keywords: "concierge, lagos, nigeria, luxury, bespoke, travel, lifestyle",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  openGraph: {
+    type: "website",
+    url: "https://thesortedconcierge.com",
+    title: "Sorted Concierge | Bespoke Luxury Services",
+    description:
+      "Curate extraordinary experiences in Lagos with our exclusive concierge services, tailored for the discerning.",
+    siteName: "The Sorted Concierge",
+    images: [{ url: "/logo.png" }],
+  },
 };
 
 export default function RootLayout({

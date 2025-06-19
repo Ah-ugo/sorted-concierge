@@ -60,7 +60,7 @@ export async function generateMetadata({
     const apiPost = await apiClient.getBlogBySlug(slug);
 
     // Ensure absolute URLs for images
-    const baseUrl = "https://naijaconcierge.com";
+    const baseUrl = "https://thesortedconcierge.com";
     const imageUrl = apiPost.coverImage
       ? apiPost.coverImage.startsWith("http")
         ? apiPost.coverImage
@@ -153,7 +153,7 @@ export async function generateMetadata({
     };
   } catch (error) {
     console.error("Error generating metadata:", error);
-    const baseUrl = "https://naijaconcierge.com";
+    const baseUrl = "https://thesortedconcierge.com";
     const defaultImage = `${baseUrl}/placeholder.svg?height=630&width=1200`;
 
     return {

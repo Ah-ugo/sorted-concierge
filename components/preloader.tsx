@@ -39,7 +39,7 @@ export default function Preloader() {
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
             className="mb-6"
           >
-            <motion.h1
+            {/* <motion.h1
               animate={{
                 scale: [1, 1.05, 1],
                 opacity: [0.9, 1, 0.9],
@@ -52,7 +52,22 @@ export default function Preloader() {
               className="text-5xl md:text-6xl font-semibold text-secondary-light tracking-widest"
             >
               SC
-            </motion.h1>
+
+            </motion.h1> */}
+
+            <motion.img
+              animate={{
+                scale: [1, 1.05, 1],
+                opacity: [0.9, 1, 0.9],
+              }}
+              transition={{
+                repeat: Number.POSITIVE_INFINITY,
+                duration: 2.5,
+                ease: "easeInOut",
+              }}
+              src={"/logo.png"}
+              className="w-[50px] h-[50px]"
+            />
           </motion.div>
           <motion.div
             initial={{ width: 0, opacity: 0 }}
