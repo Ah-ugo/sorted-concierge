@@ -68,7 +68,7 @@ const About = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')`,
+            backgroundImage: `url('/image27.jpg')`,
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background/70 to-background/50" />
@@ -81,7 +81,7 @@ const About = () => {
           transition={{ duration: 0.8 }}
         >
           <h1 className="text-6xl md:text-8xl font-bold mb-6">About Sorted</h1>
-          <p className="text-xl md:text-2xl text-muted-foreground font-archivo leading-relaxed">
+          <p className="text-xl md:text-2xl text-muted-foreground font-crimson_pro leading-relaxed">
             Born in Lagos. Built for the world.
           </p>
         </motion.div>
@@ -109,17 +109,17 @@ const About = () => {
                 />
               </div>
               <div className="space-y-6">
-                <p className="text-lg leading-relaxed font-archivo text-muted-foreground">
+                <p className="text-lg leading-relaxed font-crimson_pro text-muted-foreground">
                   Sorted started with one goal: to make life easier for people
                   who live fast, travel often, and can't afford chaos.
                 </p>
-                <p className="text-lg font-archivo leading-relaxed text-muted-foreground">
+                <p className="text-lg font-crimson_pro leading-relaxed text-muted-foreground">
                   Our founder, a corporate strategist and lifestyle consultant,
                   repeatedly saw the same problem: clients had access to luxury
                   but still had to chase details, fix mistakes, and explain
                   things twice.
                 </p>
-                <p className="text-lg font-archivo leading-relaxed text-muted-foreground">
+                <p className="text-lg font-crimson_pro leading-relaxed text-muted-foreground">
                   What began as a private network serving a few Lagos-based
                   executives and diaspora clients has quickly grown into a
                   trusted global service for HNWIs, founders, creatives, and
@@ -132,7 +132,7 @@ const About = () => {
       </section>
 
       {/* Founder Profile */}
-      <section className="py-20 bg-muted">
+      <section className="py-20 bg-primary">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial="hidden"
@@ -147,22 +147,22 @@ const About = () => {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <h3 className="text-2xl font-bold">Emeka Idam</h3>
-                <p className="text-lg font-archivo text-muted-foreground">
+                <p className="text-lg font-crimson_pro text-muted-foreground">
                   Founder of Sorted Concierge
                 </p>
-                <p className="text-lg font-archivo leading-relaxed text-muted-foreground">
+                <p className="text-lg font-crimson_pro leading-relaxed text-muted-foreground">
                   Some people build businesses. He built a solution.
                 </p>
-                <p className="text-lg font-archivo leading-relaxed text-muted-foreground">
+                <p className="text-lg font-crimson_pro leading-relaxed text-muted-foreground">
                   After years of working with high-profile individuals and
                   executives, and as a global traveler himself, Emeka saw the
                   same pattern repeat: people had access to luxury, but not the
                   ease that should come with it.
                 </p>
-                <blockquote className="border-l-4 border-primary pl-6 font-archivo italic text-lg">
+                <blockquote className="border-l-4 border-primary pl-6 font-crimson_pro italic text-lg">
                   "Luxury, to me, isn't the thing you post, it's the peace of
                   mind you feel when everything's just… handled."
-                  <footer className="mt-2 text-muted-foreground font-archivo">
+                  <footer className="mt-2 text-muted-foreground font-crimson_pro">
                     — Emeka Idam
                   </footer>
                 </blockquote>
@@ -192,7 +192,7 @@ const About = () => {
             <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center">
               Who We Serve
             </h2>
-            <p className="text-lg text-center font-archivo text-muted-foreground mb-12 max-w-3xl mx-auto">
+            <p className="text-lg text-center font-crimson_pro text-muted-foreground mb-12 max-w-3xl mx-auto">
               We work with a small, highly selective group of clients who value
               their privacy, their time, and doing things right the first time.
             </p>
@@ -200,7 +200,7 @@ const About = () => {
               {clientTypes.map((type, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
-                    <Users className="w-8 h-8 mb-4 text-secondary font-archivo" />
+                    <Users className="w-8 h-8 mb-4 text-secondary font-crimson_pro" />
                     <p className="text-lg">{type}</p>
                   </CardContent>
                 </Card>
@@ -211,7 +211,7 @@ const About = () => {
       </section>
 
       {/* How We Work */}
-      <section className="py-20 bg-muted">
+      <section className="py-20 bg-primary">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial="hidden"
@@ -223,7 +223,7 @@ const About = () => {
             <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center">
               How We Work
             </h2>
-            <p className="text-lg text-center text-muted-foreground mb-12 font-archivo max-w-3xl mx-auto">
+            <p className="text-lg text-center text-muted-foreground mb-12 font-crimson_pro max-w-3xl mx-auto">
               Every Sorted engagement is personal. There are no cookie-cutter
               packages. No generic templates.
             </p>
@@ -238,7 +238,7 @@ const About = () => {
                   <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-semibold text-sm">
                     {index + 1}
                   </div>
-                  <p className="text-lg text-muted-foreground font-archivo">
+                  <p className="text-lg text-muted-foreground font-crimson_pro">
                     {process}
                   </p>
                 </motion.div>
@@ -277,7 +277,7 @@ const About = () => {
                       <h3 className="text-xl font-semibold mb-4">
                         {value.title}
                       </h3>
-                      <p className="text-muted-foreground font-archivo leading-relaxed">
+                      <p className="text-muted-foreground font-crimson_pro leading-relaxed">
                         {value.description}
                       </p>
                     </CardContent>
@@ -302,18 +302,18 @@ const About = () => {
             <h2 className="text-4xl md:text-5xl font-bold mb-8 text-center">
               Global Access
             </h2>
-            <p className="text-lg font-archivo text-center text-primary-foreground/80 mb-12">
+            <p className="text-lg font-crimson_pro text-center text-primary-foreground/80 mb-12">
               Sorted currently supports clients across:
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
               {globalLocations.map((location, index) => (
                 <div key={index} className="text-center">
                   <div className="text-4xl mb-2">{location.flag}</div>
-                  <p className="text-lg font-archivo">{location.city}</p>
+                  <p className="text-lg font-crimson_pro">{location.city}</p>
                 </div>
               ))}
             </div>
-            <p className="text-center font-archivo text-primary-foreground/80 mt-8">
+            <p className="text-center font-crimson_pro text-primary-foreground/80 mt-8">
               And extends to seasonal travel and custom destination requests.
             </p>
           </motion.div>
@@ -321,7 +321,7 @@ const About = () => {
       </section>
 
       {/* Policies */}
-      <section className="py-20 bg-muted">
+      <section className="py-20 bg-primary">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial="hidden"
@@ -338,7 +338,7 @@ const About = () => {
                 <h3 className="text-2xl font-semibold mb-6">
                   How We Work With Clients
                 </h3>
-                <ul className="space-y-4 text-muted-foreground font-archivo">
+                <ul className="space-y-4 text-muted-foreground font-crimson_pro">
                   <li>• Sorted is a private, membership-based service</li>
                   <li>
                     • All new clients go through an intake and onboarding
@@ -356,13 +356,13 @@ const About = () => {
               </div>
               <div>
                 <h3 className="text-2xl font-semibold mb-6">Confidentiality</h3>
-                <p className="text-muted-foreground mb-6 font-archivo">
+                <p className="text-muted-foreground mb-6 font-crimson_pro">
                   Strict confidentiality protocols and NDAs protect client data
                   and activity. We do not disclose, promote, or reference client
                   names, photos, or stories unless explicitly permitted.
                 </p>
                 <h3 className="text-2xl font-semibold mb-6">Vendor Network</h3>
-                <p className="text-muted-foreground font-archivo">
+                <p className="text-muted-foreground font-crimson_pro">
                   We work with a curated list of vetted vendors and service
                   providers across travel, hospitality, security, wellness, and
                   logistics.
@@ -386,13 +386,13 @@ const About = () => {
             <h2 className="text-4xl md:text-5xl font-bold mb-8">
               Ready to Get Sorted?
             </h2>
-            <p className="text-xl mb-8 font-archivo text-primary-foreground/80">
+            <p className="text-xl mb-8 font-crimson_pro text-primary-foreground/80">
               We're not for everyone, and that's intentional.
             </p>
             <Button
               size="lg"
               variant="outline"
-              className="bg-transparent border-primary-foreground font-archivo text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              className="bg-transparent border-primary-foreground font-crimson_pro text-primary-foreground hover:bg-primary-foreground hover:text-primary"
             >
               Contact Us
             </Button>

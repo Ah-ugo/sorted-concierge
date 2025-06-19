@@ -152,15 +152,27 @@ export default function Header() {
                   {category.hasDropdown ? (
                     <button
                       style={{
-                        padding: 0,
-                        border: "none",
                         background: "none",
-                        outline: "none",
+                        border: "none",
+                        padding: 0,
+                        margin: 0,
+                        fontFamily: "inherit", // Matches parent font family
+                        fontSize: "0.875rem", // Matches text-sm (14px)
+                        fontWeight: 400, // Matches font-normal (400)
+                        lineHeight: "1.5", // Matches text-sm line height
+                        letterSpacing: "0.1em", // Matches tracking-widest
+                        textDecoration: "none", // Ensures no underline
+                        textTransform: "uppercase", // Matches uppercase
+                        color: "inherit", // Inherits color from parent
                         cursor: "pointer",
-                        font: "inherit",
-                        color: "inherit",
-                        textAlign: "inherit",
+                        outline: "none",
                         appearance: "none",
+                        display: "flex", // Matches flex behavior
+                        alignItems: "center", // Vertically centers content
+                        gap: "0.25rem", // Matches gap-1 (4px)
+                        verticalAlign: "middle", // Ensures inline alignment
+                        height: "100%", // Matches parent li height
+                        boxSizing: "border-box", // Ensures consistent sizing
                       }}
                       onClick={handleServicesClick}
                       className={cn(

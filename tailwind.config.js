@@ -64,6 +64,7 @@ module.exports = {
         cinzel: ["var(--font-cinzel)", "serif"],
         lora: ["var(--font-lora)", "serif"],
         archivo: ["var(--font-archivo)", "serif"],
+        crimson_pro: ["var(--font-crimson_pro)", "serif"],
       },
       keyframes: {
         "accordion-down": {

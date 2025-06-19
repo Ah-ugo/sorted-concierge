@@ -154,7 +154,7 @@ export default function Services() {
       >
         <div className="absolute inset-0">
           <Image
-            src="/image19.png"
+            src="/image26.jpg"
             alt="Luxury concierge services"
             fill
             className="object-cover"
@@ -173,11 +173,11 @@ export default function Services() {
             <h1 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-cinzel font-bold uppercase tracking-widest text-white">
               Our Services
             </h1>
-            <p className="mb-8 text-lg sm:text-xl font-archivo text-muted-foreground max-w-3xl mx-auto">
+            <p className="mb-8 text-lg sm:text-xl font-crimson_pro text-muted-foreground max-w-3xl mx-auto">
               Two distinct membership paths, built around how our clients live,
               travel, and plan for the future.
             </p>
-            {/* <p className="text-base sm:text-lg font-archivo text-muted-foreground max-w-2xl mx-auto">
+            {/* <p className="text-base sm:text-lg font-crimson_pro text-muted-foreground max-w-2xl mx-auto">
               We follow the example of refined service providers by organizing
               our offerings under clear umbrella categories, making navigation
               easier and eliminating confusion about what we deliver.
@@ -200,7 +200,7 @@ export default function Services() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white mb-6">
               Our Membership Tiers
             </h2>
-            <p className="text-lg font-archivo text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-lg font-crimson_pro text-muted-foreground max-w-3xl mx-auto">
               Sorted Concierge offers two distinct membership paths, designed
               around the way our discerning clients live, work, and build their
               legacy.
@@ -234,11 +234,11 @@ export default function Services() {
                           </h3>
                         </div>
 
-                        <p className="text-secondary text-sm font-archivo uppercase tracking-wider mb-4">
+                        <p className="text-secondary text-sm font-crimson_pro uppercase tracking-wider mb-4">
                           {tier.tagline}
                         </p>
 
-                        <p className="text-muted-foreground font-archivo mb-8 leading-relaxed">
+                        <p className="text-muted-foreground font-crimson_pro mb-8 leading-relaxed">
                           {tier.description}
                         </p>
 
@@ -258,10 +258,10 @@ export default function Services() {
                                   {service.title}
                                 </h5>
                               </div>
-                              <p className="text-sm font-archivo text-muted-foreground mb-2 ml-9">
+                              <p className="text-sm font-crimson_pro text-muted-foreground mb-2 ml-9">
                                 {service.description}
                               </p>
-                              <p className="text-xs font-archivo text-muted-foreground/80 ml-9 italic">
+                              <p className="text-xs font-crimson_pro text-muted-foreground/80 ml-9 italic">
                                 {service.details}
                               </p>
                             </div>
@@ -270,7 +270,7 @@ export default function Services() {
 
                         <Button
                           asChild
-                          className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-3 font-archivo uppercase tracking-wider w-fit group-hover:shadow-lg transition-all duration-300"
+                          className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-3 font-crimson_pro uppercase tracking-wider w-fit group-hover:shadow-lg transition-all duration-300"
                         >
                           <Link
                             href={`/services/${tier.id}`}
@@ -353,7 +353,7 @@ export default function Services() {
                 <h3 className="font-cinzel font-bold text-white mb-2 uppercase tracking-wider">
                   {item.title}
                 </h3>
-                <p className="text-sm font-archivo text-muted-foreground leading-relaxed">
+                <p className="text-sm font-crimson_pro text-muted-foreground leading-relaxed">
                   {item.description}
                 </p>
               </motion.div>
@@ -396,7 +396,7 @@ export default function Services() {
                       {faq.question}
                     </h3>
                     <Separator className="bg-secondary/20 mb-4" />
-                    <p className="font-archivo text-muted-foreground leading-relaxed">
+                    <p className="font-crimson_pro text-muted-foreground leading-relaxed">
                       {faq.answer}
                     </p>
                   </CardContent>
@@ -420,21 +420,21 @@ export default function Services() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white mb-6">
               Ready to Begin?
             </h2>
-            <p className="text-lg font-archivo text-muted-foreground mb-8">
+            <p className="text-lg font-crimson_pro text-muted-foreground mb-8">
               Apply through our private intake form, get referred by an existing
               client, or engage us on a bespoke project first.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 asChild
-                className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-4 font-archivo uppercase tracking-wider"
+                className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-4 font-crimson_pro uppercase tracking-wider"
               >
                 <Link href="/contact">Request Private Access</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
-                className="border-secondary text-white hover:bg-secondary hover:text-black px-8 py-4 font-archivo uppercase tracking-wider"
+                className="border-secondary text-white hover:bg-secondary hover:text-black px-8 py-4 font-crimson_pro uppercase tracking-wider"
               >
                 <Link href="/about">Learn Our Approach</Link>
               </Button>

@@ -479,11 +479,11 @@ export default function ServiceItem() {
               </h1>
             </div>
 
-            <p className="text-secondary text-lg font-archivo uppercase tracking-wider mb-4">
+            <p className="text-secondary text-lg font-crimson_pro uppercase tracking-wider mb-4">
               {service.subtitle}
             </p>
 
-            <p className="text-lg sm:text-xl font-archivo text-muted-foreground mb-8 leading-relaxed max-w-3xl">
+            <p className="text-lg sm:text-xl font-crimson_pro text-muted-foreground mb-8 leading-relaxed max-w-3xl">
               {service.description}
             </p>
 
@@ -495,14 +495,14 @@ export default function ServiceItem() {
                       .getElementById("pricing")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-4 font-archivo uppercase tracking-wider"
+                  className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-4 font-crimson_pro uppercase tracking-wider"
                 >
                   View Pricing Plans
                 </Button>
               ) : (
                 <Button
                   asChild
-                  className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-4 font-archivo uppercase tracking-wider"
+                  className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-4 font-crimson_pro uppercase tracking-wider"
                 >
                   <Link href="/contact">Request Consultation</Link>
                 </Button>
@@ -510,7 +510,7 @@ export default function ServiceItem() {
               <Button
                 asChild
                 variant="outline"
-                className="border-secondary text-white hover:bg-secondary hover:text-black px-8 py-4 font-archivo uppercase tracking-wider"
+                className="border-secondary text-white hover:bg-secondary hover:text-black px-8 py-4 font-crimson_pro uppercase tracking-wider"
               >
                 <Link href="/contact">Contact Us</Link>
               </Button>
@@ -538,7 +538,7 @@ export default function ServiceItem() {
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white mb-6">
                 Membership Tiers
               </h2>
-              <p className="text-lg font-archivo text-muted-foreground">
+              <p className="text-lg font-crimson_pro text-muted-foreground">
                 Choose the level of luxury lifestyle management that fits your
                 needs
               </p>
@@ -561,7 +561,7 @@ export default function ServiceItem() {
                 >
                   {tier.popular && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <span className="bg-gold-gradient text-black px-4 py-1 rounded-full text-xs font-archivo uppercase tracking-wider">
+                      <span className="bg-gold-gradient text-black px-4 py-1 rounded-full text-xs font-crimson_pro uppercase tracking-wider">
                         Most Popular
                       </span>
                     </div>
@@ -578,7 +578,7 @@ export default function ServiceItem() {
                       <p className="text-3xl font-cinzel font-bold text-secondary mb-4">
                         {tier.price}
                       </p>
-                      <p className="text-muted-foreground font-archivo mb-6">
+                      <p className="text-muted-foreground font-crimson_pro mb-6">
                         {tier.description}
                       </p>
 
@@ -586,7 +586,7 @@ export default function ServiceItem() {
                         {tier.features.map((feature, featureIndex) => (
                           <div key={featureIndex} className="flex items-start">
                             <Check className="w-5 h-5 text-secondary mr-3 mt-0.5 flex-shrink-0" />
-                            <p className="text-sm font-archivo text-muted-foreground">
+                            <p className="text-sm font-crimson_pro text-muted-foreground">
                               {feature}
                             </p>
                           </div>
@@ -595,7 +595,7 @@ export default function ServiceItem() {
 
                       <Button
                         asChild
-                        className={`w-full py-3 font-archivo uppercase tracking-wider ${
+                        className={`w-full py-3 font-crimson_pro uppercase tracking-wider ${
                           tier.popular
                             ? "bg-gold-gradient text-black hover:bg-secondary/80"
                             : "bg-transparent border border-secondary text-white hover:bg-secondary hover:text-black"
@@ -674,12 +674,12 @@ export default function ServiceItem() {
                       </div>
 
                       {section.subtitle && (
-                        <p className="text-secondary text-sm font-archivo uppercase tracking-wider mb-4">
+                        <p className="text-secondary text-sm font-crimson_pro uppercase tracking-wider mb-4">
                           {section.subtitle}
                         </p>
                       )}
 
-                      <p className="text-muted-foreground font-archivo mb-8 leading-relaxed text-lg">
+                      <p className="text-muted-foreground font-crimson_pro mb-8 leading-relaxed text-lg">
                         {section.description}
                       </p>
 
@@ -696,7 +696,7 @@ export default function ServiceItem() {
                                 className="flex items-start"
                               >
                                 <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 flex-shrink-0" />
-                                <p className="text-sm font-archivo text-muted-foreground">
+                                <p className="text-sm font-crimson_pro text-muted-foreground">
                                   {feature}
                                 </p>
                               </div>
@@ -717,7 +717,7 @@ export default function ServiceItem() {
                                   className="flex items-start"
                                 >
                                   <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 flex-shrink-0" />
-                                  <p className="text-sm font-archivo text-muted-foreground">
+                                  <p className="text-sm font-crimson_pro text-muted-foreground">
                                     {detail}
                                   </p>
                                 </div>
@@ -748,7 +748,7 @@ export default function ServiceItem() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white mb-6">
               {service.contact.title}
             </h2>
-            <p className="text-lg font-archivo text-muted-foreground mb-8">
+            <p className="text-lg font-crimson_pro text-muted-foreground mb-8">
               {service.contact.description}
             </p>
 
@@ -761,7 +761,7 @@ export default function ServiceItem() {
                       <h4 className="font-cinzel font-bold text-white mb-2 uppercase tracking-wider">
                         {location.city}
                       </h4>
-                      <p className="text-sm font-archivo text-muted-foreground">
+                      <p className="text-sm font-crimson_pro text-muted-foreground">
                         {location.phone}
                       </p>
                     </CardContent>
@@ -775,7 +775,7 @@ export default function ServiceItem() {
                 {service.contact.email && (
                   <div className="flex items-center">
                     <Mail className="w-5 h-5 text-secondary mr-2" />
-                    <span className="text-sm font-archivo text-muted-foreground">
+                    <span className="text-sm font-crimson_pro text-muted-foreground">
                       {service.contact.email}
                     </span>
                   </div>
@@ -783,7 +783,7 @@ export default function ServiceItem() {
                 {service.contact.phone && (
                   <div className="flex items-center">
                     <Phone className="w-5 h-5 text-secondary mr-2" />
-                    <span className="text-sm font-archivo text-muted-foreground">
+                    <span className="text-sm font-crimson_pro text-muted-foreground">
                       {service.contact.phone}
                     </span>
                   </div>
@@ -799,14 +799,14 @@ export default function ServiceItem() {
                       .getElementById("pricing")
                       ?.scrollIntoView({ behavior: "smooth" })
                   }
-                  className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-4 font-archivo uppercase tracking-wider"
+                  className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-4 font-crimson_pro uppercase tracking-wider"
                 >
                   Choose Your Plan
                 </Button>
               ) : (
                 <Button
                   asChild
-                  className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-4 font-archivo uppercase tracking-wider"
+                  className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-4 font-crimson_pro uppercase tracking-wider"
                 >
                   <Link href="/contact">Request Consultation</Link>
                 </Button>
@@ -814,7 +814,7 @@ export default function ServiceItem() {
               <Button
                 asChild
                 variant="outline"
-                className="border-secondary text-white hover:bg-secondary hover:text-black px-8 py-4 font-archivo uppercase tracking-wider"
+                className="border-secondary text-white hover:bg-secondary hover:text-black px-8 py-4 font-crimson_pro uppercase tracking-wider"
               >
                 <Link href="/services">View All Services</Link>
               </Button>
