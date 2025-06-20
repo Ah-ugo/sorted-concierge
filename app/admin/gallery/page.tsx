@@ -266,13 +266,13 @@ export default function GalleryPage() {
 
     setIsActionLoading(true);
     try {
-      const createdImage = await apiClient.createGalleryImage({
-        title: newImage.title,
-        description: newImage.description,
-        category: newImage.category,
-        tags: newImage.tags,
-        file: newImage.file,
-      });
+      const createdImage = await apiClient.createGalleryImage(
+        newImage.title,
+        newImage.category,
+        newImage.file,
+        newImage.description,
+        newImage.tags
+      );
       setImages((prev) => [createdImage, ...prev]);
       setFilteredImages((prev) => [createdImage, ...prev]);
       setIsModalOpen(false);
