@@ -73,9 +73,13 @@ export default function ProfilePage() {
 
     setIsLoadingBookings(true);
     try {
-      const data = await apiClient.getBookings();
+      const data = await apiClient.getMyBookings();
+      if (data.some((booking) => !booking.service && !booking.tier)) {
+        console.warn("Some bookings have null service and tier data:", data);
+      }
       setBookings(data);
     } catch (error) {
+      console.error("Failed to fetch bookings:", error);
       toast({
         title: "Error",
         description: "Failed to fetch your bookings. Please try again.",
@@ -482,10 +486,20 @@ export default function ProfilePage() {
                                       )}
                                     </span>
                                   </div>
+                                  {booking.location && (
+                                    <div className="flex items-center space-x-2">
+                                      <MapPin className="h-5 w-5 text-secondary-light" />
+                                      <span className="text-xs sm:text-sm text-muted-foreground font-normal">
+                                        {booking.location}
+                                      </span>
+                                    </div>
+                                  )}
                                   <div className="flex items-center space-x-2">
-                                    <MapPin className="h-5 w-5 text-secondary-light" />
                                     <span className="text-xs sm:text-sm text-muted-foreground font-normal">
-                                      {booking.location || "Not specified"}
+                                      Payment:{" "}
+                                      {booking.payment_required
+                                        ? `${booking.payment_amount} (${booking.payment_status})`
+                                        : "No payment required"}
                                     </span>
                                   </div>
                                 </div>
@@ -494,7 +508,11 @@ export default function ProfilePage() {
                               <div className="p-4 sm:p-6 md:col-span-3">
                                 <div className="mb-3 sm:mb-4 flex items-center justify-between">
                                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold uppercase tracking-wider text-white">
-                                    {booking.service?.name || "Service"}
+                                    {booking.tier?.name ||
+                                      booking.service?.name ||
+                                      (booking.booking_type === "consultation"
+                                        ? "Consultation"
+                                        : "Service")}
                                   </h3>
                                   <Badge
                                     className={`${getStatusColor(

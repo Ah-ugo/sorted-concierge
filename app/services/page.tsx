@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
   Accordion,
   AccordionContent,
@@ -13,79 +12,81 @@ import {
 } from "@/components/ui/accordion";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
+
+interface ServiceFeature {
+  name: string;
+  description: string;
+  image: string;
+  duration: string;
+  isAvailable: boolean;
+  features: string[];
+  requirements: string[];
+}
+
+interface ServiceTier {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  features: string[];
+  is_popular: boolean;
+  is_available: boolean;
+  image: string;
+}
+
+interface ServiceCategory {
+  id: string;
+  name: string;
+  description: string;
+  category_type: "tiered" | "contact_only";
+  image: string;
+  is_active: boolean;
+  tiers: ServiceTier[];
+  services: ServiceFeature[];
+}
 
 export default function Services() {
   const [heroRef, heroInView] = useInView({ threshold: 0.3 });
   const [servicesRef, servicesInView] = useInView({ threshold: 0.1 });
   const [faqRef, faqInView] = useInView({ threshold: 0.1 });
 
-  const serviceTiers = [
-    {
-      id: "sorted-lifestyle",
-      name: "Sorted Lifestyle",
-      tagline:
-        "This is for movers, founders, creatives, families, and global citizens who want to live well without the burden of managing it all.",
-      description:
-        "We design, orchestrate, and deliver experiences that feel tailored, intentional, and entirely stress-free.",
-      image:
-        "https://res.cloudinary.com/dejeplzpv/image/upload/v1749092226/naija_concierge/packages/dc8eab17-ab3f-48ec-96a9-8447c2bb504d.jpg",
-      services: [
-        {
-          title: "Luxury Event Curation",
-          description:
-            "From intimate proposals in hidden corners of the world to milestone celebrations that span continents, your vision becomes our blueprint. Whether it's your Cape Town celebration or a Parisian anniversary, we handle the impossible logistics while you enjoy the flawless execution.",
-        },
-        {
-          title: "Destination Planning",
-          description:
-            "We don't book trips, we build entire journeys. Full itinerary design. Guest movement across time zones. Venues that don't show up in Google searches. Every touchpoint aligns with your style, pace, and privacy. Think of us as your stage manager, but for the world.",
-        },
-        {
-          title: "Group Travel & Experiences",
-          description:
-            "Multi-day corporate retreats, family milestone trips, friends' getaway weekends.",
-          quote:
-            "You share the vision. We turn it into a memory you'll never forget, with none of the stress that usually comes with it.",
-        },
-      ],
-    },
-    {
-      id: "sorted-heritage",
-      name: "Sorted Heritage",
-      tagline: "Securing Your Legacy",
-      description: "",
-      image:
-        "https://res.cloudinary.com/dejeplzpv/image/upload/v1749092615/naija_concierge/packages/2fef31a1-0dd1-4ae3-9fc8-6596fa22d1ed.jpg",
-      services: [
-        {
-          title: "Legacy & Financial Structuring",
-          description:
-            "Through our trusted partners, we coordinate: USD-denominated life insurance planning, Cross-border estate planning & trust structures, Generational wealth protection, Inter-family financial coordination",
-        },
-        {
-          title: "Global Mobility Solutions",
-          description:
-            "We manage your migration goals from start to finish: Citizenship & Residency by Investment (Caribbean, Europe, etc.), Strategic location planning (for tax, access, and security), Family documentation, renewals, and legal pathways, Partner coordination with licensed migration attorneys",
-        },
-        {
-          title: "Global Real Estate Sourcing & Advisory",
-          description:
-            "Off-market property access across major cities and lifestyle destinations, Negotiation support, due diligence, and relocation concierge, Local fixer teams to manage viewings, inspections, and logistics, Luxury rental management and second-home setup",
-        },
-        {
-          title: "Full Family Office Support",
-          description:
-            "We integrate with your existing family office or act as your trusted private team to handle: Philanthropic project support, Travel management across family branches, Wellness, education, and lifestyle planning for dependents, Executive coordination for key household or business assets",
-        },
-        {
-          title: "Private Procurement",
-          description:
-            "We assist with sourcing and discreet purchasing of rare assets, including: Investment-grade art, collectibles, and timepieces, Vehicles, watercraft, and lifestyle acquisitions, Custom gifting for private or professional use",
-        },
-      ],
-    },
-  ];
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>(
+    []
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchServiceCategories = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          "https://naija-concierge-api.onrender.com/service-categories?skip=0&limit=100",
+          {
+            headers: {
+              accept: "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch service categories");
+        }
+
+        const data = await response.json();
+        setServiceCategories(
+          data.filter((category: ServiceCategory) => category.is_active)
+        );
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServiceCategories();
+  }, []);
 
   const faqs = [
     {
@@ -136,6 +137,45 @@ export default function Services() {
     },
   ];
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-secondary mx-auto mb-4" />
+          <p className="text-muted-foreground font-crimson_pro">
+            Loading services...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400 font-crimson_pro mb-4">
+            Error loading services: {error}
+          </p>
+          <Button
+            onClick={() => window.location.reload()}
+            className="bg-gold-gradient text-black hover:bg-secondary/80"
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black">
       {/* Hero Section */}
@@ -168,7 +208,7 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Service Tiers Section */}
+      {/* Service Categories Section */}
       <section className="py-16 md:py-24" ref={servicesRef}>
         <div className="container mx-auto px-6">
           <motion.div
@@ -180,18 +220,18 @@ export default function Services() {
             className="text-center mb-16"
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white mb-6">
-              Our Service Tiers
+              Our Service Categories
             </h2>
             <p className="text-lg font-crimson_pro text-muted-foreground max-w-3xl mx-auto">
-              Sorted Concierge offers two distinct service paths, built around
-              how our clients live, travel, and plan for the future.
+              Sorted Concierge offers distinct service paths, built around how
+              our clients live, travel, and plan for the future.
             </p>
           </motion.div>
 
           <div className="grid gap-12 lg:gap-16">
-            {serviceTiers.map((tier, index) => (
+            {serviceCategories.map((category, index) => (
               <motion.div
-                key={tier.id}
+                key={category.id}
                 initial={{ opacity: 0, y: 40 }}
                 animate={
                   servicesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
@@ -209,57 +249,110 @@ export default function Services() {
                       {/* Content */}
                       <div className="p-8 lg:p-12 flex flex-col justify-center order-2 lg:order-1">
                         <h3 className="text-2xl sm:text-3xl font-cinzel font-bold text-white mb-4">
-                          {tier.name}
+                          {category.name}
                         </h3>
 
-                        <p className="text-muted-foreground font-crimson_pro mb-4 leading-relaxed">
-                          {tier.tagline}
+                        <p className="text-muted-foreground font-crimson_pro mb-8 leading-relaxed">
+                          {category.description}
                         </p>
 
-                        {tier.description && (
-                          <p className="text-muted-foreground font-crimson_pro mb-8 leading-relaxed">
-                            {tier.description}
-                          </p>
-                        )}
+                        {/* Tiers for tiered categories */}
+                        {category.category_type === "tiered" &&
+                          category.tiers.length > 0 && (
+                            <div className="space-y-6 mb-8">
+                              <h4 className="text-lg font-cinzel font-bold text-white uppercase tracking-wider">
+                                Service Tiers:
+                              </h4>
+                              {category.tiers.map((tier) => (
+                                <div
+                                  key={tier.id}
+                                  className="border-l-2 border-secondary/20 pl-6"
+                                >
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <h5 className="font-cinzel font-bold text-white">
+                                      {tier.name}
+                                    </h5>
+                                    <span className="text-secondary font-crimson_pro font-bold">
+                                      {formatPrice(tier.price)}
+                                    </span>
+                                    {tier.is_popular && (
+                                      <span className="bg-gold-gradient text-black px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">
+                                        Popular
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-sm font-crimson_pro text-muted-foreground mb-3">
+                                    {tier.description}
+                                  </p>
+                                  <ul className="text-sm font-crimson_pro text-muted-foreground space-y-1">
+                                    {tier.features.map(
+                                      (feature, featureIndex) => (
+                                        <li
+                                          key={featureIndex}
+                                          className="flex items-start"
+                                        >
+                                          <span className="text-secondary mr-2">
+                                            •
+                                          </span>
+                                          {feature}
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                </div>
+                              ))}
+                            </div>
+                          )}
 
-                        <div className="space-y-6 mb-8">
-                          <h4 className="text-lg font-cinzel font-bold text-white uppercase tracking-wider">
-                            What We{" "}
-                            {tier.name === "Sorted Heritage"
-                              ? "Handle"
-                              : "Manage"}
-                            :
-                          </h4>
-
-                          {tier.services.map((service, serviceIndex) => (
-                            <div
-                              key={serviceIndex}
-                              className="border-l-2 border-secondary/20 pl-6"
-                            >
-                              <h5 className="font-cinzel font-bold text-white mb-2">
-                                {service.title}
-                              </h5>
-                              <p className="text-sm font-crimson_pro text-muted-foreground mb-2">
-                                {service.description}
-                              </p>
-                              {service.quote && (
-                                <blockquote className="text-sm font-crimson_pro text-muted-foreground/80 italic mt-2">
-                                  "{service.quote}"
-                                </blockquote>
+                        {/* Services for contact-only categories */}
+                        {category.category_type === "contact_only" &&
+                          category.services.length > 0 && (
+                            <div className="space-y-6 mb-8">
+                              <h4 className="text-lg font-cinzel font-bold text-white uppercase tracking-wider">
+                                Available Services:
+                              </h4>
+                              {category.services.slice(0, 3).map((service) => (
+                                <div
+                                  key={service.name}
+                                  className="border-l-2 border-secondary/20 pl-6"
+                                >
+                                  <h5 className="font-cinzel font-bold text-white mb-2">
+                                    {service.name}
+                                  </h5>
+                                  <p className="text-sm font-crimson_pro text-muted-foreground mb-2">
+                                    {service.description}
+                                  </p>
+                                  {service.duration && (
+                                    <p className="text-xs font-crimson_pro text-muted-foreground/80">
+                                      Duration: {service.duration}
+                                    </p>
+                                  )}
+                                </div>
+                              ))}
+                              {category.services.length > 3 && (
+                                <p className="text-sm font-crimson_pro text-muted-foreground italic pl-6">
+                                  + {category.services.length - 3} more services
+                                  available
+                                </p>
                               )}
                             </div>
-                          ))}
-                        </div>
+                          )}
 
                         <Button
                           asChild
                           className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-3 font-crimson_pro uppercase tracking-wider w-fit group-hover:shadow-lg transition-all duration-300"
                         >
                           <Link
-                            href={`/services/${tier.id}`}
+                            href={
+                              category.category_type === "tiered"
+                                ? `/services/${category.id}`
+                                : `/services/${category.id}`
+                            }
                             className="flex items-center"
                           >
-                            Learn More
+                            {category.category_type === "tiered"
+                              ? "View Tiers"
+                              : "Learn More"}
                             <ChevronRight className="ml-2 w-4 h-4" />
                           </Link>
                         </Button>
@@ -268,8 +361,8 @@ export default function Services() {
                       {/* Image */}
                       <div className="relative aspect-[4/3] lg:aspect-auto order-1 lg:order-2">
                         <Image
-                          src={tier.image}
-                          alt={tier.name}
+                          src={category.image || "/placeholder.svg"}
+                          alt={category.name}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-700"
                         />

@@ -6,34 +6,39 @@ import Image from "next/image";
 import { useScroll, useTransform, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Button } from "@/components/ui/button";
-import { apiClient, type Service, type GalleryImage } from "@/lib/api";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  ChevronDown,
-  Plane,
-  Car,
-  Calendar,
-  Users,
-  Star,
-  Briefcase,
-  Shield,
-} from "lucide-react";
+import { ChevronDown } from "lucide-react";
+
+interface Service {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  category: {
+    name: string;
+  };
+  features: string[];
+  requirements: string[];
+}
 
 interface Package {
   id: string;
   name: string;
   description: string;
   image: string;
+  category: string;
+  title: string;
+  width: number;
+  height: number;
+  link: string;
 }
 
 export default function Home() {
   const { toast } = useToast();
   const [services, setServices] = useState<Service[]>([]);
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [carouselItems, setCarouselItems] = useState<Package[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPreloaderVisible, setIsPreloaderVisible] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 500], [1, 0]);
@@ -45,105 +50,115 @@ export default function Home() {
   const [testimonialsRef, testimonialsInView] = useInView({ threshold: 0.03 });
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchServices = async () => {
       try {
-        const [servicesData, packagesData, galleryData] = await Promise.all([
-          apiClient.getServices({ limit: 3 }),
-          apiClient.getPackages(),
-          apiClient.getGallery({ limit: 10 }),
-        ]);
-        setServices(servicesData);
-        setPackages(
-          packagesData.map((pkg: any) => ({
-            id: pkg.id,
-            name: pkg.name,
-            description: pkg.description,
-            image: pkg.image || "/images/default-membership.jpg",
-          }))
+        const response = await fetch(
+          "https://naija-concierge-api.onrender.com/services?skip=0&limit=100"
         );
-        setGalleryImages(galleryData);
+        if (!response.ok) {
+          throw new Error("Failed to fetch services");
+        }
+        const servicesData = await response.json();
+        setServices(servicesData);
+
+        // Map API data to carousel format
+        const mappedItems = servicesData.map((service: Service) => ({
+          id: service.id,
+          image: service.image,
+          category: service.category.name,
+          title: service.name,
+          description: service.description,
+          width: 350,
+          height: 450,
+          link: `/services/${service.category.id
+            .toLowerCase()
+            .replace(/\s+/g, "-")}#${service.name
+            .toLowerCase()
+            .replace(/\s+/g, "-")}`,
+        }));
+
+        setCarouselItems(mappedItems.slice(0, 6)); // Use first 6 services
       } catch (error: any) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching services:", error);
         toast({
           title: "Error",
-          description:
-            error.message || "Failed to load data. Please try again.",
+          description: error.message || "Failed to load services",
           variant: "destructive",
         });
+
+        // Fallback data if API fails
+        // setCarouselItems([
+        //   {
+        //     id: "1",
+        //     image: "/romantic-bohemian-couple-bed.jpg",
+        //     category: "TRAVEL",
+        //     title: "Global Travel & Aviation",
+        //     description: "Full-service concierge support for your global travel needs",
+        //     width: 350,
+        //     height: 450,
+        //     link: "/services/sorted-lifestyle#travel",
+        //   },
+        //   {
+        //     id: "2",
+        //     image: "/medium-shot-people-eating.jpg",
+        //     category: "EVENTS",
+        //     title: "Private Event Production",
+        //     description: "Full-service concierge support for your exclusive events",
+        //     width: 350,
+        //     height: 450,
+        //     link: "/services/sorted-experiences#events",
+        //   },
+        //   {
+        //     id: "3",
+        //     image: "/image.png",
+        //     category: "EXPERIENCES",
+        //     title: "Rare Cultural Moments",
+        //     description: "Full-service concierge support for unique experiences",
+        //     width: 350,
+        //     height: 450,
+        //     link: "/services/sorted-experiences#experiences",
+        //   },
+        //   {
+        //     id: "4",
+        //     image: "/image2.png",
+        //     category: "LIFESTYLE",
+        //     title: "Personal Affairs Management",
+        //     description: "Full-service concierge support for your lifestyle needs",
+        //     width: 350,
+        //     height: 450,
+        //     link: "/services/sorted-lifestyle#lifestyle",
+        //   },
+        //   {
+        //     id: "5",
+        //     image: "/image1.png",
+        //     category: "MOBILITY",
+        //     title: "Luxury Transportation",
+        //     description: "Full-service concierge support for your mobility needs",
+        //     width: 350,
+        //     height: 450,
+        //     link: "/services/sorted-lifestyle#mobility",
+        //   },
+        //   {
+        //     id: "6",
+        //     image: "/image3.png",
+        //     category: "LOGISTICS",
+        //     title: "Crisis Response",
+        //     description: "Full-service concierge support for critical situations",
+        //     width: 350,
+        //     height: 450,
+        //     link: "/services/sorted-heritage#logistics",
+        //   },
+        // ]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchData();
+    fetchServices();
 
     const timer = setTimeout(() => setIsPreloaderVisible(false), 2500);
     return () => clearTimeout(timer);
   }, [toast]);
-
-  const carouselItems = [
-    {
-      id: 1,
-      image: "/romantic-bohemian-couple-bed.jpg",
-      category: "TRAVEL",
-      title: "Global Travel & Aviation",
-      description:
-        "Full-service concierge support for your global travel needs",
-      width: 350,
-      height: 450,
-      link: "/services/sorted-lifestyle#travel",
-    },
-    {
-      id: 2,
-      image: "/medium-shot-people-eating.jpg",
-      category: "EVENTS",
-      title: "Private Event Production",
-      description: "Full-service concierge support for your exclusive events",
-      width: 350,
-      height: 450,
-      link: "/services/sorted-experiences#events",
-    },
-    {
-      id: 3,
-      image: "/image.png",
-      category: "EXPERIENCES",
-      title: "Rare Cultural Moments",
-      description: "Full-service concierge support for unique experiences",
-      width: 350,
-      height: 450,
-      link: "/services/sorted-experiences#experiences",
-    },
-    {
-      id: 4,
-      image: "/image2.png",
-      category: "LIFESTYLE",
-      title: "Personal Affairs Management",
-      description: "Full-service concierge support for your lifestyle needs",
-      width: 350,
-      height: 450,
-      link: "/services/sorted-lifestyle#lifestyle",
-    },
-    {
-      id: 5,
-      image: "/image1.png",
-      category: "MOBILITY",
-      title: "Luxury Transportation",
-      description: "Full-service concierge support for your mobility needs",
-      width: 350,
-      height: 450,
-      link: "/services/sorted-lifestyle#mobility",
-    },
-    {
-      id: 6,
-      image: "/image3.png",
-      category: "LOGISTICS",
-      title: "Crisis Response",
-      description: "Full-service concierge support for critical situations",
-      width: 350,
-      height: 450,
-      link: "/services/sorted-heritage#logistics",
-    },
-  ];
 
   return (
     <>
@@ -294,84 +309,90 @@ export default function Home() {
             className="mx-auto max-w-3xl text-center mb-12"
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white mb-8">
-              Your World, Sorted
+              Our Services
             </h2>
             <p className="text-sm sm:text-base md:text-lg font-crimson_pro text-muted-foreground mb-12">
-              We don't just handle requests, we anticipate needs, solve problems
-              before they surface, and deliver outcomes that exceed
-              expectations. You envision, we execute.
+              Discover our curated selection of premium concierge services
             </p>
           </motion.div>
 
           {/* Single Line Carousel with Overlay */}
-          <div className="max-w-full mx-auto overflow-hidden relative group py-8">
-            <motion.div
-              className="flex gap-6 w-max cursor-grab active:cursor-grabbing"
-              animate={{ x: [0, -2100] }}
-              transition={{
-                x: {
-                  repeat: Number.POSITIVE_INFINITY,
-                  repeatType: "loop",
-                  duration: 40,
-                  ease: "linear",
-                },
-              }}
-              drag="x"
-              dragConstraints={{ left: -2100, right: 0 }}
-              dragElastic={0.1}
-              whileDrag={{ scale: 0.98 }}
-            >
-              {[...carouselItems, ...carouselItems].map((item, index) => (
-                <motion.div
-                  key={`${item.id}-${index}`}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={
-                    servicesInView
-                      ? { opacity: 1, y: 0 }
-                      : { opacity: 0, y: 30 }
-                  }
-                  transition={{
-                    duration: 0.5,
-                    delay: 0.1 * (index % carouselItems.length),
-                    ease: "easeOut",
-                  }}
-                  className="group relative w-[350px] h-[450px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
-                >
-                  <Image
-                    loading="lazy"
-                    src={item.image}
-                    alt={item.title}
-                    width={item.width}
-                    height={item.height}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="350px"
-                  />
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-pulse text-white">
+                Loading services...
+              </div>
+            </div>
+          ) : (
+            <div className="max-w-full mx-auto overflow-hidden relative group py-8">
+              <motion.div
+                className="flex gap-6 w-max cursor-grab active:cursor-grabbing"
+                animate={{ x: [0, -2100] }}
+                transition={{
+                  x: {
+                    repeat: Number.POSITIVE_INFINITY,
+                    repeatType: "loop",
+                    duration: 40,
+                    ease: "linear",
+                  },
+                }}
+                drag="x"
+                dragConstraints={{ left: -2100, right: 0 }}
+                dragElastic={0.1}
+                whileDrag={{ scale: 0.98 }}
+              >
+                {[...carouselItems, ...carouselItems].map((item, index) => (
+                  <motion.div
+                    key={`${item.id}-${index}`}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={
+                      servicesInView
+                        ? { opacity: 1, y: 0 }
+                        : { opacity: 0, y: 30 }
+                    }
+                    transition={{
+                      duration: 0.5,
+                      delay: 0.1 * (index % carouselItems.length),
+                      ease: "easeOut",
+                    }}
+                    className="group relative w-[350px] h-[450px] overflow-hidden rounded-lg elegant-shadow hover:shadow-2xl transition-all duration-300 flex-shrink-0"
+                  >
+                    <Image
+                      loading="lazy"
+                      src={item.image}
+                      alt={item.title}
+                      width={item.width}
+                      height={item.height}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="350px"
+                    />
 
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
-                  {/* Content Overlay */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-6">
-                    <p className="text-xs sm:text-sm font-crimson_pro uppercase tracking-widest text-secondary-light mb-2">
-                      {item.category}
-                    </p>
-                    <h3 className="text-xl sm:text-2xl font-cinzel font-bold uppercase tracking-wider text-white mb-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-sm font-crimson_pro text-white/80 mb-4">
-                      {item.description}
-                    </p>
-                    <Button
-                      asChild
-                      className="bg-gold-gradient w-full py-3 text-xs sm:text-sm font-crimson_pro uppercase tracking-widest text-black hover:bg-secondary-light/80 transition-all duration-300 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
-                    >
-                      <Link href={item.link}>Learn More</Link>
-                    </Button>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
+                    {/* Content Overlay */}
+                    <div className="absolute inset-0 flex flex-col justify-end p-6">
+                      <p className="text-xs sm:text-sm font-crimson_pro uppercase tracking-widest text-secondary-light mb-2">
+                        {item.category}
+                      </p>
+                      <h3 className="text-xl sm:text-2xl font-cinzel font-bold uppercase tracking-wider text-white mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm font-crimson_pro text-white/80 mb-4 line-clamp-2">
+                        {item.description}
+                      </p>
+                      <Button
+                        asChild
+                        className="bg-gold-gradient w-full py-3 text-xs sm:text-sm font-crimson_pro uppercase tracking-widest text-black hover:bg-secondary-light/80 transition-all duration-300 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                      >
+                        <Link href={item.link}>Learn More</Link>
+                      </Button>
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -456,17 +477,6 @@ export default function Home() {
               </p>
             </div>
           </motion.div>
-
-          {/* Office Address */}
-          {/* <div className="mt-16 text-center">
-            <p className="text-sm sm:text-base font-crimson_pro text-muted-foreground">
-              1st Floor, Wings Office Complex
-              <br />
-              17A Ozumba Mbadiwe Avenue
-              <br />
-              Victoria Island, Lagos
-            </p>
-          </div> */}
         </div>
       </section>
 

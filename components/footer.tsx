@@ -169,17 +169,18 @@ export default function Footer() {
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 text-secondary-light mr-2 mt-0.5" />
                 <span className="text-muted-foreground">
-                  123 Victoria Island, Lagos, Nigeria
+                  1st Floor, Wings Office Complex, 17A Ozumba Mbadiwe Avenue,
+                  Victoria Island, Lagos.
                 </span>
               </li>
               <li className="flex items-start">
                 <Phone className="h-5 w-5 text-secondary-light mr-2 mt-0.5" />
-                <span className="text-muted-foreground">+234 123 456 7890</span>
+                <span className="text-muted-foreground">+234 803 408 6086</span>
               </li>
               <li className="flex items-start">
                 <Mail className="h-5 w-5 text-secondary-light mr-2 mt-0.5" />
                 <span className="text-muted-foreground">
-                  info@sortedconcierge.com
+                  info@thesortedconcierge.com
                 </span>
               </li>
             </ul>

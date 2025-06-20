@@ -1,6 +1,7 @@
 "use client";
-
 import { useState, useEffect, useRef } from "react";
+import type React from "react";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -19,25 +20,22 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
-import { apiClient } from "@/lib/api";
-
-interface MembershipTier {
-  name: string;
-  href: string;
-  bgImage: string;
-  description: string;
-}
+import { apiClient, type ServiceCategory } from "@/lib/api";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const [membershipTiers, setMembershipTiers] = useState<MembershipTier[]>([]);
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState(true);
-  const { user, logout } = useAuth();
   const pathname = usePathname();
   const servicesRef = useRef<HTMLLIElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Use the auth context
+  const { user, isAuthenticated, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,27 +75,26 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    const fetchPackages = async () => {
+    const fetchServiceCategories = async () => {
       setIsLoading(true);
       try {
-        const packages = await apiClient.getPackages();
-        const tiers: MembershipTier[] = packages.map((pkg: any) => ({
-          name: pkg.name,
-          href: `/services/${pkg.id}`,
-          bgImage: pkg.image || "/images/default-membership.jpg",
-          description:
-            pkg.description.split(".")[0] ||
-            "Explore this exclusive membership.",
-        }));
-        setMembershipTiers(tiers);
-      } catch {
-        setMembershipTiers([]);
+        const data = await apiClient.getServiceCategories({
+          skip: 0,
+          limit: 100,
+        });
+        const activeCategories = data.filter(
+          (category: ServiceCategory) => category.is_active
+        );
+        setServiceCategories(activeCategories);
+      } catch (error) {
+        console.error("Failed to fetch service categories:", error);
+        setServiceCategories([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchPackages();
+    fetchServiceCategories();
   }, []);
 
   const mainCategories = [
@@ -105,7 +102,7 @@ export default function Header() {
     { name: "ABOUT", href: "/about" },
     {
       name: "SERVICES",
-      href: "/services/6829b41919d4815586fee5f8",
+      href: "/services",
       hasDropdown: true,
     },
     { name: "BLOG", href: "/blog" },
@@ -120,6 +117,14 @@ export default function Header() {
   const handleServicesClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsServicesOpen(!isServicesOpen);
+  };
+
+  const getServiceCategoryDescription = (category: ServiceCategory) => {
+    const shortDesc =
+      category.description.split(".")[0] || category.description;
+    return shortDesc.length > 60
+      ? shortDesc.substring(0, 60) + "..."
+      : shortDesc;
   };
 
   return (
@@ -156,32 +161,32 @@ export default function Header() {
                         border: "none",
                         padding: 0,
                         margin: 0,
-                        fontFamily: "inherit", // Matches parent font family
-                        fontSize: "0.875rem", // Matches text-sm (14px)
-                        fontWeight: 400, // Matches font-normal (400)
-                        lineHeight: "1.5", // Matches text-sm line height
-                        letterSpacing: "0.1em", // Matches tracking-widest
-                        textDecoration: "none", // Ensures no underline
-                        textTransform: "uppercase", // Matches uppercase
-                        color: "inherit", // Inherits color from parent
+                        fontFamily: "inherit",
+                        fontSize: "0.875rem",
+                        fontWeight: 400,
+                        lineHeight: "1.5",
+                        letterSpacing: "0.1em",
+                        textDecoration: "none",
+                        textTransform: "uppercase",
+                        color: "inherit",
                         cursor: "pointer",
                         outline: "none",
                         appearance: "none",
-                        display: "flex", // Matches flex behavior
-                        alignItems: "center", // Vertically centers content
-                        gap: "0.25rem", // Matches gap-1 (4px)
-                        verticalAlign: "middle", // Ensures inline alignment
-                        height: "100%", // Matches parent li height
-                        boxSizing: "border-box", // Ensures consistent sizing
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.25rem",
+                        verticalAlign: "middle",
+                        height: "100%",
+                        boxSizing: "border-box",
                       }}
                       onClick={handleServicesClick}
                       className={cn(
                         "flex items-center gap-1 text-sm font-normal uppercase tracking-widest transition-colors",
                         isActive(category.href)
-                          ? "text-secondary-light"
+                          ? "text-secondary"
                           : isScrolled
-                          ? "text-white/80 hover:text-secondary-light"
-                          : "text-white hover:text-secondary-light"
+                          ? "text-white/80 hover:text-secondary"
+                          : "text-white hover:text-secondary"
                       )}
                     >
                       {category.name}
@@ -196,12 +201,12 @@ export default function Header() {
                     <Link
                       href={category.href}
                       className={cn(
-                        "text-sm font-normal uppercase tracking-widest",
+                        "text-sm font-normal uppercase tracking-widest transition-colors",
                         isActive(category.href)
-                          ? "text-secondary-light"
+                          ? "text-secondary"
                           : isScrolled
-                          ? "text-white/80 hover:text-secondary-light"
-                          : "text-white hover:text-secondary-light"
+                          ? "text-white/80 hover:text-secondary"
+                          : "text-white hover:text-secondary"
                       )}
                     >
                       {category.name}
@@ -212,25 +217,37 @@ export default function Header() {
             </ul>
           </nav>
           <div className="flex items-center space-x-2">
-            {user ? (
-              <Link href="/profile">
+            {isAuthenticated && user ? (
+              <div className="flex items-center space-x-2">
+                <Link href="/profile">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "hover:bg-secondary/10",
+                      isScrolled ? "text-white" : "text-white"
+                    )}
+                  >
+                    <User className="h-5 w-5" />
+                  </Button>
+                </Link>
                 <Button
+                  onClick={logout}
                   variant="ghost"
                   size="icon"
                   className={cn(
-                    "hover:bg-secondary-light/10",
+                    "hover:bg-secondary/10",
                     isScrolled ? "text-white" : "text-white"
                   )}
                 >
-                  <User className="h-5 w-5" />
+                  <LogOut className="h-5 w-5" />
                 </Button>
-              </Link>
+              </div>
             ) : (
               <Link href="/auth/login">
                 <Button
                   className={cn(
-                    "text-sm font-normal uppercase tracking-widest bg-gold-gradient text-black hover:bg-secondary-light/80",
-                    isScrolled ? "text-black" : "text-white"
+                    "text-sm font-normal uppercase tracking-widest bg-gold-gradient text-black hover:bg-secondary/80"
                   )}
                 >
                   Login
@@ -250,6 +267,8 @@ export default function Header() {
             </Button>
           </div>
         </div>
+
+        {/* Desktop Services Dropdown */}
         {isServicesOpen && (
           <div
             ref={dropdownRef}
@@ -259,7 +278,7 @@ export default function Header() {
               <div className="mb-4">
                 <Link
                   href="/services"
-                  className="text-lg font-normal text-white hover:text-secondary-light transition-colors"
+                  className="text-lg font-normal text-white hover:text-secondary transition-colors"
                   onClick={() => setIsServicesOpen(false)}
                 >
                   View All Services
@@ -267,29 +286,39 @@ export default function Header() {
               </div>
               {isLoading ? (
                 <div className="flex justify-center py-4">
-                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-secondary-light border-t-transparent"></div>
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-secondary border-t-transparent"></div>
                 </div>
               ) : (
-                <div className="grid grid-cols-3 gap-6">
-                  {membershipTiers.map((tier) => (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {serviceCategories.map((category) => (
                     <Link
-                      key={tier.name}
-                      href={tier.href}
+                      key={category.id}
+                      href={`/services/${category.id}`}
                       className="group block"
                       onClick={() => setIsServicesOpen(false)}
                     >
                       <div
                         className="relative h-40 bg-cover bg-center rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-105"
-                        style={{ backgroundImage: `url(${tier.bgImage})` }}
+                        style={{
+                          backgroundImage: `url(${
+                            category.image ||
+                            "/placeholder.svg?height=160&width=300"
+                          })`,
+                        }}
                       >
                         <div className="absolute inset-0 bg-black/60 group-hover:bg-black/70 transition-colors duration-300" />
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-4">
                           <h3 className="text-xl font-semibold tracking-wider mb-2">
-                            {tier.name}
+                            {category.name}
                           </h3>
-                          <p className="text-sm font-normal opacity-90">
-                            {tier.description}
+                          <p className="text-sm font-normal opacity-90 mb-3">
+                            {getServiceCategoryDescription(category)}
                           </p>
+                          <div className="text-xs uppercase tracking-wider opacity-75">
+                            {category.category_type === "tiered"
+                              ? "Membership Tiers"
+                              : "Custom Experience"}
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -300,6 +329,8 @@ export default function Header() {
           </div>
         )}
       </header>
+
+      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 flex flex-col bg-black shadow-lg md:hidden">
           <div className="flex h-16 items-center justify-between border-b border-muted/50 px-4">
@@ -325,8 +356,8 @@ export default function Header() {
                       className={cn(
                         "text-xl font-normal uppercase tracking-widest",
                         isActive(category.href)
-                          ? "text-secondary-light"
-                          : "text-white hover:text-secondary-light"
+                          ? "text-secondary"
+                          : "text-white hover:text-secondary"
                       )}
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -339,18 +370,25 @@ export default function Header() {
                             Loading services...
                           </li>
                         ) : (
-                          membershipTiers.map((tier) => (
-                            <li key={tier.name}>
+                          serviceCategories.map((serviceCategory) => (
+                            <li key={serviceCategory.id}>
                               <Link
-                                href={tier.href}
-                                className="block p-3 rounded-lg border border-muted/50 hover:border-secondary-light transition-colors"
+                                href={`/services/${serviceCategory.id}`}
+                                className="block p-3 rounded-lg border border-muted/50 hover:border-secondary transition-colors"
                                 onClick={() => setIsMenuOpen(false)}
                               >
                                 <div className="text-base font-semibold text-white mb-1">
-                                  {tier.name}
+                                  {serviceCategory.name}
                                 </div>
-                                <div className="text-sm font-normal text-muted-foreground">
-                                  {tier.description}
+                                <div className="text-sm font-normal text-muted-foreground mb-2">
+                                  {getServiceCategoryDescription(
+                                    serviceCategory
+                                  )}
+                                </div>
+                                <div className="text-xs uppercase tracking-wider text-secondary">
+                                  {serviceCategory.category_type === "tiered"
+                                    ? "Membership Tiers Available"
+                                    : "Custom Experience"}
                                 </div>
                               </Link>
                             </li>
@@ -368,7 +406,7 @@ export default function Header() {
                   Contact Us
                 </h3>
                 <p className="flex items-center gap-2 text-sm font-normal text-white">
-                  <Phone className="h-4 w-4" /> +234 123 456 7890
+                  <Phone className="h-4 w-4" /> +234 803 408 6086
                 </p>
                 <p className="flex items-center gap-2 text-sm font-normal text-white">
                   <Mail className="h-4 w-4" /> info@sortedconcierge.com
@@ -390,7 +428,7 @@ export default function Header() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 text-white hover:bg-secondary-light/10"
+                      className="h-9 w-9 text-white hover:bg-secondary/10"
                     >
                       <Instagram className="h-5 w-5" />
                     </Button>
@@ -403,7 +441,7 @@ export default function Header() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 text-white hover:bg-secondary-light/10"
+                      className="h-9 w-9 text-white hover:bg-secondary/10"
                     >
                       <Facebook className="h-5 w-5" />
                     </Button>
@@ -416,14 +454,14 @@ export default function Header() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 text-white hover:bg-secondary-light/10"
+                      className="h-9 w-9 text-white hover:bg-secondary/10"
                     >
                       <Twitter className="h-5 w-5" />
                     </Button>
                   </Link>
                 </div>
               </div>
-              {user ? (
+              {isAuthenticated && user ? (
                 <div className="pt-2">
                   <Button
                     onClick={() => {
@@ -431,7 +469,7 @@ export default function Header() {
                       setIsMenuOpen(false);
                     }}
                     variant="outline"
-                    className="w-full border-secondary-light text-white hover:bg-secondary-light hover:text-black"
+                    className="w-full border-secondary text-white hover:bg-secondary hover:text-black"
                   >
                     <LogOut className="mr-2 h-4 w-4" /> Logout
                   </Button>
@@ -440,7 +478,7 @@ export default function Header() {
                 <div className="flex flex-col gap-2 pt-2">
                   <Button
                     asChild
-                    className="w-full bg-gold-gradient text-black hover:bg-secondary-light/80"
+                    className="w-full bg-gold-gradient text-black hover:bg-secondary/80"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Link href="/auth/login">Login</Link>
@@ -448,7 +486,7 @@ export default function Header() {
                   <Button
                     asChild
                     variant="outline"
-                    className="w-full border-secondary-light text-white hover:bg-secondary-light hover:text-black"
+                    className="w-full border-secondary text-white hover:bg-secondary hover:text-black"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Link href="/auth/register">Register</Link>

@@ -15,110 +15,369 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { useCurrency } from "@/lib/currency-context";
-import { apiClient, type Package, type SubscriptionInitiate } from "@/lib/api";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import {
+  Loader2,
+  RefreshCw,
+  Eye,
+  EyeOff,
+  CheckCircle,
+  AlertCircle,
+  CalendarIcon,
+} from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { apiClient, APIError } from "@/lib/api";
 
-interface ConvertedPackage extends Package {
+interface ServiceTier {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
   convertedPrice: number;
   currency: string;
+  originalPrice: number;
+  category_id: string;
+  image?: string;
+  features: string[];
+  is_popular: boolean;
+  is_available: boolean;
+  services: Array<{
+    id: string;
+    name: string;
+    description: string;
+    duration: string;
+  }>;
 }
 
-export default function MembershipBookingPage() {
+interface ServiceCategory {
+  id: string;
+  name: string;
+  description: string;
+  category_type: string;
+  tiers: ServiceTier[];
+}
+
+export default function TierBookingPage() {
   const { toast } = useToast();
-  const { user, token, isAuthenticated } = useAuth();
+  const { user, token, isAuthenticated, setAuthData } = useAuth();
   const { formatPrice, changeCurrency, currentCurrency, currencies } =
     useCurrency();
   const router = useRouter();
-  const [step, setStep] = useState(1);
-  const [packages, setPackages] = useState<ConvertedPackage[]>([]);
-  const [selectedPackage, setSelectedPackage] =
-    useState<ConvertedPackage | null>(null);
+  const searchParams = useSearchParams();
+  const preselectedCategoryId = searchParams.get("categoryId");
+  const [step, setStep] = useState(isAuthenticated ? 2 : 1);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [showPassword, setShowPassword] = useState(false);
+  const [authError, setAuthError] = useState<string>("");
+  const [authSuccess, setAuthSuccess] = useState<string>("");
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
+  const [selectedTier, setSelectedTier] = useState<ServiceTier | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
+  const [exchangeRates, setExchangeRates] = useState<Record<string, number>>(
+    {}
+  );
+  const [date, setDate] = useState<Date>();
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
-    packageId: "",
+    password: "",
+    confirmPassword: "",
+    tierId: "",
+    bookingDate: null as Date | null,
+    specialRequests: "",
     paymentMethod: "card",
   });
 
-  useEffect(() => {
-    const fetchPackages = async () => {
-      try {
-        setIsLoading(true);
-        const data = await apiClient.getPackages();
-        const convertedPackages = await Promise.all(
-          data.map(async (pkg: Package) => {
-            let convertedPrice = pkg.price;
-            if (currentCurrency.code !== "NGN") {
-              try {
-                const response = await apiClient.getConvertedPrice(
-                  pkg.id,
-                  currentCurrency.code
-                );
-                convertedPrice = response.convertedPrice;
-              } catch {
-                const targetCurrency = currencies.find(
-                  (c) => c.code === currentCurrency.code
-                );
-                if (targetCurrency) {
-                  convertedPrice = pkg.price * targetCurrency.rate;
+  // Fetch exchange rates
+  const fetchExchangeRates = async () => {
+    try {
+      const response = await fetch(
+        "https://naija-concierge-api.onrender.com/exchange-rates"
+      );
+      const data = await response.json();
+      setExchangeRates(data.rates);
+    } catch (error) {
+      console.error("Failed to fetch exchange rates:", error);
+    }
+  };
+
+  // Fetch categories and tiers
+  const fetchCategories = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        "https://naija-concierge-api.onrender.com/service-categories?category_type=tiered",
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const tieredCategories = data.filter(
+        (category: ServiceCategory) => category.category_type === "tiered"
+      );
+
+      const categoriesWithConvertedPrices = await Promise.all(
+        tieredCategories.map(async (category: ServiceCategory) => {
+          const tiersWithConvertedPrices = await Promise.all(
+            category.tiers.map(async (tier: ServiceTier) => {
+              let convertedPrice = tier.price;
+              if (currentCurrency.code !== "NGN" && token) {
+                try {
+                  const response = await fetch(
+                    `https://naija-concierge-api.onrender.com/service-tiers/${tier.id}/convert?currency=${currentCurrency.code}`,
+                    {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  );
+
+                  if (response.ok) {
+                    const conversionData = await response.json();
+                    convertedPrice = conversionData.convertedPrice;
+                  } else {
+                    const rate =
+                      exchangeRates[currentCurrency.code] ||
+                      currentCurrency.rate;
+                    convertedPrice = tier.price * rate;
+                  }
+                } catch (error) {
+                  console.error(
+                    `Failed to convert price for tier ${tier.id}:`,
+                    error
+                  );
+                  const rate =
+                    exchangeRates[currentCurrency.code] || currentCurrency.rate;
+                  convertedPrice = tier.price * rate;
                 }
               }
-            }
-            if (isNaN(convertedPrice) || convertedPrice <= 0) {
-              convertedPrice = pkg.price;
-            }
-            return {
-              ...pkg,
-              convertedPrice,
-              currency: currentCurrency.code,
-            };
-          })
+
+              return {
+                ...tier,
+                convertedPrice: Math.max(convertedPrice, 0.01),
+                currency: currentCurrency.code,
+                originalPrice: tier.price,
+              };
+            })
+          );
+
+          return {
+            ...category,
+            tiers: tiersWithConvertedPrices,
+          };
+        })
+      );
+
+      setCategories(categoriesWithConvertedPrices);
+
+      if (preselectedCategoryId) {
+        const preselected = categoriesWithConvertedPrices.find(
+          (cat: ServiceCategory) => cat.id === preselectedCategoryId
         );
-        setPackages(convertedPackages);
-      } catch {
-        toast({
-          title: "Error",
-          description: "Failed to load packages. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
+        if (preselected && preselected.tiers.length > 0) {
+          setFormData((prev) => ({
+            ...prev,
+            tierId: preselected.tiers[0].id,
+          }));
+        }
       }
-    };
-
-    fetchPackages();
-
-    if (user) {
-      setFormData((prev) => ({
-        ...prev,
-        name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
-        email: user.email || "",
-        phone: user.phone || "",
-      }));
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load service tiers. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-  }, [user, toast, currentCurrency.code, currencies]);
+  };
+
+  // Convert prices when currency changes
+  const convertPrices = async () => {
+    if (categories.length === 0 || !token) return;
+
+    setIsConverting(true);
+    try {
+      const updatedCategories = await Promise.all(
+        categories.map(async (category) => {
+          const updatedTiers = await Promise.all(
+            category.tiers.map(async (tier) => {
+              let convertedPrice = tier.originalPrice;
+              if (currentCurrency.code !== "NGN") {
+                try {
+                  const response = await fetch(
+                    `https://naija-concierge-api.onrender.com/service-tiers/${tier.id}/convert?currency=${currentCurrency.code}`,
+                    {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  );
+
+                  if (response.ok) {
+                    const conversionData = await response.json();
+                    convertedPrice = conversionData.convertedPrice;
+                  } else {
+                    const rate =
+                      exchangeRates[currentCurrency.code] ||
+                      currentCurrency.rate;
+                    convertedPrice = tier.originalPrice * rate;
+                  }
+                } catch (error) {
+                  console.error(
+                    `Failed to convert price for tier ${tier.id}:`,
+                    error
+                  );
+                  const rate =
+                    exchangeRates[currentCurrency.code] || currentCurrency.rate;
+                  convertedPrice = tier.originalPrice * rate;
+                }
+              }
+
+              return {
+                ...tier,
+                convertedPrice: Math.max(convertedPrice, 0.01),
+                currency: currentCurrency.code,
+              };
+            })
+          );
+
+          return {
+            ...category,
+            tiers: updatedTiers,
+          };
+        })
+      );
+
+      setCategories(updatedCategories);
+
+      if (selectedTier) {
+        const updatedCategory = updatedCategories.find((cat) =>
+          cat.tiers.some((tier) => tier.id === selectedTier.id)
+        );
+        if (updatedCategory) {
+          const updatedTier = updatedCategory.tiers.find(
+            (tier) => tier.id === selectedTier.id
+          );
+          if (updatedTier) {
+            setSelectedTier(updatedTier);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Failed to convert prices:", error);
+      toast({
+        title: "Currency Conversion Error",
+        description: "Failed to convert prices. Using fallback rates.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsConverting(false);
+    }
+  };
 
   useEffect(() => {
-    if (formData.packageId && packages.length > 0) {
-      const pkg = packages.find((p) => p.id === formData.packageId) || null;
-      setSelectedPackage(pkg);
-    } else {
-      setSelectedPackage(null);
+    fetchExchangeRates();
+  }, []);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [token]);
+
+  useEffect(() => {
+    if (categories.length > 0) {
+      convertPrices();
     }
-  }, [formData.packageId, packages]);
+  }, [currentCurrency.code]);
+
+  useEffect(() => {
+    if (formData.tierId && categories.length > 0) {
+      const tier =
+        categories
+          .flatMap((cat) => cat.tiers)
+          .find((t) => t.id === formData.tierId) || null;
+      setSelectedTier(tier);
+    } else {
+      setSelectedTier(null);
+    }
+  }, [formData.tierId, categories]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setStep(2);
+      setFormData((prev) => ({
+        ...prev,
+        firstName: user?.firstName || "",
+        lastName: user?.lastName || "",
+        email: user?.email || "",
+        phone: user?.phone || "",
+      }));
+    }
+  }, [isAuthenticated, user]);
+
+  const validateStep = (stepNumber: number) => {
+    const newErrors: Record<string, string> = {};
+
+    if (stepNumber === 1 && !isAuthenticated) {
+      if (authMode === "register") {
+        if (!formData.firstName) newErrors.firstName = "First name is required";
+        if (!formData.lastName) newErrors.lastName = "Last name is required";
+        if (!formData.password) newErrors.password = "Password is required";
+        else if (formData.password.length < 8)
+          newErrors.password = "Password must be at least 8 characters";
+        if (formData.password !== formData.confirmPassword)
+          newErrors.confirmPassword = "Passwords do not match";
+      }
+      if (!formData.email) newErrors.email = "Email is required";
+      else if (!/\S+@\S+\.\S+/.test(formData.email))
+        newErrors.email = "Email is invalid";
+      if (!formData.password && authMode === "login")
+        newErrors.password = "Password is required";
+    }
+
+    if (stepNumber === 2) {
+      if (!formData.tierId) newErrors.tierId = "Please select a service tier";
+      if (!formData.bookingDate) newErrors.bookingDate = "Please select a date";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -132,67 +391,184 @@ export default function MembershipBookingPage() {
     setFormData((prev) => ({ ...prev, paymentMethod: value }));
   };
 
-  const nextStep = () => {
-    if (step === 1) {
-      if (!formData.name || !formData.email || !formData.phone) {
-        toast({
-          title: "Missing Information",
-          description: "Please fill in all required fields.",
-          variant: "destructive",
-        });
-        return;
-      }
-    } else if (step === 2) {
-      if (!formData.packageId) {
-        toast({
-          title: "Missing Information",
-          description: "Please select a service package.",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
-    setStep((prev) => prev + 1);
-    window.scrollTo(0, 0);
-  };
+  const handleLogin = async () => {
+    if (!validateStep(1)) return;
 
-  const prevStep = () => {
-    setStep((prev) => prev - 1);
-    window.scrollTo(0, 0);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isAuthenticated || !token || !user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to subscribe to a service.",
-        variant: "destructive",
-      });
-      router.push("/auth/login");
-      return;
-    }
     setIsSubmitting(true);
+    setAuthError("");
+    setAuthSuccess("");
+
     try {
-      const subscriptionData: SubscriptionInitiate = {
-        userId: user.id,
-        packageId: formData.packageId,
-        preferredCurrency: currentCurrency.code,
-      };
-      const { payment_url } = await apiClient.initiateSubscriptionPayment(
-        subscriptionData
-      );
-      window.location.href = payment_url;
-    } catch {
+      const response = await apiClient.login({
+        username: formData.email,
+        password: formData.password,
+      });
+
+      if (response?.access_token && response?.user) {
+        setAuthData(response.access_token, response.user);
+        setAuthSuccess("Successfully logged in!");
+        setStep(2);
+        toast({
+          title: "Success",
+          description: "Logged in successfully!",
+        });
+      } else {
+        throw new Error("Login failed");
+      }
+    } catch (error: any) {
+      let errorMessage = "Login failed";
+      if (error instanceof APIError) {
+        errorMessage = error.message;
+        if (error.status === 401) {
+          errorMessage = "Invalid email or password";
+        } else if (error.status === 422) {
+          errorMessage = "Please check your email and password";
+        }
+      }
+      setAuthError(errorMessage);
       toast({
-        title: "Subscription Failed",
-        description:
-          "There was an error processing your subscription. Please try again.",
+        title: "Login Error",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleRegister = async () => {
+    if (!validateStep(1)) return;
+
+    setIsSubmitting(true);
+    setAuthError("");
+    setAuthSuccess("");
+
+    try {
+      const response = await apiClient.register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+      });
+
+      if (response?.access_token && response?.user) {
+        setAuthData(response.access_token, response.user);
+        setAuthSuccess("Account created successfully!");
+        setStep(2);
+        toast({
+          title: "Success",
+          description: "Account created successfully!",
+        });
+      } else {
+        throw new Error("Registration failed");
+      }
+    } catch (error: any) {
+      let errorMessage = "Registration failed";
+      if (error instanceof APIError) {
+        errorMessage = error.message;
+        if (error.status === 422) {
+          errorMessage = Array.isArray(error.details?.detail)
+            ? error.details.detail.map((e: any) => e.msg).join(", ")
+            : error.details?.detail || "Invalid registration data";
+        } else if (error.status === 400) {
+          errorMessage = "Email already exists or invalid data provided";
+        }
+      }
+      setAuthError(errorMessage);
+      toast({
+        title: "Registration Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAuthenticated || !token || !user) {
+      setStep(1);
+      return;
+    }
+
+    if (!validateStep(3)) return;
+
+    if (!selectedTier) {
+      toast({
+        title: "No Tier Selected",
+        description: "Please select a service tier.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const params = new URLSearchParams({
+        tier_id: formData.tierId,
+        booking_date: formData.bookingDate
+          ? formData.bookingDate.toISOString()
+          : new Date().toISOString(),
+        preferred_currency: currentCurrency.code,
+      }).toString();
+
+      const response = await fetch(
+        `https://naija-concierge-api.onrender.com/bookings/tier?${params}`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to create booking");
+      }
+
+      const booking = await response.json();
+
+      if (booking.payment_url) {
+        window.location.href = booking.payment_url;
+      } else {
+        toast({
+          title: "Booking Created",
+          description:
+            "Your booking has been created. Payment link will be provided shortly.",
+        });
+        router.push("/dashboard/bookings");
+      }
+    } catch (error) {
+      console.error("Booking creation failed:", error);
+      toast({
+        title: "Booking Failed",
+        description:
+          "There was an error creating your booking. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const nextStep = () => {
+    if (step === 1 && !isAuthenticated) {
+      if (authMode === "login") {
+        handleLogin();
+      } else {
+        handleRegister();
+      }
+    } else if (step === 2) {
+      if (validateStep(2)) setStep(3);
+    }
+  };
+
+  const prevStep = () => {
+    setStep((prev) => prev - 1);
+    window.scrollTo(0, 0);
   };
 
   if (isLoading) {
@@ -209,7 +585,7 @@ export default function MembershipBookingPage() {
         <div className="absolute inset-0">
           <Image
             src="/image11.png"
-            alt="Membership Hero"
+            alt="Tier Booking Hero"
             fill
             priority
             className="w-full h-full object-cover"
@@ -220,14 +596,14 @@ export default function MembershipBookingPage() {
         <div className="container relative z-10 mx-auto my-24 sm:my-32 px-4 sm:px-6">
           <div className="max-w-3xl mx-auto text-center">
             <Badge className="mb-4 bg-secondary-light/20 text-secondary-light px-3 sm:px-4 py-1 text-xs sm:text-sm font-normal">
-              Join Now
+              Premium Tiers
             </Badge>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-widest text-white mb-4 sm:mb-6">
-              Book a Service
+              Book a Service Tier
             </h1>
             <p className="text-sm sm:text-base md:text-lg font-normal text-muted-foreground mb-6 sm:mb-8">
-              Select a service package and enjoy exclusive benefits. Complete
-              the form below to start your booking.
+              Choose from our premium service tiers and enjoy comprehensive
+              lifestyle management.
             </p>
           </div>
         </div>
@@ -238,147 +614,317 @@ export default function MembershipBookingPage() {
           <div className="max-w-4xl mx-auto">
             <div className="mb-8 sm:mb-12">
               <div className="flex justify-between items-center">
-                <div
-                  className={`flex flex-col items-center ${
-                    step >= 1 ? "text-secondary-light" : "text-muted-foreground"
-                  }`}
-                >
-                  <div
-                    className={`w-8 sm:w-10 h-8 sm:h-10 rounded-full flex items-center justify-center mb-2 text-xs sm:text-sm ${
-                      step >= 1
-                        ? "bg-secondary-light text-black"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    1
+                {[
+                  { number: 1, label: isAuthenticated ? "Account" : "Sign In" },
+                  { number: 2, label: "Tier Selection" },
+                  { number: 3, label: "Confirmation" },
+                ].map((stepItem, index) => (
+                  <div key={stepItem.number} className="flex items-center">
+                    <div
+                      className={`flex flex-col items-center ${
+                        step >= stepItem.number
+                          ? "text-secondary-light"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      <div
+                        className={`w-8 sm:w-10 h-8 sm:h-10 rounded-full flex items-center justify-center mb-2 text-xs sm:text-sm ${
+                          step >= stepItem.number
+                            ? "bg-secondary-light text-black"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {stepItem.number}
+                      </div>
+                      <span className="text-xs sm:text-sm font-normal">
+                        {stepItem.label}
+                      </span>
+                    </div>
+                    {index < 2 && (
+                      <div
+                        className={`flex-1 h-1 mx-2 sm:mx-4 ${
+                          step > stepItem.number
+                            ? "bg-secondary-light"
+                            : "bg-muted"
+                        }`}
+                      />
+                    )}
                   </div>
-                  <span className="text-xs sm:text-sm font-normal">
-                    Personal Info
-                  </span>
-                </div>
-                <div
-                  className={`flex-1 h-1 mx-2 sm:mx-4 ${
-                    step >= 2 ? "bg-secondary-light" : "bg-muted"
-                  }`}
-                ></div>
-                <div
-                  className={`flex flex-col items-center ${
-                    step >= 2 ? "text-secondary-light" : "text-muted-foreground"
-                  }`}
-                >
-                  <div
-                    className={`w-8 sm:w-10 h-8 sm:h-10 rounded-full flex items-center justify-center mb-2 text-xs sm:text-sm ${
-                      step >= 2
-                        ? "bg-secondary-light text-black"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    2
-                  </div>
-                  <span className="text-xs sm:text-sm font-normal">
-                    Package Selection
-                  </span>
-                </div>
-                <div
-                  className={`flex-1 h-1 mx-2 sm:mx-4 ${
-                    step >= 3 ? "bg-secondary-light" : "bg-muted"
-                  }`}
-                ></div>
-                <div
-                  className={`flex flex-col items-center ${
-                    step >= 3 ? "text-secondary-light" : "text-muted-foreground"
-                  }`}
-                >
-                  <div
-                    className={`w-8 sm:w-10 h-8 sm:h-10 rounded-full flex items-center justify-center mb-2 text-xs sm:text-sm ${
-                      step >= 3
-                        ? "bg-secondary-light text-black"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    3
-                  </div>
-                  <span className="text-xs sm:text-sm font-normal">
-                    Confirmation
-                  </span>
-                </div>
+                ))}
               </div>
             </div>
 
             <Card className="border-muted/50 bg-card shadow-sm">
               <CardContent className="p-4 sm:p-6 md:p-8">
                 <form onSubmit={handleSubmit}>
-                  {step === 1 && (
+                  {step === 1 && !isAuthenticated && (
                     <motion.div
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold uppercase tracking-widest text-white mb-4 sm:mb-6">
-                        Personal Information
+                      <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold uppercase tracking-widest text-white mb-4 sm:mb-6 text-center">
+                        Welcome to Sorted Concierge
                       </h2>
-                      <div className="space-y-3 sm:space-y-4">
-                        <div>
-                          <Label
-                            htmlFor="name"
-                            className="text-xs sm:text-sm font-normal text-muted-foreground"
-                          >
-                            Full Name *
-                          </Label>
-                          <Input
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            placeholder="Enter your full name"
-                            required
-                            className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
-                          />
-                        </div>
-                        <div>
-                          <Label
-                            htmlFor="email"
-                            className="text-xs sm:text-sm font-normal text-muted-foreground"
-                          >
-                            Email Address *
-                          </Label>
-                          <Input
-                            id="email"
-                            name="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder="Enter your email address"
-                            required
-                            className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
-                          />
-                        </div>
-                        <div>
-                          <Label
-                            htmlFor="phone"
-                            className="text-xs sm:text-sm font-normal text-muted-foreground"
-                          >
-                            Phone Number *
-                          </Label>
-                          <Input
-                            id="phone"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            placeholder="Enter your phone number"
-                            required
-                            className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
-                          />
-                        </div>
-                      </div>
+
+                      {authSuccess && (
+                        <Alert className="mb-6 border-green-500 bg-green-500/10">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <AlertDescription className="text-green-500">
+                            {authSuccess}
+                          </AlertDescription>
+                        </Alert>
+                      )}
+
+                      {authError && (
+                        <Alert className="mb-6 border-red-500 bg-red-500/10">
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                          <AlertDescription className="text-red-500">
+                            {authError}
+                          </AlertDescription>
+                        </Alert>
+                      )}
+
+                      <Tabs
+                        value={authMode}
+                        onValueChange={(value) =>
+                          setAuthMode(value as "login" | "register")
+                        }
+                      >
+                        <TabsList className="grid w-full grid-cols-2 mb-6">
+                          <TabsTrigger value="login">Sign In</TabsTrigger>
+                          <TabsTrigger value="register">
+                            Create Account
+                          </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="login" className="space-y-4">
+                          <div>
+                            <Label
+                              htmlFor="email"
+                              className="text-white text-xs sm:text-sm font-normal"
+                            >
+                              Email *
+                            </Label>
+                            <Input
+                              id="email"
+                              type="email"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleChange}
+                              placeholder="your.email@example.com"
+                              className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
+                            />
+                            {errors.email && (
+                              <p className="text-red-400 text-sm mt-1">
+                                {errors.email}
+                              </p>
+                            )}
+                          </div>
+                          <div>
+                            <Label
+                              htmlFor="password"
+                              className="text-white text-xs sm:text-sm font-normal"
+                            >
+                              Password *
+                            </Label>
+                            <div className="relative">
+                              <Input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal pr-10"
+                                placeholder="••••••••"
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-white"
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                {showPassword ? (
+                                  <EyeOff className="w-4 h-4" />
+                                ) : (
+                                  <Eye className="w-4 h-4" />
+                                )}
+                              </Button>
+                            </div>
+                            {errors.password && (
+                              <p className="text-red-400 text-sm mt-1">
+                                {errors.password}
+                              </p>
+                            )}
+                          </div>
+                        </TabsContent>
+
+                        <TabsContent value="register" className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label
+                                htmlFor="firstName"
+                                className="text-white text-xs sm:text-sm font-normal"
+                              >
+                                First Name *
+                              </Label>
+                              <Input
+                                id="firstName"
+                                name="firstName"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                                className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
+                                placeholder="John"
+                              />
+                              {errors.firstName && (
+                                <p className="text-red-400 text-sm mt-1">
+                                  {errors.firstName}
+                                </p>
+                              )}
+                            </div>
+                            <div>
+                              <Label
+                                htmlFor="lastName"
+                                className="text-white text-xs sm:text-sm font-normal"
+                              >
+                                Last Name *
+                              </Label>
+                              <Input
+                                id="lastName"
+                                name="lastName"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                                className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
+                                placeholder="Doe"
+                              />
+                              {errors.lastName && (
+                                <p className="text-red-400 text-sm mt-1">
+                                  {errors.lastName}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <div>
+                            <Label
+                              htmlFor="email"
+                              className="text-white text-xs sm:text-sm font-normal"
+                            >
+                              Email *
+                            </Label>
+                            <Input
+                              id="email"
+                              type="email"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleChange}
+                              className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
+                              placeholder="your.email@example.com"
+                            />
+                            {errors.email && (
+                              <p className="text-red-400 text-sm mt-1">
+                                {errors.email}
+                              </p>
+                            )}
+                          </div>
+                          <div>
+                            <Label
+                              htmlFor="phone"
+                              className="text-white text-xs sm:text-sm font-normal"
+                            >
+                              Phone (Optional)
+                            </Label>
+                            <Input
+                              id="phone"
+                              name="phone"
+                              value={formData.phone}
+                              onChange={handleChange}
+                              className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
+                              placeholder="+234 123 456 7890"
+                            />
+                          </div>
+                          <div>
+                            <Label
+                              htmlFor="password"
+                              className="text-white text-xs sm:text-sm font-normal"
+                            >
+                              Password *
+                            </Label>
+                            <div className="relative">
+                              <Input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal pr-10"
+                                placeholder="••••••••"
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-white"
+                                onClick={() => setShowPassword(!showPassword)}
+                              >
+                                {showPassword ? (
+                                  <EyeOff className="w-4 h-4" />
+                                ) : (
+                                  <Eye className="w-4 h-4" />
+                                )}
+                              </Button>
+                            </div>
+                            {errors.password && (
+                              <p className="text-red-400 text-sm mt-1">
+                                {errors.password}
+                              </p>
+                            )}
+                          </div>
+                          <div>
+                            <Label
+                              htmlFor="confirmPassword"
+                              className="text-white text-xs sm:text-sm font-normal"
+                            >
+                              Confirm Password *
+                            </Label>
+                            <Input
+                              id="confirmPassword"
+                              type="password"
+                              name="confirmPassword"
+                              value={formData.confirmPassword}
+                              onChange={handleChange}
+                              className="border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal"
+                              placeholder="••••••••"
+                            />
+                            {errors.confirmPassword && (
+                              <p className="text-red-400 text-sm mt-1">
+                                {errors.confirmPassword}
+                              </p>
+                            )}
+                          </div>
+                        </TabsContent>
+                      </Tabs>
+
                       <div className="mt-6 sm:mt-8 flex justify-end">
                         <Button
                           type="button"
                           onClick={nextStep}
+                          disabled={isSubmitting}
                           className="bg-gold-gradient hover:bg-secondary-light/80 text-black text-xs sm:text-sm font-normal px-4 sm:px-6 py-2 sm:py-3"
                         >
-                          Next Step
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              {authMode === "register"
+                                ? "Creating Account..."
+                                : "Signing In..."}
+                            </>
+                          ) : authMode === "register" ? (
+                            "Create Account"
+                          ) : (
+                            "Sign In"
+                          )}
                         </Button>
                       </div>
                     </motion.div>
@@ -391,71 +937,16 @@ export default function MembershipBookingPage() {
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold uppercase tracking-widest text-white mb-4 sm:mb-6">
-                        Select Service Package
-                      </h2>
+                      <div className="flex justify-between items-center mb-4 sm:mb-6">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold uppercase tracking-widest text-white">
+                          Select Service Tier
+                        </h2>
+                        {isConverting && (
+                          <RefreshCw className="h-4 w-4 animate-spin text-secondary-light" />
+                        )}
+                      </div>
+
                       <div className="space-y-3 sm:space-y-4">
-                        <div>
-                          <Label
-                            htmlFor="packageId"
-                            className="text-xs sm:text-sm font-normal text-muted-foreground"
-                          >
-                            Select Package *
-                          </Label>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {packages.map((pkg) => (
-                              <Card
-                                key={pkg.id}
-                                className={`border ${
-                                  formData.packageId === pkg.id
-                                    ? "border-secondary-light"
-                                    : "border-muted/50"
-                                } cursor-pointer hover:border-secondary-light/50 transition-colors`}
-                                onClick={() =>
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    packageId: pkg.id,
-                                  }))
-                                }
-                              >
-                                <CardContent className="p-4">
-                                  <div className="flex justify-between items-start">
-                                    <div>
-                                      <h3 className="text-base sm:text-lg font-semibold text-white">
-                                        {pkg.name}
-                                      </h3>
-                                      <p className="text-sm sm:text-base font-normal text-muted-foreground">
-                                        {formatPrice(
-                                          pkg.convertedPrice,
-                                          pkg.currency
-                                        )}{" "}
-                                        / {pkg.duration}
-                                      </p>
-                                      <p className="text-xs sm:text-sm font-normal text-muted-foreground mt-2">
-                                        {pkg.description}
-                                      </p>
-                                      <ul className="mt-2 space-y-1">
-                                        {pkg.features.map((feature, index) => (
-                                          <li
-                                            key={index}
-                                            className="text-xs sm:text-sm font-normal text-white"
-                                          >
-                                            • {feature}
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    </div>
-                                    {pkg.isPopular && (
-                                      <Badge className="bg-secondary-light text-black">
-                                        Popular
-                                      </Badge>
-                                    )}
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
-                        </div>
                         <div>
                           <Label
                             htmlFor="currency"
@@ -471,14 +962,206 @@ export default function MembershipBookingPage() {
                               <SelectValue placeholder="Select currency" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="NGN">NGN</SelectItem>
-                              <SelectItem value="USD">USD</SelectItem>
-                              <SelectItem value="EUR">EUR</SelectItem>
-                              <SelectItem value="GBP">GBP</SelectItem>
+                              <SelectItem value="NGN">NGN (₦)</SelectItem>
+                              <SelectItem value="USD">USD ($)</SelectItem>
+                              <SelectItem value="EUR">EUR (€)</SelectItem>
+                              <SelectItem value="GBP">GBP (£)</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
+
+                        <div>
+                          <Label
+                            htmlFor="bookingDate"
+                            className="text-xs sm:text-sm font-normal text-muted-foreground"
+                          >
+                            Preferred Date *
+                          </Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full justify-start text-left font-normal bg-card border-muted/50 text-white",
+                                  !date && "text-muted-foreground"
+                                )}
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {date ? (
+                                  format(date, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 bg-card border-muted/50">
+                              <Calendar
+                                mode="single"
+                                selected={date}
+                                onSelect={(selectedDate) => {
+                                  setDate(selectedDate);
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    bookingDate: selectedDate || null,
+                                  }));
+                                }}
+                                disabled={(date) => date < new Date()}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          {errors.bookingDate && (
+                            <p className="text-red-400 text-sm mt-1">
+                              {errors.bookingDate}
+                            </p>
+                          )}
+                        </div>
+
+                        {categories.map((category) => (
+                          <div key={category.id} className="space-y-4">
+                            <h3 className="text-lg font-semibold text-white">
+                              {category.name}
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {category.tiers.map((tier) => (
+                                <Card
+                                  key={tier.id}
+                                  className={`border cursor-pointer hover:border-secondary-light/50 transition-colors ${
+                                    formData.tierId === tier.id
+                                      ? "border-secondary-light"
+                                      : "border-muted/50"
+                                  } ${
+                                    !tier.is_available
+                                      ? "opacity-50 cursor-not-allowed"
+                                      : ""
+                                  }`}
+                                  onClick={() => {
+                                    if (tier.is_available) {
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        tierId: tier.id,
+                                      }));
+                                    }
+                                  }}
+                                >
+                                  <CardContent className="p-4">
+                                    <div className="flex justify-between items-start mb-3">
+                                      <div>
+                                        <h4 className="text-base sm:text-lg font-semibold text-white">
+                                          {tier.name}
+                                        </h4>
+                                        <div className="space-y-1">
+                                          <p className="text-lg sm:text-xl font-bold text-secondary-light">
+                                            {currentCurrency.symbol}
+                                            {tier.convertedPrice.toFixed(2)}
+                                          </p>
+                                          {currentCurrency.code !== "NGN" && (
+                                            <p className="text-xs text-muted-foreground">
+                                              Originally ₦
+                                              {tier.originalPrice.toLocaleString()}
+                                              <br />
+                                              (converted from NGN)
+                                            </p>
+                                          )}
+                                        </div>
+                                      </div>
+                                      {tier.is_popular && (
+                                        <Badge className="bg-secondary-light text-black">
+                                          Popular
+                                        </Badge>
+                                      )}
+                                    </div>
+
+                                    <p className="text-xs sm:text-sm font-normal text-muted-foreground mb-3">
+                                      {tier.description}
+                                    </p>
+
+                                    <div className="space-y-2">
+                                      <p className="text-xs font-semibold text-white">
+                                        Features:
+                                      </p>
+                                      <ul className="space-y-1">
+                                        {tier.features
+                                          .slice(0, 3)
+                                          .map((feature, index) => (
+                                            <li
+                                              key={index}
+                                              className="text-xs text-white"
+                                            >
+                                              • {feature}
+                                            </li>
+                                          ))}
+                                        {tier.features.length > 3 && (
+                                          <li className="text-xs text-secondary-light">
+                                            +{tier.features.length - 3} more
+                                            features
+                                          </li>
+                                        )}
+                                      </ul>
+                                    </div>
+
+                                    {tier.services.length > 0 && (
+                                      <div className="mt-3 space-y-2">
+                                        <p className="text-xs font-semibold text-white">
+                                          Included Services:
+                                        </p>
+                                        <ul className="space-y-1">
+                                          {tier.services
+                                            .slice(0, 2)
+                                            .map((service, index) => (
+                                              <li
+                                                key={index}
+                                                className="text-xs text-muted-foreground"
+                                              >
+                                                • {service.name}
+                                              </li>
+                                            ))}
+                                          {tier.services.length > 2 && (
+                                            <li className="text-xs text-secondary-light">
+                                              +{tier.services.length - 2} more
+                                              services
+                                            </li>
+                                          )}
+                                        </ul>
+                                      </div>
+                                    )}
+
+                                    {!tier.is_available && (
+                                      <div className="mt-3">
+                                        <Badge
+                                          variant="secondary"
+                                          className="text-xs"
+                                        >
+                                          Currently Unavailable
+                                        </Badge>
+                                      </div>
+                                    )}
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+
+                        <div>
+                          <Label
+                            htmlFor="specialRequests"
+                            className="text-xs sm:text-sm font-normal text-muted-foreground"
+                          >
+                            Special Requests (Optional)
+                          </Label>
+                          <Textarea
+                            id="specialRequests"
+                            name="specialRequests"
+                            value={formData.specialRequests}
+                            onChange={handleChange}
+                            placeholder="Any special requirements or requests..."
+                            rows={3}
+                            className="w-full border border-muted/50 bg-card text-sm sm:text-base text-white focus:border-secondary-light focus:ring-secondary-light font-normal rounded-md px-3 py-2"
+                          />
+                        </div>
                       </div>
+
                       <div className="mt-6 sm:mt-8 flex justify-between">
                         <Button
                           type="button"
@@ -491,7 +1174,12 @@ export default function MembershipBookingPage() {
                         <Button
                           type="button"
                           onClick={nextStep}
-                          className="bg-gold-gradient hover:bg-secondary-light/80 text-black text-xs sm:text-sm font-normal px-4 sm:px-6 py-2 sm:py-3"
+                          disabled={
+                            isSubmitting ||
+                            !formData.tierId ||
+                            !formData.bookingDate
+                          }
+                          className="bg-gold-gradient hover:bg-secondary-light/80 text-black text-xs sm:text-sm font-normal px-4 sm:px-6 py-2 sm:py-3 disabled:opacity-50"
                         >
                           Next Step
                         </Button>
@@ -507,10 +1195,11 @@ export default function MembershipBookingPage() {
                       transition={{ duration: 0.3 }}
                     >
                       <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold uppercase tracking-widest text-white mb-4 sm:mb-6">
-                        Confirm Your Service
+                        Confirm Your Booking
                       </h2>
+
                       <div className="space-y-4 sm:space-y-6">
-                        <div className="bg-card p-3 sm:p-4 rounded-lg border-muted/50">
+                        <div className="bg-card p-3 sm:p-4 rounded-lg border border-muted/50">
                           <h3 className="font-normal text-base sm:text-lg text-white mb-3 sm:mb-4">
                             Personal Information
                           </h3>
@@ -519,15 +1208,17 @@ export default function MembershipBookingPage() {
                               <p className="text-xs sm:text-sm text-muted-foreground font-normal">
                                 Name
                               </p>
-                              <p className="text-sm sm:text-base font-normal">
-                                {formData.name}
+                              <p className="text-sm sm:text-base font-normal text-white">
+                                {user
+                                  ? `${user.firstName} ${user.lastName}`
+                                  : `${formData.firstName} ${formData.lastName}`}
                               </p>
                             </div>
                             <div>
                               <p className="text-xs sm:text-sm text-muted-foreground font-normal">
                                 Email
                               </p>
-                              <p className="text-sm sm:text-base font-normal">
+                              <p className="text-sm sm:text-base font-normal text-white">
                                 {formData.email}
                               </p>
                             </div>
@@ -535,59 +1226,103 @@ export default function MembershipBookingPage() {
                               <p className="text-xs sm:text-sm text-muted-foreground font-normal">
                                 Phone
                               </p>
-                              <p className="text-sm sm:text-base font-normal">
-                                {formData.phone}
+                              <p className="text-sm sm:text-base font-normal text-white">
+                                {formData.phone || "Not provided"}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-xs sm:text-sm text-muted-foreground font-normal">
+                                Date
+                              </p>
+                              <p className="text-sm sm:text-base font-normal text-white">
+                                {formData.bookingDate
+                                  ? format(formData.bookingDate, "PPP")
+                                  : "Not selected"}
                               </p>
                             </div>
                           </div>
                         </div>
-                        <div className="bg-card p-3 sm:p-4 rounded-lg border-muted/50">
-                          <h3 className="font-normal text-base sm:text-lg text-white mb-3 sm:mb-4">
-                            Package Details
-                          </h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                            <div>
-                              <p className="text-xs sm:text-sm text-muted-foreground font-normal">
-                                Package
-                              </p>
-                              <p className="text-sm sm:text-base font-normal">
-                                {selectedPackage?.name}
-                              </p>
+
+                        {selectedTier && (
+                          <div className="bg-card p-3 sm:p-4 rounded-lg border border-muted/50">
+                            <h3 className="font-normal text-base sm:text-lg text-white mb-3 sm:mb-4">
+                              Tier Details
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                              <div>
+                                <p className="text-xs sm:text-sm text-muted-foreground font-normal">
+                                  Tier
+                                </p>
+                                <p className="text-sm sm:text-base font-normal text-white">
+                                  {selectedTier.name}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs sm:text-sm text-muted-foreground font-normal">
+                                  Price
+                                </p>
+                                <div>
+                                  <p className="text-lg font-bold text-secondary-light">
+                                    {currentCurrency.symbol}
+                                    {selectedTier.convertedPrice.toFixed(2)}
+                                  </p>
+                                  {currentCurrency.code !== "NGN" && (
+                                    <p className="text-xs text-muted-foreground">
+                                      Originally ₦
+                                      {selectedTier.originalPrice.toLocaleString()}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="md:col-span-2">
+                                <p className="text-xs sm:text-sm text-muted-foreground font-normal">
+                                  Currency
+                                </p>
+                                <p className="text-sm sm:text-base font-normal text-white">
+                                  {currentCurrency.code}
+                                </p>
+                              </div>
                             </div>
-                            <div>
+
+                            <div className="mt-3 sm:mt-4">
                               <p className="text-xs sm:text-sm text-muted-foreground font-normal">
-                                Price
+                                Features
                               </p>
-                              <p className="text-sm sm:text-base font-normal">
-                                {formatPrice(
-                                  selectedPackage?.convertedPrice || 0,
-                                  selectedPackage?.currency
-                                )}{" "}
-                                / {selectedPackage?.duration}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs sm:text-sm text-muted-foreground font-normal">
-                                Currency
-                              </p>
-                              <p className="text-sm sm:text-base font-normal">
-                                {currentCurrency.code}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="mt-3 sm:mt-4">
-                            <p className="text-xs sm:text-sm text-muted-foreground font-normal">
-                              Features
-                            </p>
-                            <ul className="text-sm sm:text-base font-normal">
-                              {selectedPackage?.features.map(
-                                (feature, index) => (
+                              <ul className="text-sm sm:text-base font-normal text-white space-y-1">
+                                {selectedTier.features.map((feature, index) => (
                                   <li key={index}>• {feature}</li>
-                                )
-                              )}
-                            </ul>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {selectedTier.services.length > 0 && (
+                              <div className="mt-3 sm:mt-4">
+                                <p className="text-xs sm:text-sm text-muted-foreground font-normal">
+                                  Included Services
+                                </p>
+                                <ul className="text-sm sm:text-base font-normal text-white space-y-1">
+                                  {selectedTier.services.map(
+                                    (service, index) => (
+                                      <li key={index}>• {service.name}</li>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
+                            )}
                           </div>
-                        </div>
+                        )}
+
+                        {formData.specialRequests && (
+                          <div className="bg-card p-3 sm:p-4 rounded-lg border border-muted/50">
+                            <h3 className="font-normal text-base sm:text-lg text-white mb-3 sm:mb-4">
+                              Special Requests
+                            </h3>
+                            <p className="text-sm sm:text-base font-normal text-white">
+                              {formData.specialRequests}
+                            </p>
+                          </div>
+                        )}
+
                         <div>
                           <h3 className="font-normal text-base sm:text-lg text-white mb-3 sm:mb-4">
                             Payment Method
@@ -610,22 +1345,40 @@ export default function MembershipBookingPage() {
                                 Credit/Debit Card
                               </Label>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <RadioGroupItem
-                                value="transfer"
-                                id="transfer"
-                                className="text-secondary-light focus:ring-secondary-light"
-                              />
-                              <Label
-                                htmlFor="transfer"
-                                className="text-xs sm:text-sm font-normal text-white"
-                              >
-                                Bank Transfer
-                              </Label>
-                            </div>
+                            {currentCurrency.code === "NGN" && (
+                              <>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="transfer"
+                                    id="transfer"
+                                    className="text-secondary-light focus:ring-secondary-light"
+                                  />
+                                  <Label
+                                    htmlFor="transfer"
+                                    className="text-xs sm:text-sm font-normal text-white"
+                                  >
+                                    Bank Transfer
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="ussd"
+                                    id="ussd"
+                                    className="text-secondary-light focus:ring-secondary-light"
+                                  />
+                                  <Label
+                                    htmlFor="ussd"
+                                    className="text-xs sm:text-sm font-normal text-white"
+                                  >
+                                    USSD
+                                  </Label>
+                                </div>
+                              </>
+                            )}
                           </RadioGroup>
                         </div>
                       </div>
+
                       <div className="mt-6 sm:mt-8 flex justify-between">
                         <Button
                           type="button"
@@ -646,7 +1399,9 @@ export default function MembershipBookingPage() {
                               Processing
                             </>
                           ) : (
-                            "Proceed to Payment"
+                            `Proceed to Payment (${
+                              currentCurrency.symbol
+                            }${selectedTier?.convertedPrice.toFixed(2)})`
                           )}
                         </Button>
                       </div>
@@ -655,66 +1410,6 @@ export default function MembershipBookingPage() {
                 </form>
               </CardContent>
             </Card>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-12 sm:py-16 md:py-20 bg-muted/20">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-8 sm:mb-12">
-              <Badge className="mb-3 sm:mb-4 bg-secondary-light/20 text-secondary-light px-3 sm:px-4 py-1 text-xs sm:text-sm font-normal">
-                FAQs
-              </Badge>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold uppercase tracking-widest text-white mb-3 sm:mb-4">
-                Frequently Asked Questions
-              </h2>
-              <p className="text-sm sm:text-base md:text-lg font-normal text-muted-foreground">
-                Find answers to common questions about our service packages.
-              </p>
-            </div>
-            <div className="space-y-3 sm:space-y-4">
-              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm border-muted/50">
-                <h3 className="font-normal text-base sm:text-lg text-white mb-2">
-                  What are the benefits of a service?
-                </h3>
-                <p className="text-sm sm:text-base font-normal text-muted-foreground">
-                  Service packages offer exclusive benefits such as priority
-                  booking, discounted services, and access to special events.
-                  Each package has unique features tailored to your needs.
-                </p>
-              </div>
-              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm border-muted/50">
-                <h3 className="font-normal text-base sm:text-lg text-white mb-2">
-                  Can I cancel my service?
-                </h3>
-                <p className="text-sm sm:text-base font-normal text-muted-foreground">
-                  Yes, you can cancel your service by contacting our support
-                  team. Cancellation policies vary by package, and some may
-                  include a minimum commitment period.
-                </p>
-              </div>
-              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm border-muted/50">
-                <h3 className="font-normal text-base sm:text-lg text-white mb-2">
-                  How do I upgrade or downgrade my service?
-                </h3>
-                <p className="text-sm sm:text-base font-normal text-muted-foreground">
-                  You can upgrade or downgrade your service by contacting our
-                  concierge team. Changes take effect at the start of the next
-                  billing cycle.
-                </p>
-              </div>
-              <div className="bg-card p-4 sm:p-6 rounded-lg shadow-sm border-muted/50">
-                <h3 className="font-normal text-base sm:text-lg text-white mb-2">
-                  What payment methods are accepted?
-                </h3>
-                <p className="text-sm sm:text-base font-normal text-muted-foreground">
-                  We accept credit/debit cards and bank transfers for service
-                  subscriptions. Payments are processed securely through our
-                  payment gateway.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </section>

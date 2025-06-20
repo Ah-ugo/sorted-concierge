@@ -7,6 +7,7 @@ import {
   useEffect,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import {
   apiClient,
   type User,
@@ -27,6 +28,8 @@ interface AuthContextType {
   logout: () => void;
   updateUser: (userData: UserUpdate) => Promise<boolean>;
   uploadProfileImage: (file: File) => Promise<string | null>;
+  refreshUser: () => Promise<void>;
+  setAuthData: (token: string, userData: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,10 +38,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    // Check if user is logged in
-    const storedToken = localStorage.getItem("token");
+    // Check if user is logged in - use consistent token key
+    const storedToken = localStorage.getItem("access_token");
     if (storedToken) {
       setToken(storedToken);
       fetchUserData(storedToken);
@@ -64,6 +68,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const refreshUser = async () => {
+    if (!token) return;
+    try {
+      const userData = await apiClient.getCurrentUser();
+      if (userData) {
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error("Error refreshing user data:", error);
+    }
+  };
+
+  // New function to set auth data without redirecting
+  const setAuthData = (token: string, userData: User) => {
+    setToken(token);
+    setUser(userData);
+    localStorage.setItem("access_token", token);
+  };
+
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
@@ -75,13 +98,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response?.access_token) {
         setToken(response.access_token);
         setUser(response.user);
-        localStorage.setItem("token", response.access_token);
+        localStorage.setItem("access_token", response.access_token);
 
-        // Route based on user role - redirect to admin dashboard if admin
+        // Use Next.js router instead of window.location
         if (response.user.role === "admin") {
-          window.location.href = "/admin/dashboard";
+          router.push("/admin/dashboard");
         } else {
-          window.location.href = "/";
+          router.push("/");
         }
 
         return true;
@@ -119,13 +142,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response && response.access_token) {
         setToken(response.access_token);
         setUser(response.user);
-        localStorage.setItem("token", response.access_token);
+        localStorage.setItem("access_token", response.access_token);
 
-        // Route based on user role (though new registrations are typically regular users)
+        // Use Next.js router instead of window.location
         if (response.user.role === "admin") {
-          window.location.href = "/admin/dashboard";
+          router.push("/admin/dashboard");
         } else {
-          window.location.href = "/";
+          router.push("/");
         }
 
         return true;
@@ -142,8 +165,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem("token");
-    window.location.href = "/auth/login";
+    localStorage.removeItem("access_token");
+    // Use Next.js router instead of window.location
+    router.push("/auth/login");
   };
 
   const updateUser = async (userData: UserUpdate) => {
@@ -197,6 +221,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         updateUser,
         uploadProfileImage,
+        refreshUser,
+        setAuthData,
       }}
     >
       {children}
