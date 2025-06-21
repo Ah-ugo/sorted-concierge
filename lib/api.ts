@@ -506,9 +506,11 @@ export const apiClient = {
         headers: createHeaders(false),
         body: JSON.stringify(user),
       });
+      console.log(response);
       return handleResponse(response);
     } catch (error: any) {
       if (error instanceof APIError) throw error;
+      console.log(error);
       throw new APIError(500, error.message || "Registration failed");
     }
   },
@@ -706,6 +708,50 @@ export const apiClient = {
     }
   },
 
+  async updateServiceCategory(
+    categoryId: string,
+    update: ServiceCategoryUpdate
+  ): Promise<ServiceCategory> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/service-categories/${categoryId}`,
+        {
+          method: "PUT",
+          headers: createHeaders(true),
+          body: JSON.stringify(update),
+        }
+      );
+      return handleResponse(response);
+    } catch (error: any) {
+      if (error instanceof APIError) throw error;
+      throw new APIError(
+        500,
+        error.message || "Failed to update service category"
+      );
+    }
+  },
+
+  async deleteServiceCategory(
+    categoryId: string
+  ): Promise<{ message: string }> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/service-categories/${categoryId}`,
+        {
+          method: "DELETE",
+          headers: createHeaders(true),
+        }
+      );
+      return handleResponse(response);
+    } catch (error: any) {
+      if (error instanceof APIError) throw error;
+      throw new APIError(
+        500,
+        error.message || "Failed to delete service category"
+      );
+    }
+  },
+
   async uploadServiceCategoryImage(file: File): Promise<{ imageUrl: string }> {
     try {
       const formData = new FormData();
@@ -780,6 +826,36 @@ export const apiClient = {
     } catch (error: any) {
       if (error instanceof APIError) throw error;
       throw new APIError(500, error.message || "Failed to create service tier");
+    }
+  },
+
+  async updateServiceTier(
+    tierId: string,
+    update: ServiceTierUpdate
+  ): Promise<ServiceTier> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/service-tiers/${tierId}`, {
+        method: "PUT",
+        headers: createHeaders(true),
+        body: JSON.stringify(update),
+      });
+      return handleResponse(response);
+    } catch (error: any) {
+      if (error instanceof APIError) throw error;
+      throw new APIError(500, error.message || "Failed to update service tier");
+    }
+  },
+
+  async deleteServiceTier(tierId: string): Promise<{ message: string }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/service-tiers/${tierId}`, {
+        method: "DELETE",
+        headers: createHeaders(true),
+      });
+      return handleResponse(response);
+    } catch (error: any) {
+      if (error instanceof APIError) throw error;
+      throw new APIError(500, error.message || "Failed to delete service tier");
     }
   },
 
@@ -870,10 +946,42 @@ export const apiClient = {
         headers: createHeaders(true),
         body: JSON.stringify(service),
       });
+      console.log(response);
       return handleResponse(response);
     } catch (error: any) {
       if (error instanceof APIError) throw error;
       throw new APIError(500, error.message || "Failed to create service");
+    }
+  },
+
+  async updateService(
+    serviceId: string,
+    update: ServiceUpdate
+  ): Promise<Service> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/${serviceId}`, {
+        method: "PUT",
+        headers: createHeaders(true),
+        body: JSON.stringify(update),
+      });
+      console.log(response);
+      return handleResponse(response);
+    } catch (error: any) {
+      if (error instanceof APIError) throw error;
+      throw new APIError(500, error.message || "Failed to update service");
+    }
+  },
+
+  async deleteService(serviceId: string): Promise<{ message: string }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/services/${serviceId}`, {
+        method: "DELETE",
+        headers: createHeaders(true),
+      });
+      return handleResponse(response);
+    } catch (error: any) {
+      if (error instanceof APIError) throw error;
+      throw new APIError(500, error.message || "Failed to delete service");
     }
   },
 
@@ -983,11 +1091,14 @@ export const apiClient = {
     update: BookingUpdate
   ): Promise<Booking> {
     try {
-      const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
-        method: "PUT",
-        headers: createHeaders(true),
-        body: JSON.stringify(update),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/admin/bookings/${bookingId}`,
+        {
+          method: "PUT",
+          headers: createHeaders(true),
+          body: JSON.stringify(update),
+        }
+      );
       return handleResponse(response);
     } catch (error: any) {
       if (error instanceof APIError) throw error;
@@ -997,10 +1108,13 @@ export const apiClient = {
 
   async deleteBooking(bookingId: string): Promise<{ message: string }> {
     try {
-      const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
-        method: "DELETE",
-        headers: createHeaders(true),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/admin/bookings/${bookingId}`,
+        {
+          method: "DELETE",
+          headers: createHeaders(true),
+        }
+      );
       return handleResponse(response);
     } catch (error: any) {
       if (error instanceof APIError) throw error;

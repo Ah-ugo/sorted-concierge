@@ -69,16 +69,16 @@ export default function AdminSidebar() {
       icon: <Package className="h-4 w-4" />,
       label: "Services",
     },
-    {
-      href: "/admin/packages",
-      icon: <BarChart3 className="h-4 w-4" />,
-      label: "Packages",
-    },
-    {
-      href: "/admin/subscriptions",
-      icon: <MessageSquare className="h-4 w-4" />,
-      label: "Subscriptions",
-    },
+    // {
+    //   href: "/admin/packages",
+    //   icon: <BarChart3 className="h-4 w-4" />,
+    //   label: "Packages",
+    // },
+    // {
+    //   href: "/admin/subscriptions",
+    //   icon: <MessageSquare className="h-4 w-4" />,
+    //   label: "Subscriptions",
+    // },
     {
       href: "/admin/crm",
       icon: <Bell className="h-4 w-4" />,
@@ -94,11 +94,11 @@ export default function AdminSidebar() {
       icon: <Settings className="h-4 w-4" />,
       label: "Gallery",
     },
-    {
-      href: "/admin/content",
-      icon: <Settings className="h-4 w-4" />,
-      label: "Content",
-    },
+    // {
+    //   href: "/admin/content",
+    //   icon: <Settings className="h-4 w-4" />,
+    //   label: "Content",
+    // },
     {
       href: "/admin/emergency-alerts",
       icon: <Settings className="h-4 w-4" />,

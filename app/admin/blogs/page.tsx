@@ -850,14 +850,14 @@ export default function BlogsPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
+                  className="border-gold-gradient bg-black text-white text-gold-accent hover:bg-gold-gradient hover:text-black font-lora"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isUploading}
-                  className="gold-gradient text-black hover:opacity-90 font-lora"
+                  className="gold-gradient bg-gold-gradient hover:bg-black hover:text-white text-black hover:opacity-90 font-lora"
                 >
                   Create Blog Post
                 </Button>
@@ -1158,14 +1158,14 @@ export default function BlogsPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="border-gold-accent text-gold-accent hover:bg-gold-accent hover:text-black font-lora"
+                  className="border-gold-accent text-gold-accent bg-black hover:bg-secondary hover:text-black font-lora"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isUploading}
-                  className="gold-gradient text-black hover:opacity-90 font-lora"
+                  className="gold-gradient text-black bg-gold-gradient hover:bg-black hover:text-white hover:opacity-90 font-lora"
                 >
                   Update Blog Post
                 </Button>

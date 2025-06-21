@@ -193,7 +193,7 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="space-y-6 bg-background p-6">
+    <div className="space-y-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -201,7 +201,7 @@ export default function UsersPage() {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
         <h1 className="text-2xl sm:text-3xl font-cinzel font-bold uppercase tracking-widest text-secondary">
-          Members
+          Users Management
         </h1>
       </motion.div>
 
@@ -214,7 +214,7 @@ export default function UsersPage() {
         <Card className="bg-card elegant-shadow border-gold-accent/20">
           <CardHeader className="pb-3">
             <CardTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
-              Manage Members
+              Manage Users
               <motion.div
                 className="h-0.5 bg-gradient-to-r from-transparent via-gold-accent to-transparent mt-2"
                 initial={{ width: 0 }}
@@ -262,7 +262,7 @@ export default function UsersPage() {
                   <TableHeader>
                     <TableRow className="border-gold-accent/20">
                       <TableHead className="font-cinzel uppercase tracking-wider text-secondary">
-                        Member
+                        User
                       </TableHead>
                       <TableHead className="font-cinzel uppercase tracking-wider text-secondary">
                         Email
@@ -312,7 +312,7 @@ export default function UsersPage() {
                                   {user.firstName} {user.lastName}
                                 </div>
                                 <div className="text-xs font-lora text-muted-foreground">
-                                  {user.id}
+                                  {user.id.substring(0, 8)}...
                                 </div>
                               </div>
                             </div>
@@ -369,7 +369,7 @@ export default function UsersPage() {
                                   disabled={isActionLoading}
                                 >
                                   <Edit className="mr-2 h-4 w-4 text-gold-accent" />
-                                  Edit Member
+                                  Edit User
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator className="bg-gold-accent/20" />
                                 <DropdownMenuItem
@@ -382,17 +382,8 @@ export default function UsersPage() {
                                   }
                                   disabled={isActionLoading}
                                 >
-                                  {isActionLoading ? (
-                                    <div className="flex items-center">
-                                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-600 border-t-transparent mr-2"></div>
-                                      Deleting...
-                                    </div>
-                                  ) : (
-                                    <>
-                                      <Trash className="mr-2 h-4 w-4" />
-                                      Delete Member
-                                    </>
-                                  )}
+                                  <Trash className="mr-2 h-4 w-4" />
+                                  Delete User
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -405,7 +396,7 @@ export default function UsersPage() {
                           colSpan={6}
                           className="h-24 text-center font-lora text-muted-foreground italic"
                         >
-                          No members found.
+                          No users found.
                         </TableCell>
                       </TableRow>
                     )}
@@ -417,11 +408,12 @@ export default function UsersPage() {
         </Card>
       </motion.div>
 
+      {/* View Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
         <DialogContent className="max-w-2xl bg-card border-gold-accent/20">
           <DialogHeader>
             <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
-              Member Details
+              User Details
             </DialogTitle>
           </DialogHeader>
           {selectedUser && (
@@ -487,7 +479,7 @@ export default function UsersPage() {
                     <User className="h-4 w-4 text-gold-accent" />
                     <div>
                       <p className="text-sm font-lora text-foreground">
-                        Member ID
+                        User ID
                       </p>
                       <p className="text-sm font-lora text-muted-foreground">
                         {selectedUser.id}
@@ -524,11 +516,12 @@ export default function UsersPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Edit Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent className="max-w-2xl bg-card border-gold-accent/20">
           <DialogHeader>
             <DialogTitle className="text-xl font-cinzel uppercase tracking-widest text-secondary">
-              Edit Member
+              Edit User
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpdateUser} className="space-y-4">
@@ -624,7 +617,7 @@ export default function UsersPage() {
                     Updating...
                   </div>
                 ) : (
-                  "Update Member"
+                  "Update User"
                 )}
               </Button>
             </DialogFooter>
