@@ -35,7 +35,7 @@ export function GoogleAuthButton({
     if (error) {
       toast({
         title: "Authentication Error",
-        description: error,
+        description: decodeURIComponent(error),
         variant: "destructive",
       });
       // Clean up the URL
