@@ -1,6 +1,5 @@
 "use client";
 
-import type React from "react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,6 +41,7 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { apiClient, APIError } from "@/lib/api";
+import { GoogleAuthButton } from "@/components/GoogleAuthButton";
 
 interface ServiceTier {
   id: string;
@@ -926,6 +926,30 @@ export default function TierBookingPage() {
                             "Sign In"
                           )}
                         </Button>
+                      </div>
+
+                      {/* Google Auth Button */}
+                      <div className="mt-4 flex flex-col space-y-4">
+                        <div className="relative">
+                          <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-muted/50" />
+                          </div>
+                          <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-card px-2 text-muted-foreground">
+                              Or continue with
+                            </span>
+                          </div>
+                        </div>
+                        <GoogleAuthButton
+                          variant="outline"
+                          text={
+                            authMode === "login"
+                              ? "Continue with Google"
+                              : "Sign up with Google"
+                          }
+                          isRegister={authMode === "register"}
+                          className="border-muted/50 hover:bg-muted/10 hover:text-white"
+                        />
                       </div>
                     </motion.div>
                   )}

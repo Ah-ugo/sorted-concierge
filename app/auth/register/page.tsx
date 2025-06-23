@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import { apiClient } from "@/lib/api";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { Google } from "@/components/icons";
 
 interface UserCreate {
   firstName: string;
@@ -41,6 +42,7 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -119,6 +121,57 @@ export default function RegisterPage() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    setIsGoogleLoading(true);
+    try {
+      // Open Google auth window
+      const authWindow = window.open(
+        `https://naija-concierge-api.onrender.com/auth/google/login`,
+        "googleAuth",
+        "width=500,height=600"
+      );
+
+      // Listen for message from the popup
+      const messageHandler = (event: MessageEvent) => {
+        if (event.origin !== new URL(process.env.NEXT_PUBLIC_API_URL!).origin) {
+          return;
+        }
+
+        if (event.data.type === "google-auth-success") {
+          const { token, user } = event.data;
+          localStorage.setItem("access_token", token);
+          toast({
+            title: "Registration Successful",
+            description: "Welcome to our platform!",
+          });
+          router.push("/");
+          authWindow?.close();
+          window.removeEventListener("message", messageHandler);
+        }
+
+        if (event.data.type === "google-auth-error") {
+          toast({
+            title: "Registration Error",
+            description: event.data.message,
+            variant: "destructive",
+          });
+          authWindow?.close();
+          window.removeEventListener("message", messageHandler);
+        }
+      };
+
+      window.addEventListener("message", messageHandler);
+    } catch (error) {
+      toast({
+        title: "Registration Error",
+        description: "Failed to register with Google",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
 
@@ -280,7 +333,7 @@ export default function RegisterPage() {
               <Button
                 type="submit"
                 className="w-full h-12 bg-gold-gradient text-black font-normal uppercase tracking-wider hover:bg-secondary-light/80"
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
               >
                 {isLoading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -288,6 +341,35 @@ export default function RegisterPage() {
                   "Sign Up"
                 )}
               </Button>
+
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-muted/50" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-black px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleGoogleSignUp}
+                disabled={isLoading || isGoogleLoading}
+                className="w-full h-12 border-muted/50 text-white hover:bg-card/80 hover:text-white"
+              >
+                {isGoogleLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Google className="mr-2 h-4 w-4" />
+                    Sign up with Google
+                  </>
+                )}
+              </Button>
+
               <p className="text-center text-sm text-muted-foreground font-normal mt-4">
                 Already have an account?{" "}
                 <Link

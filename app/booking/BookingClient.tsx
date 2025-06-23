@@ -36,6 +36,7 @@ import {
   APIError,
   BookingCreate,
 } from "@/lib/api";
+import { GoogleAuthButton } from "@/components/GoogleAuthButton";
 
 export default function Booking() {
   const { toast } = useToast();
@@ -106,7 +107,6 @@ export default function Booking() {
         );
         setServiceCategories(contactOnlyCategories);
 
-        // Auto-select preselected category
         if (preselectedCategoryId) {
           const preselected = contactOnlyCategories.find(
             (cat: ServiceCategory) => cat.id === preselectedCategoryId
@@ -179,7 +179,6 @@ export default function Booking() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Separate login function that doesn't redirect
   const handleLogin = async () => {
     if (!validateStep(1)) return;
 
@@ -194,7 +193,6 @@ export default function Booking() {
       });
 
       if (response?.access_token && response?.user) {
-        // Set auth data without redirecting
         setAuthData(response.access_token, response.user);
         setAuthSuccess("Successfully logged in!");
         setStep(2);
@@ -228,7 +226,6 @@ export default function Booking() {
     }
   };
 
-  // Separate register function that doesn't redirect
   const handleRegister = async () => {
     if (!validateStep(1)) return;
 
@@ -246,7 +243,6 @@ export default function Booking() {
       });
 
       if (response?.access_token && response?.user) {
-        // Set auth data without redirecting
         setAuthData(response.access_token, response.user);
         setAuthSuccess("Account created successfully!");
         setStep(2);
@@ -285,12 +281,10 @@ export default function Booking() {
   };
 
   const handleBooking = async () => {
-    console.log(selectedCategory, "category");
     if (!validateStep(3)) return;
 
     setSubmitting(true);
     try {
-      // Validate required data
       if (!selectedCategory) {
         throw new Error("No service category selected");
       }
@@ -299,7 +293,6 @@ export default function Booking() {
         throw new Error("User not authenticated");
       }
 
-      // Create booking date from selected date and time
       const timeMatch = formData.time.match(/(\d+):(\d+)\s*([AP]M)/);
       if (!timeMatch) throw new Error("Invalid time format");
 
@@ -321,18 +314,6 @@ export default function Booking() {
           )
         : new Date();
 
-      // For category bookings (contact-only), we don't provide serviceId or tierId
-      // Instead, we'll use the Airtable booking endpoint which handles category bookings
-      // const airtableBookingData = {
-      //   clientName: `${user.firstName} ${user.lastName}`,
-      //   email: user.email,
-      //   phone: user.phone || "",
-      //   serviceId: selectedCategory.id, // No specific service for category booking
-      //   tierId: null, // No specific tier for category booking
-      //   bookingDate: bookingDateTime.toISOString(),
-      //   specialRequests: `Category: ${selectedCategory.name}\nPreferences: ${formData.specialRequests}\nContact via: ${formData.contactPreference}`,
-      // };
-
       const bookingData: BookingCreate = {
         userId: user.id,
         serviceId: selectedCategory.id,
@@ -345,8 +326,6 @@ export default function Booking() {
         payment_required: true,
       };
 
-      console.log("Creating category booking via Airtable:", bookingData);
-
       await apiClient.createBooking(bookingData);
 
       toast({
@@ -356,8 +335,6 @@ export default function Booking() {
 
       router.push("/booking/confirmation");
     } catch (error: any) {
-      console.error("Booking error:", error);
-
       let errorMessage = "Booking failed";
 
       if (error instanceof APIError) {
@@ -587,6 +564,19 @@ export default function Booking() {
                             </p>
                           )}
                         </div>
+
+                        <div className="relative my-4">
+                          <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-muted/50" />
+                          </div>
+                          <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-card px-2 text-muted-foreground">
+                              Or continue with
+                            </span>
+                          </div>
+                        </div>
+
+                        <GoogleAuthButton className="border-muted/50 text-white hover:bg-card/80 hover:text-white" />
                       </TabsContent>
 
                       <TabsContent value="register" className="space-y-4">
@@ -704,7 +694,7 @@ export default function Booking() {
                               {showPassword ? (
                                 <EyeOff className="w-4 h-4" />
                               ) : (
-                                <Eye className="w-4 h-4" />
+                                <Eye className="w-4 w-4" />
                               )}
                             </Button>
                           </div>
@@ -740,6 +730,22 @@ export default function Booking() {
                             </p>
                           )}
                         </div>
+
+                        <div className="relative my-4">
+                          <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-muted/50" />
+                          </div>
+                          <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-card px-2 text-muted-foreground">
+                              Or continue with
+                            </span>
+                          </div>
+                        </div>
+
+                        <GoogleAuthButton
+                          isRegister
+                          className="border-muted/50 text-white hover:bg-card/80 hover:text-white"
+                        />
                       </TabsContent>
                     </Tabs>
 

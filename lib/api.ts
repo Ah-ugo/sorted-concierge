@@ -515,6 +515,20 @@ export const apiClient = {
     }
   },
 
+  async registerWithGoogle(googleToken: string): Promise<Token> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register/google`, {
+        method: "POST",
+        headers: createHeaders(false),
+        body: JSON.stringify({ google_token: googleToken }),
+      });
+      return handleResponse(response);
+    } catch (error: any) {
+      if (error instanceof APIError) throw error;
+      throw new APIError(500, error.message || "Google registration failed");
+    }
+  },
+
   async login(credentials: {
     username: string;
     password: string;
@@ -536,6 +550,22 @@ export const apiClient = {
     } catch (error: any) {
       if (error instanceof APIError) throw error;
       throw new APIError(500, error.message || "Login failed");
+    }
+  },
+
+  async loginWithGoogle(googleToken: string): Promise<Token> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/google/callback`, {
+        method: "GET",
+        headers: {
+          ...createHeaders(false),
+          Authorization: `Bearer ${googleToken}`,
+        },
+      });
+      return handleResponse(response);
+    } catch (error: any) {
+      if (error instanceof APIError) throw error;
+      throw new APIError(500, error.message || "Google login failed");
     }
   },
 

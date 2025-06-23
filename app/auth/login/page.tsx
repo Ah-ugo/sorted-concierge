@@ -13,10 +13,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { APIError } from "@/lib/api";
+import { GoogleAuthButton } from "@/components/GoogleAuthButton";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, user } = useAuth();
+  const { login, user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     email: "",
@@ -56,6 +57,55 @@ export default function LoginPage() {
     setErrors(newErrors);
     return valid;
   };
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!validateForm()) return;
+
+  //   setIsLoading(true);
+  //   try {
+  //     const success = await login(formData.email, formData.password);
+  //     if (success) {
+  //       const isAdmin = user?.role === "admin";
+  //       router.push(isAdmin ? "/admin/dashboard" : "/");
+  //       toast({
+  //         title: "Login Successful",
+  //         description: `Welcome back! Redirecting to ${
+  //           isAdmin ? "admin" : "your"
+  //         } dashboard...`,
+  //         variant: "default",
+  //       });
+  //     } else {
+  //       toast({
+  //         title: "Login Failed",
+  //         description: "Invalid email or password",
+  //         variant: "destructive",
+  //       });
+  //     }
+  //   } catch (error: any) {
+  //     let errorMessage = "Login failed";
+  //     if (error instanceof APIError) {
+  //       if (error.status === 422) {
+  //         errorMessage =
+  //           "Validation error: " +
+  //           (Array.isArray(error.details)
+  //             ? error.details.join(", ")
+  //             : error.message);
+  //       } else if (error.status === 401) {
+  //         errorMessage = "Invalid credentials";
+  //       } else {
+  //         errorMessage = error.message;
+  //       }
+  //     }
+  //     toast({
+  //       title: "Login Error",
+  //       description: errorMessage,
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,6 +254,20 @@ export default function LoginPage() {
                 "Sign In"
               )}
             </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-muted/50" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-black px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <GoogleAuthButton className="border-muted/50 text-white hover:bg-card/80 hover:text-white" />
+
             <div className="text-center text-sm text-muted-foreground font-normal">
               Don't have an account?{" "}
               <Link

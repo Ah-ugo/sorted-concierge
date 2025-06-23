@@ -30,6 +30,8 @@ interface AuthContextType {
   uploadProfileImage: (file: File) => Promise<string | null>;
   refreshUser: () => Promise<void>;
   setAuthData: (token: string, userData: User) => void;
+  loginWithGoogle: (token: string) => Promise<boolean>;
+  registerWithGoogle: (token: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -162,6 +164,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async (googleToken: string) => {
+    setIsLoading(true);
+    try {
+      const response = await apiClient.loginWithGoogle(googleToken);
+      if (response?.access_token) {
+        setToken(response.access_token);
+        setUser(response.user);
+        localStorage.setItem("access_token", response.access_token);
+        router.push("/");
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Google login error:", error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const registerWithGoogle = async (googleToken: string) => {
+    setIsLoading(true);
+    try {
+      const response = await apiClient.registerWithGoogle(googleToken);
+      if (response?.access_token) {
+        setToken(response.access_token);
+        setUser(response.user);
+        localStorage.setItem("access_token", response.access_token);
+        router.push("/");
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Google registration error:", error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -223,6 +265,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         uploadProfileImage,
         refreshUser,
         setAuthData,
+        loginWithGoogle,
+        registerWithGoogle,
       }}
     >
       {children}
