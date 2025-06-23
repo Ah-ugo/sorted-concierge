@@ -4,99 +4,94 @@ import { Button } from "./ui/button";
 import { Google } from "./icons";
 import { useAuth } from "@/lib/auth-context";
 import { useToast } from "./ui/use-toast";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-
-interface GoogleAuthButtonProps {
-  variant?: "default" | "outline" | "link";
-  size?: "default" | "sm" | "lg";
-  className?: string;
-  text?: string;
-  isRegister?: boolean;
-}
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 
 export function GoogleAuthButton({
-  variant = "outline",
-  size = "default",
-  className = "",
-  text = "Continue with Google",
   isRegister = false,
-}: GoogleAuthButtonProps) {
+}: {
+  isRegister?: boolean;
+}) {
   const { loginWithGoogle, registerWithGoogle } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleGoogleAuth = async () => {
-    try {
-      const width = 600;
-      const height = 800;
-      const left = window.screenX + (window.outerWidth - width) / 2;
-      const top = window.screenY + (window.outerHeight - height) / 2;
+  const startGoogleAuth = () => {
+    setIsLoading(true);
+    const redirectUri = encodeURIComponent(
+      `${window.location.origin}/auth/callback`
+    );
+    window.location.href = `https://naija-concierge-api.onrender.com/auth/google/login?redirect_uri=${redirectUri}&register=${isRegister}`;
+  };
 
-      const authWindow = window.open(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/google/login`,
-        "googleAuth",
-        `width=${width},height=${height},left=${left},top=${top}`
-      );
+  useEffect(() => {
+    const token = searchParams.get("token");
+    const error = searchParams.get("error");
+    const register = searchParams.get("register") === "true";
 
-      if (!authWindow) {
-        throw new Error(
-          "Popup window blocked. Please allow popups for this site."
-        );
-      }
-
-      const checkWindow = setInterval(() => {
-        if (authWindow.closed) {
-          clearInterval(checkWindow);
-        }
-      }, 500);
-
-      window.addEventListener("message", (event) => {
-        // Verify the origin is your API URL
-        if (event.origin !== process.env.NEXT_PUBLIC_API_URL) {
-          return;
-        }
-
-        if (event.data.type === "google-auth-success") {
-          const { token, user } = event.data;
-          if (isRegister) {
-            registerWithGoogle(token);
-          } else {
-            loginWithGoogle(token);
-          }
-          authWindow.close();
-          router.refresh();
-        }
-
-        if (event.data.type === "google-auth-error") {
-          toast({
-            title: "Authentication Error",
-            description: event.data.message,
-            variant: "destructive",
-          });
-          authWindow.close();
-        }
-      });
-    } catch (error: any) {
+    if (error) {
       toast({
         title: "Authentication Error",
-        description:
-          error.message || "Failed to initiate Google authentication",
+        description: error,
         variant: "destructive",
       });
+      // Clean up the URL
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, "", cleanUrl);
+      setIsLoading(false);
+      return;
     }
-  };
+
+    if (token) {
+      const handleAuth = async () => {
+        try {
+          const userJson = searchParams.get("user");
+          if (!userJson) throw new Error("User data missing");
+
+          const user = JSON.parse(decodeURIComponent(userJson));
+
+          if (register) {
+            await registerWithGoogle(token);
+          } else {
+            await loginWithGoogle(token);
+          }
+
+          // Clean up the URL and redirect
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState({}, "", cleanUrl);
+          router.push("/dashboard");
+        } catch (err: any) {
+          toast({
+            title: "Authentication Error",
+            description: err.message || "Failed to process authentication",
+            variant: "destructive",
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      handleAuth();
+    }
+  }, [searchParams, loginWithGoogle, registerWithGoogle, router, toast]);
 
   return (
     <Button
-      variant={variant}
-      size={size}
-      type="button"
-      onClick={handleGoogleAuth}
-      className={`w-full gap-2 ${className}`}
+      variant="outline"
+      onClick={startGoogleAuth}
+      disabled={isLoading}
+      className="w-full gap-2"
     >
-      <Google className="h-4 w-4" />
-      {text}
+      {isLoading ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <>
+          <Google className="h-4 w-4" />
+          {isRegister ? "Sign up with Google" : "Continue with Google"}
+        </>
+      )}
     </Button>
   );
 }
