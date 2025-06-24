@@ -39,10 +39,14 @@ const About = () => {
           variants={fadeInUp}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="text-6xl md:text-8xl font-bold mb-6">About Sorted</h1>
-          <p className="text-xl md:text-2xl text-muted-foreground font-crimson_pro leading-relaxed">
+          {/* <h1 className="text-6xl md:text-8xl font-bold mb-6">About Sorted</h1> */}
+          {/* <p className="text-xl md:text-2xl text-muted-foreground font-crimson_pro leading-relaxed">
             Born in Lagos. Built for the world.
-          </p>
+          </p> */}
+
+          <h1 className="text-3xl md:text-6xl font-bold mb-6">
+            Born in Lagos. Built for the world.
+          </h1>
         </motion.div>
       </section>
 
@@ -165,7 +169,7 @@ const About = () => {
       </section>
 
       {/* Global Access */}
-      <section className="py-20 bg-primary text-primary-foreground">
+      <section className="pb-10 pt-0 bg-primary text-primary-foreground">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial="hidden"
