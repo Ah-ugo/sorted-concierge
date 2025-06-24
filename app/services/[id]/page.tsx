@@ -410,7 +410,7 @@ export default function ServiceDetail() {
             </Button>
 
             <div className="flex justify-center items-center mb-6">
-              <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-cinzel font-bol text-white ml-4">
+              <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-cinzel font-bold text-white ml-4">
                 {serviceCategory.description}
               </p>
             </div>

@@ -599,7 +599,7 @@ export default function TierBookingPage() {
               Premium Tiers
             </Badge>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-widest text-white mb-4 sm:mb-6">
-              Book a Service Tier
+              Secure Your Experience
             </h1>
             <p className="text-sm sm:text-base md:text-lg font-normal text-muted-foreground mb-6 sm:mb-8">
               Choose from our premium service tiers and enjoy comprehensive
