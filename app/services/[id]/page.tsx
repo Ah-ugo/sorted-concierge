@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,8 @@ import {
   Check,
   Clock,
   Loader2,
+  ChevronRight,
+  ChevronLeft as ChevronLeftIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -97,6 +99,170 @@ const getFeatureIcon = (featureName: string) => {
   return <Star className="w-6 h-6 text-secondary" />;
 };
 
+const ServiceCarousel = ({ services }: { services: ServiceFeature[] }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+
+  const checkScroll = () => {
+    if (containerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1); // -1 to account for rounding errors
+    }
+  };
+
+  const scrollLeft = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({
+        left: -containerRef.current.clientWidth * 0.8,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollBy({
+        left: containerRef.current.clientWidth * 0.8,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("scroll", checkScroll);
+      // Initial check after items are rendered
+      const timeout = setTimeout(checkScroll, 100);
+      return () => {
+        container.removeEventListener("scroll", checkScroll);
+        clearTimeout(timeout);
+      };
+    }
+  }, []);
+
+  return (
+    <div className="relative w-full max-w-6xl mx-auto group">
+      {/* Navigation arrows */}
+      {showLeftArrow && (
+        <motion.button
+          onClick={scrollLeft}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 rounded-full p-2 shadow-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronLeftIcon className="h-8 w-8 text-white" />
+        </motion.button>
+      )}
+
+      {showRightArrow && (
+        <motion.button
+          onClick={scrollRight}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-black/70 hover:bg-black/90 rounded-full p-2 shadow-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronRight className="h-8 w-8 text-white" />
+        </motion.button>
+      )}
+
+      {/* Scrollable container */}
+      <div
+        ref={containerRef}
+        className="flex overflow-x-auto scrollbar-hide gap-6 px-4 py-8"
+        style={{
+          scrollBehavior: "smooth",
+          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
+        {services.map((service) => (
+          <motion.div
+            key={service.id}
+            className="flex-shrink-0 w-[85vw] sm:w-[65vw] md:w-[45vw] lg:w-[35vw] xl:w-[30vw] snap-start"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Card className="bg-card/80 backdrop-blur-sm border-0 elegant-shadow h-full relative overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  {getFeatureIcon(service.name)}
+                  <h3 className="ml-3 text-xl sm:text-2xl font-cinzel font-bold text-white">
+                    {service.name}
+                  </h3>
+                </div>
+
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-secondary text-xs font-crimson_pro uppercase tracking-wider">
+                    Duration: {service.duration}
+                  </span>
+                  {service.isAvailable && (
+                    <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">
+                      Available
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-muted-foreground font-crimson_pro mb-6 leading-relaxed">
+                  {service.description}
+                </p>
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-md font-cinzel font-bold text-white uppercase tracking-wider mb-3">
+                      What's Included
+                    </h4>
+                    <div className="space-y-2">
+                      {service.features.map((feature, featureIndex) => (
+                        <div
+                          key={`${service.id}-feature-${featureIndex}`}
+                          className="flex items-start"
+                        >
+                          <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-2 flex-shrink-0" />
+                          <p className="text-sm font-crimson_pro text-muted-foreground">
+                            {feature}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {service.requirements.length > 0 && (
+                    <div>
+                      <h4 className="text-md font-cinzel font-bold text-white uppercase tracking-wider mb-3">
+                        Requirements
+                      </h4>
+                      <div className="space-y-2">
+                        {service.requirements.map((requirement, reqIndex) => (
+                          <div
+                            key={`${service.id}-req-${reqIndex}`}
+                            className="flex items-start"
+                          >
+                            <Clock className="w-4 h-4 text-secondary mt-1 mr-2 flex-shrink-0" />
+                            <p className="text-sm font-crimson_pro text-muted-foreground">
+                              {requirement}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export default function ServiceDetail() {
   const { id } = useParams<{ id: string }>();
   const [heroRef, heroInView] = useInView({ threshold: 0.3 });
@@ -150,12 +316,10 @@ export default function ServiceDetail() {
   const getBookingRoute = () => {
     if (!serviceCategory) return "/contact";
 
-    // Sorted Lifestyle (tiered) - book individual tiers
     if (serviceCategory.category_type === "tiered") {
       return "/membership-booking";
     }
 
-    // Sorted Heritage/Experience (contact_only) - book entire category
     return "/booking";
   };
 
@@ -163,7 +327,7 @@ export default function ServiceDetail() {
     if (!serviceCategory) return "Contact Us";
 
     if (serviceCategory.category_type === "tiered") {
-      return "Choose Membership Tier";
+      return "Choose Service Tier";
     }
 
     return "Book This Service Category";
@@ -246,15 +410,10 @@ export default function ServiceDetail() {
             </Button>
 
             <div className="flex justify-center items-center mb-6">
-              {/* {getServiceIcon(serviceCategory.name)} */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-cinzel font-bold uppercase tracking-widest text-white ml-4">
-                {serviceCategory.name}
-              </h1>
+              <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-cinzel font-bol text-white ml-4">
+                {serviceCategory.description}
+              </p>
             </div>
-
-            <p className="text-lg sm:text-xl font-crimson_pro text-muted-foreground mb-8 leading-relaxed mx-auto max-w-3xl">
-              {serviceCategory.description}
-            </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button
@@ -290,7 +449,7 @@ export default function ServiceDetail() {
         </div>
       </section>
 
-      {/* Pricing Tiers Section - Only for tiered services (Sorted Lifestyle) */}
+      {/* Pricing Tiers Section */}
       {serviceCategory.category_type === "tiered" &&
         serviceCategory.tiers.length > 0 && (
           <section
@@ -308,99 +467,106 @@ export default function ServiceDetail() {
                 className="text-center mb-16"
               >
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-cinzel font-bold uppercase tracking-widest text-white mb-6">
-                  Membership Tiers
+                  Service Tiers
                 </h2>
                 <p className="text-lg font-crimson_pro text-muted-foreground">
                   Choose the level of service that fits your lifestyle
                 </p>
               </motion.div>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                {serviceCategory.tiers.map((tier, index) => (
-                  <motion.div
-                    key={tier.id}
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={
-                      tiersInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }
-                    }
-                    transition={{
-                      duration: 0.8,
-                      delay: index * 0.2,
-                      ease: "easeOut",
-                    }}
-                    className={`relative ${tier.is_popular ? "scale-105" : ""}`}
-                  >
-                    {tier.is_popular && (
-                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                        <span className="bg-gold-gradient text-black px-4 py-1 rounded-full text-xs font-crimson_pro uppercase tracking-wider">
-                          Most Popular
-                        </span>
-                      </div>
-                    )}
-                    <Card
-                      className={`bg-card border-0 elegant-shadow h-full ${
-                        tier.is_popular ? "border-secondary" : ""
+              <div className="flex justify-center align-middle items-center">
+                <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                  {serviceCategory.tiers.map((tier, index) => (
+                    <motion.div
+                      key={tier.id}
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={
+                        tiersInView
+                          ? { opacity: 1, y: 0 }
+                          : { opacity: 0, y: 40 }
+                      }
+                      transition={{
+                        duration: 0.8,
+                        delay: index * 0.2,
+                        ease: "easeOut",
+                      }}
+                      className={`relative ${
+                        tier.is_popular ? "scale-105" : ""
                       }`}
                     >
-                      <CardContent className="p-8">
-                        <div className="relative aspect-[4/3] mb-6 overflow-hidden rounded-lg">
-                          <Image
-                            src={
-                              tier.image ||
-                              "/placeholder.svg?height=300&width=400"
-                            }
-                            alt={tier.name}
-                            fill
-                            className="object-cover"
-                          />
+                      {tier.is_popular && (
+                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                          <span className="bg-gold-gradient text-black px-4 py-1 rounded-full text-xs font-crimson_pro uppercase tracking-wider">
+                            Most Popular
+                          </span>
                         </div>
+                      )}
+                      <Card
+                        className={`bg-card border-0 elegant-shadow h-full ${
+                          tier.is_popular ? "border-secondary" : ""
+                        }`}
+                      >
+                        <CardContent className="p-8">
+                          <div className="relative aspect-[4/3] mb-6 overflow-hidden rounded-lg">
+                            <Image
+                              src={
+                                tier.image ||
+                                "/placeholder.svg?height=300&width=400"
+                              }
+                              alt={tier.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
 
-                        <h3 className="text-2xl font-cinzel font-bold text-white mb-2 uppercase tracking-wider">
-                          {tier.name}
-                        </h3>
-                        <p className="text-3xl font-cinzel font-bold text-secondary mb-4">
-                          {formatPrice(tier.price)}
-                        </p>
-                        <p className="text-muted-foreground font-crimson_pro mb-6">
-                          {tier.description}
-                        </p>
+                          <h3 className="text-2xl font-cinzel font-bold text-white mb-2 uppercase tracking-wider">
+                            {tier.name}
+                          </h3>
+                          <p className="text-3xl font-cinzel font-bold text-secondary mb-4">
+                            {formatPrice(tier.price)}
+                          </p>
+                          <p className="text-muted-foreground font-crimson_pro mb-6">
+                            {tier.description}
+                          </p>
 
-                        <div className="space-y-3 mb-8">
-                          {tier.features.map((feature, featureIndex) => (
-                            <div
-                              key={featureIndex}
-                              className="flex items-start"
+                          <div className="space-y-3 mb-8">
+                            {tier.features.map((feature, featureIndex) => (
+                              <div
+                                key={featureIndex}
+                                className="flex items-start"
+                              >
+                                <Check className="w-5 h-5 text-secondary mr-3 mt-0.5 flex-shrink-0" />
+                                <p className="text-sm font-crimson_pro text-muted-foreground">
+                                  {feature}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+
+                          <Button
+                            asChild
+                            className={`w-full py-3 font-crimson_pro uppercase tracking-wider ${
+                              tier.is_popular
+                                ? "bg-gold-gradient text-black hover:bg-secondary/80"
+                                : "bg-transparent border border-secondary text-white hover:bg-secondary hover:text-black"
+                            }`}
+                          >
+                            <Link
+                              href={`/membership-booking?tierId=${tier.id}`}
                             >
-                              <Check className="w-5 h-5 text-secondary mr-3 mt-0.5 flex-shrink-0" />
-                              <p className="text-sm font-crimson_pro text-muted-foreground">
-                                {feature}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-
-                        <Button
-                          asChild
-                          className={`w-full py-3 font-crimson_pro uppercase tracking-wider ${
-                            tier.is_popular
-                              ? "bg-gold-gradient text-black hover:bg-secondary/80"
-                              : "bg-transparent border border-secondary text-white hover:bg-secondary hover:text-black"
-                          }`}
-                        >
-                          <Link href={`/membership-booking?tierId=${tier.id}`}>
-                            Select This Tier
-                          </Link>
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
+                              Select This Tier
+                            </Link>
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </div>
           </section>
         )}
 
-      {/* Services Section - For contact-only services (Heritage/Experience) */}
+      {/* Services Section */}
       {serviceCategory.services.length > 0 && (
         <section id="services" className="py-16 md:py-24" ref={sectionsRef}>
           <div className="container mx-auto px-6">
@@ -422,145 +588,125 @@ export default function ServiceDetail() {
               </p>
             </motion.div>
 
-            <div className="space-y-24">
-              {serviceCategory.services.map((service, index) => (
-                <motion.div
-                  key={service.id}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={
-                    sectionsInView
-                      ? { opacity: 1, y: 0 }
-                      : { opacity: 0, y: 40 }
-                  }
-                  transition={{
-                    duration: 0.8,
-                    delay: index * 0.2,
-                    ease: "easeOut",
-                  }}
-                  className={`grid lg:grid-cols-2 gap-12 items-center ${
-                    index % 2 === 1 ? "lg:grid-flow-col-dense" : ""
-                  }`}
-                >
-                  <div className={index % 2 === 1 ? "lg:col-start-2" : ""}>
-                    <div className="relative aspect-[4/3] overflow-hidden rounded-lg elegant-shadow">
-                      <Image
-                        src={
-                          service.image ||
-                          "/placeholder.svg?height=600&width=800"
-                        }
-                        alt={service.name}
-                        fill
-                        className="object-cover transition-transform duration-500 hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                      <div className="absolute bottom-4 left-4">
-                        {getFeatureIcon(service.name)}
+            {serviceCategory.category_type === "contact_only" ? (
+              <ServiceCarousel services={serviceCategory.services} />
+            ) : (
+              <div className="space-y-24">
+                {serviceCategory.services.map((service, index) => (
+                  <motion.div
+                    key={service.id}
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={
+                      sectionsInView
+                        ? { opacity: 1, y: 0 }
+                        : { opacity: 0, y: 40 }
+                    }
+                    transition={{
+                      duration: 0.8,
+                      delay: index * 0.2,
+                      ease: "easeOut",
+                    }}
+                    className={`grid lg:grid-cols-2 gap-12 items-center ${
+                      index % 2 === 1 ? "lg:grid-flow-col-dense" : ""
+                    }`}
+                  >
+                    <div className={index % 2 === 1 ? "lg:col-start-2" : ""}>
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-lg elegant-shadow">
+                        <Image
+                          src={
+                            service.image ||
+                            "/placeholder.svg?height=600&width=800"
+                          }
+                          alt={service.name}
+                          fill
+                          className="object-cover transition-transform duration-500 hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                        <div className="absolute bottom-4 left-4">
+                          {getFeatureIcon(service.name)}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div
-                    className={
-                      index % 2 === 1 ? "lg:col-start-1 lg:row-start-1" : ""
-                    }
-                  >
-                    <Card className="bg-card border-0 elegant-shadow h-full">
-                      <CardContent className="p-8">
-                        <div className="flex items-center mb-6">
-                          {getFeatureIcon(service.name)}
-                          <h3 className="ml-4 text-2xl sm:text-3xl font-cinzel font-bold text-white">
-                            {service.name}
-                          </h3>
-                        </div>
-
-                        <div className="flex items-center gap-4 mb-4">
-                          <span className="text-secondary text-sm font-crimson_pro uppercase tracking-wider">
-                            Duration: {service.duration}
-                          </span>
-                          {service.isAvailable && (
-                            <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">
-                              Available
-                            </span>
-                          )}
-                        </div>
-
-                        <p className="text-muted-foreground font-crimson_pro mb-8 leading-relaxed text-lg">
-                          {service.description}
-                        </p>
-
-                        <div className="grid gap-8">
-                          <div>
-                            <h4 className="text-lg font-cinzel font-bold text-white uppercase tracking-wider mb-4">
-                              What's Included
-                            </h4>
-                            <div className="space-y-3">
-                              {service.features.map((feature, featureIndex) => (
-                                <div
-                                  key={featureIndex}
-                                  className="flex items-start"
-                                >
-                                  <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 flex-shrink-0" />
-                                  <p className="text-sm font-crimson_pro text-muted-foreground">
-                                    {feature}
-                                  </p>
-                                </div>
-                              ))}
-                            </div>
+                    <div
+                      className={
+                        index % 2 === 1 ? "lg:col-start-1 lg:row-start-1" : ""
+                      }
+                    >
+                      <Card className="bg-card border-0 elegant-shadow h-full">
+                        <CardContent className="p-8">
+                          <div className="flex items-center mb-6">
+                            {getFeatureIcon(service.name)}
+                            <h3 className="ml-4 text-2xl sm:text-3xl font-cinzel font-bold text-white">
+                              {service.name}
+                            </h3>
                           </div>
 
-                          {service.requirements.length > 0 && (
+                          <div className="flex items-center gap-4 mb-4">
+                            <span className="text-secondary text-sm font-crimson_pro uppercase tracking-wider">
+                              Duration: {service.duration}
+                            </span>
+                            {service.isAvailable && (
+                              <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded text-xs font-bold uppercase tracking-wider">
+                                Available
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="text-muted-foreground font-crimson_pro mb-8 leading-relaxed text-lg">
+                            {service.description}
+                          </p>
+
+                          <div className="grid gap-8">
                             <div>
                               <h4 className="text-lg font-cinzel font-bold text-white uppercase tracking-wider mb-4">
-                                Requirements
+                                What's Included
                               </h4>
                               <div className="space-y-3">
-                                {service.requirements.map(
-                                  (requirement, reqIndex) => (
+                                {service.features.map(
+                                  (feature, featureIndex) => (
                                     <div
-                                      key={reqIndex}
+                                      key={featureIndex}
                                       className="flex items-start"
                                     >
-                                      <Clock className="w-4 h-4 text-secondary mt-1 mr-3 flex-shrink-0" />
+                                      <div className="w-2 h-2 bg-secondary rounded-full mt-2 mr-3 flex-shrink-0" />
                                       <p className="text-sm font-crimson_pro text-muted-foreground">
-                                        {requirement}
+                                        {feature}
                                       </p>
                                     </div>
                                   )
                                 )}
                               </div>
                             </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
 
-            {/* Book Entire Category Button for contact-only services */}
-            {serviceCategory.category_type === "contact_only" && (
-              <div className="text-center mt-16">
-                <Card className="bg-card/50 border-secondary/20 max-w-2xl mx-auto">
-                  <CardContent className="p-8">
-                    <h3 className="text-2xl font-cinzel font-bold text-white mb-4">
-                      Ready to Experience {serviceCategory.name}?
-                    </h3>
-                    <p className="text-muted-foreground font-crimson_pro mb-6">
-                      Book the entire {serviceCategory.name} experience and our
-                      team will work with you to customize every detail
-                      according to your preferences and requirements.
-                    </p>
-                    <Button
-                      asChild
-                      className="bg-gold-gradient text-black hover:bg-secondary/80 px-8 py-4 font-crimson_pro uppercase tracking-wider"
-                    >
-                      <Link href={`/booking?categoryId=${serviceCategory.id}`}>
-                        Book {serviceCategory.name}
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
+                            {service.requirements.length > 0 && (
+                              <div>
+                                <h4 className="text-lg font-cinzel font-bold text-white uppercase tracking-wider mb-4">
+                                  Requirements
+                                </h4>
+                                <div className="space-y-3">
+                                  {service.requirements.map(
+                                    (requirement, reqIndex) => (
+                                      <div
+                                        key={reqIndex}
+                                        className="flex items-start"
+                                      >
+                                        <Clock className="w-4 h-4 text-secondary mt-1 mr-3 flex-shrink-0" />
+                                        <p className="text-sm font-crimson_pro text-muted-foreground">
+                                          {requirement}
+                                        </p>
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             )}
           </div>
@@ -582,7 +728,7 @@ export default function ServiceDetail() {
             </h2>
             <p className="text-lg font-crimson_pro text-muted-foreground mb-8">
               {serviceCategory.category_type === "tiered"
-                ? "Choose your membership tier and experience luxury lifestyle management at its finest."
+                ? "Choose your service tier and experience luxury lifestyle management at its finest."
                 : "Contact us to discuss your requirements and begin your journey with our exclusive services."}
             </p>
 
