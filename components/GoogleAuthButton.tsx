@@ -22,16 +22,20 @@ export function GoogleAuthButton({
     const apiUrl =
       process.env.NEXT_PUBLIC_API_URL ||
       "https://naija-concierge-api.onrender.com";
-    const redirectUri = encodeURIComponent(
-      `${window.location.origin}/api/auth/callback`
-    );
 
-    window.location.href = `${apiUrl}/api/v1/auth/google/login?redirect_uri=${redirectUri}&register=${isRegister}`;
+    // Use the frontend callback URL (not the backend one)
+    const frontendCallbackUrl = `${window.location.origin}/auth/callback`;
+
+    // Pass the frontend callback URL as a query parameter
+    window.location.href = `${apiUrl}/auth/google/login?frontend_callback=${encodeURIComponent(
+      frontendCallbackUrl
+    )}&register=${isRegister}`;
   };
 
   useEffect(() => {
     const token = searchParams.get("token");
     const error = searchParams.get("error");
+    const user = searchParams.get("user");
 
     if (error) {
       toast({
@@ -42,8 +46,12 @@ export function GoogleAuthButton({
       cleanUrl();
     }
 
-    if (token) {
-      // Handle successful authentication
+    if (token && user) {
+      // Store the token and user data
+      localStorage.setItem("auth_token", token);
+      localStorage.setItem("user", user);
+
+      // Redirect to dashboard
       cleanUrl();
       router.push("/dashboard");
     }
@@ -52,6 +60,7 @@ export function GoogleAuthButton({
       const url = new URL(window.location.href);
       url.searchParams.delete("token");
       url.searchParams.delete("error");
+      url.searchParams.delete("user");
       window.history.replaceState({}, "", url.toString());
       setIsLoading(false);
     }

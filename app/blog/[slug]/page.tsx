@@ -49,6 +49,19 @@ interface BlogPostUI {
   relatedPosts: RelatedPostUI[];
 }
 
+// export async function generateStaticParams() {
+//   try {
+//     const allBlogs = await apiClient.getBlogs({ limit: 1000 });
+//     return allBlogs.map((blog: { slug: string }) => ({
+//       slug: blog.slug,
+//     }));
+//   } catch (error) {
+//     console.error("Error generating static params for blog posts:", error);
+
+//     return [];
+//   }
+// }
+
 export async function generateMetadata({
   params,
 }: {
