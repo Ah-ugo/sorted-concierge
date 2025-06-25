@@ -32,39 +32,39 @@ export function GoogleAuthButton({
     )}&register=${isRegister}`;
   };
 
-  useEffect(() => {
-    const token = searchParams.get("token");
-    const error = searchParams.get("error");
-    const user = searchParams.get("user");
+  //   useEffect(() => {
+  //     const token = searchParams.get("token");
+  //     const error = searchParams.get("error");
+  //     const user = searchParams.get("user");
 
-    if (error) {
-      toast({
-        title: "Authentication Error",
-        description: decodeURIComponent(error),
-        variant: "destructive",
-      });
-      cleanUrl();
-    }
+  //     if (error) {
+  //       toast({
+  //         title: "Authentication Error",
+  //         description: decodeURIComponent(error),
+  //         variant: "destructive",
+  //       });
+  //       cleanUrl();
+  //     }
 
-    if (token && user) {
-      // Store the token and user data
-      localStorage.setItem("auth_token", token);
-      localStorage.setItem("user", user);
+  //     if (token && user) {
+  //       // Store the token and user data
+  //       localStorage.setItem("auth_token", token);
+  //       localStorage.setItem("user", user);
 
-      // Redirect to dashboard
-      cleanUrl();
-      router.push("/dashboard");
-    }
+  //       // Redirect to dashboard
+  //       cleanUrl();
+  //       router.push("/dashboard");
+  //     }
 
-    function cleanUrl() {
-      const url = new URL(window.location.href);
-      url.searchParams.delete("token");
-      url.searchParams.delete("error");
-      url.searchParams.delete("user");
-      window.history.replaceState({}, "", url.toString());
-      setIsLoading(false);
-    }
-  }, [searchParams, router, toast]);
+  //     function cleanUrl() {
+  //       const url = new URL(window.location.href);
+  //       url.searchParams.delete("token");
+  //       url.searchParams.delete("error");
+  //       url.searchParams.delete("user");
+  //       window.history.replaceState({}, "", url.toString());
+  //       setIsLoading(false);
+  //     }
+  //   }, [searchParams, router, toast]);
 
   return (
     <Button

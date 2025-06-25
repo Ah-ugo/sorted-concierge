@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/components/ui/use-toast";
 
+// AuthCallbackPage.tsx
 export default function AuthCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -17,8 +18,18 @@ export default function AuthCallbackPage() {
     const token = searchParams.get("token");
     const userJson = searchParams.get("user");
 
+    // Clean up URL immediately
+    const cleanUrl = () => {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("token");
+      url.searchParams.delete("error");
+      url.searchParams.delete("user");
+      url.searchParams.delete("message");
+      window.history.replaceState({}, "", url.toString());
+    };
+
     if (error) {
-      // Handle error case
+      cleanUrl();
       toast({
         title: "Authentication Error",
         description: message || "Failed to authenticate",
@@ -26,12 +37,13 @@ export default function AuthCallbackPage() {
       });
       router.push("/auth/login");
     } else if (token && userJson) {
-      // Handle success case
       try {
         const user = JSON.parse(userJson);
         setAuthData(token, user);
-        router.push(user.role === "admin" ? "/admin/dashboard" : "/");
+        cleanUrl();
+        router.push(user.role === "admin" ? "/admin/dashboard" : "/profile");
       } catch (e) {
+        cleanUrl();
         toast({
           title: "Authentication Error",
           description: "Failed to process user data",
@@ -40,7 +52,7 @@ export default function AuthCallbackPage() {
         router.push("/auth/login");
       }
     } else {
-      // Invalid state
+      cleanUrl();
       router.push("/auth/login");
     }
   }, [searchParams, router, setAuthData, toast]);
