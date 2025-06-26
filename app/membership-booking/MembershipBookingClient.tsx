@@ -31,7 +31,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
   Loader2,
-  RefreshCw,
   Eye,
   EyeOff,
   CheckCircle,
@@ -48,9 +47,9 @@ interface ServiceTier {
   name: string;
   description: string;
   price: number;
-  convertedPrice: number;
-  currency: string;
-  originalPrice: number;
+  usd_price?: number;
+  eur_price?: number;
+  gbp_price?: number;
   category_id: string;
   image?: string;
   features: string[];
@@ -75,7 +74,7 @@ interface ServiceCategory {
 export default function TierBookingPage() {
   const { toast } = useToast();
   const { user, token, isAuthenticated, setAuthData } = useAuth();
-  const { formatPrice, changeCurrency, currentCurrency, currencies } =
+  const { formatPrice, currentCurrency, currencies, changeCurrency } =
     useCurrency();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -89,10 +88,6 @@ export default function TierBookingPage() {
   const [selectedTier, setSelectedTier] = useState<ServiceTier | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isConverting, setIsConverting] = useState(false);
-  const [exchangeRates, setExchangeRates] = useState<Record<string, number>>(
-    {}
-  );
   const [date, setDate] = useState<Date>();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -109,20 +104,28 @@ export default function TierBookingPage() {
     paymentMethod: "card",
   });
 
-  // Fetch exchange rates
-  const fetchExchangeRates = async () => {
-    try {
-      const response = await fetch(
-        "https://naija-concierge-api.onrender.com/exchange-rates"
-      );
-      const data = await response.json();
-      setExchangeRates(data.rates);
-    } catch (error) {
-      console.error("Failed to fetch exchange rates:", error);
+  const getPriceInCurrency = (
+    tier: ServiceTier,
+    currencyCode: string
+  ): number => {
+    console.log("Current tier prices:", {
+      ngn: tier.price,
+      usd: tier.usd_price,
+      eur: tier.eur_price,
+      gbp: tier.gbp_price,
+    });
+    switch (currencyCode) {
+      case "USD":
+        return tier.usd_price ?? tier.price;
+      case "EUR":
+        return tier.eur_price ?? tier.price;
+      case "GBP":
+        return tier.gbp_price ?? tier.price;
+      default:
+        return tier.price;
     }
   };
 
-  // Fetch categories and tiers
   const fetchCategories = async () => {
     try {
       setIsLoading(true);
@@ -145,63 +148,10 @@ export default function TierBookingPage() {
         (category: ServiceCategory) => category.category_type === "tiered"
       );
 
-      const categoriesWithConvertedPrices = await Promise.all(
-        tieredCategories.map(async (category: ServiceCategory) => {
-          const tiersWithConvertedPrices = await Promise.all(
-            category.tiers.map(async (tier: ServiceTier) => {
-              let convertedPrice = tier.price;
-              if (currentCurrency.code !== "NGN" && token) {
-                try {
-                  const response = await fetch(
-                    `https://naija-concierge-api.onrender.com/service-tiers/${tier.id}/convert?currency=${currentCurrency.code}`,
-                    {
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                      },
-                    }
-                  );
-
-                  if (response.ok) {
-                    const conversionData = await response.json();
-                    convertedPrice = conversionData.convertedPrice;
-                  } else {
-                    const rate =
-                      exchangeRates[currentCurrency.code] ||
-                      currentCurrency.rate;
-                    convertedPrice = tier.price * rate;
-                  }
-                } catch (error) {
-                  console.error(
-                    `Failed to convert price for tier ${tier.id}:`,
-                    error
-                  );
-                  const rate =
-                    exchangeRates[currentCurrency.code] || currentCurrency.rate;
-                  convertedPrice = tier.price * rate;
-                }
-              }
-
-              return {
-                ...tier,
-                convertedPrice: Math.max(convertedPrice, 0.01),
-                currency: currentCurrency.code,
-                originalPrice: tier.price,
-              };
-            })
-          );
-
-          return {
-            ...category,
-            tiers: tiersWithConvertedPrices,
-          };
-        })
-      );
-
-      setCategories(categoriesWithConvertedPrices);
+      setCategories(tieredCategories);
 
       if (preselectedCategoryId) {
-        const preselected = categoriesWithConvertedPrices.find(
+        const preselected = tieredCategories.find(
           (cat: ServiceCategory) => cat.id === preselectedCategoryId
         );
         if (preselected && preselected.tiers.length > 0) {
@@ -223,104 +173,9 @@ export default function TierBookingPage() {
     }
   };
 
-  // Convert prices when currency changes
-  const convertPrices = async () => {
-    if (categories.length === 0 || !token) return;
-
-    setIsConverting(true);
-    try {
-      const updatedCategories = await Promise.all(
-        categories.map(async (category) => {
-          const updatedTiers = await Promise.all(
-            category.tiers.map(async (tier) => {
-              let convertedPrice = tier.originalPrice;
-              if (currentCurrency.code !== "NGN") {
-                try {
-                  const response = await fetch(
-                    `https://naija-concierge-api.onrender.com/service-tiers/${tier.id}/convert?currency=${currentCurrency.code}`,
-                    {
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                      },
-                    }
-                  );
-
-                  if (response.ok) {
-                    const conversionData = await response.json();
-                    convertedPrice = conversionData.convertedPrice;
-                  } else {
-                    const rate =
-                      exchangeRates[currentCurrency.code] ||
-                      currentCurrency.rate;
-                    convertedPrice = tier.originalPrice * rate;
-                  }
-                } catch (error) {
-                  console.error(
-                    `Failed to convert price for tier ${tier.id}:`,
-                    error
-                  );
-                  const rate =
-                    exchangeRates[currentCurrency.code] || currentCurrency.rate;
-                  convertedPrice = tier.originalPrice * rate;
-                }
-              }
-
-              return {
-                ...tier,
-                convertedPrice: Math.max(convertedPrice, 0.01),
-                currency: currentCurrency.code,
-              };
-            })
-          );
-
-          return {
-            ...category,
-            tiers: updatedTiers,
-          };
-        })
-      );
-
-      setCategories(updatedCategories);
-
-      if (selectedTier) {
-        const updatedCategory = updatedCategories.find((cat) =>
-          cat.tiers.some((tier) => tier.id === selectedTier.id)
-        );
-        if (updatedCategory) {
-          const updatedTier = updatedCategory.tiers.find(
-            (tier) => tier.id === selectedTier.id
-          );
-          if (updatedTier) {
-            setSelectedTier(updatedTier);
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Failed to convert prices:", error);
-      toast({
-        title: "Currency Conversion Error",
-        description: "Failed to convert prices. Using fallback rates.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsConverting(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchExchangeRates();
-  }, []);
-
   useEffect(() => {
     fetchCategories();
   }, [token]);
-
-  useEffect(() => {
-    if (categories.length > 0) {
-      convertPrices();
-    }
-  }, [currentCurrency.code]);
 
   useEffect(() => {
     if (formData.tierId && categories.length > 0) {
@@ -531,16 +386,16 @@ export default function TierBookingPage() {
 
       const booking = await response.json();
 
-      if (booking.payment_url) {
-        window.location.href = booking.payment_url;
-      } else {
-        toast({
-          title: "Booking Created",
-          description:
-            "Your booking has been created. Payment link will be provided shortly.",
-        });
-        router.push("/dashboard/bookings");
-      }
+      // if (booking.payment_url) {
+      window.location.href = booking.payment_url;
+      // } else {
+      //   toast({
+      //     title: "Booking Created",
+      //     description:
+      //       "Your booking has been created. Payment link will be provided shortly.",
+      //   });
+      //   router.push("/profile");
+      // }
     } catch (error) {
       console.error("Booking creation failed:", error);
       toast({
@@ -928,7 +783,6 @@ export default function TierBookingPage() {
                         </Button>
                       </div>
 
-                      {/* Google Auth Button */}
                       <div className="mt-4 flex flex-col space-y-4">
                         <div className="relative">
                           <div className="absolute inset-0 flex items-center">
@@ -965,9 +819,6 @@ export default function TierBookingPage() {
                         <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold uppercase tracking-widest text-white">
                           Select Service Tier
                         </h2>
-                        {isConverting && (
-                          <RefreshCw className="h-4 w-4 animate-spin text-secondary-light" />
-                        )}
                       </div>
 
                       <div className="space-y-3 sm:space-y-4">
@@ -986,10 +837,14 @@ export default function TierBookingPage() {
                               <SelectValue placeholder="Select currency" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="NGN">NGN (₦)</SelectItem>
-                              <SelectItem value="USD">USD ($)</SelectItem>
-                              <SelectItem value="EUR">EUR (€)</SelectItem>
-                              <SelectItem value="GBP">GBP (£)</SelectItem>
+                              {currencies.map((currency) => (
+                                <SelectItem
+                                  key={currency.code}
+                                  value={currency.code}
+                                >
+                                  {currency.code} ({currency.symbol})
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         </div>
@@ -1047,122 +902,128 @@ export default function TierBookingPage() {
                               {category.name}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {category.tiers.map((tier) => (
-                                <Card
-                                  key={tier.id}
-                                  className={`border cursor-pointer hover:border-secondary-light/50 transition-colors ${
-                                    formData.tierId === tier.id
-                                      ? "border-secondary-light"
-                                      : "border-muted/50"
-                                  } ${
-                                    !tier.is_available
-                                      ? "opacity-50 cursor-not-allowed"
-                                      : ""
-                                  }`}
-                                  onClick={() => {
-                                    if (tier.is_available) {
-                                      setFormData((prev) => ({
-                                        ...prev,
-                                        tierId: tier.id,
-                                      }));
-                                    }
-                                  }}
-                                >
-                                  <CardContent className="p-4">
-                                    <div className="flex justify-between items-start mb-3">
-                                      <div>
-                                        <h4 className="text-base sm:text-lg font-semibold text-white">
-                                          {tier.name}
-                                        </h4>
-                                        <div className="space-y-1">
-                                          <p className="text-lg sm:text-xl font-bold text-secondary-light">
-                                            {currentCurrency.symbol}
-                                            {tier.convertedPrice.toFixed(2)}
-                                          </p>
-                                          {currentCurrency.code !== "NGN" && (
-                                            <p className="text-xs text-muted-foreground">
-                                              Originally ₦
-                                              {tier.originalPrice.toLocaleString()}
-                                              <br />
-                                              (converted from NGN)
+                              {category.tiers.map((tier) => {
+                                const price = getPriceInCurrency(
+                                  tier,
+                                  currentCurrency.code
+                                );
+                                return (
+                                  <Card
+                                    key={tier.id}
+                                    className={`border cursor-pointer hover:border-secondary-light/50 transition-colors ${
+                                      formData.tierId === tier.id
+                                        ? "border-secondary-light"
+                                        : "border-muted/50"
+                                    } ${
+                                      !tier.is_available
+                                        ? "opacity-50 cursor-not-allowed"
+                                        : ""
+                                    }`}
+                                    onClick={() => {
+                                      if (tier.is_available) {
+                                        setFormData((prev) => ({
+                                          ...prev,
+                                          tierId: tier.id,
+                                        }));
+                                      }
+                                    }}
+                                  >
+                                    <CardContent className="p-4">
+                                      <div className="flex justify-between items-start mb-3">
+                                        <div>
+                                          <h4 className="text-base sm:text-lg font-semibold text-white">
+                                            {tier.name}
+                                          </h4>
+                                          <div className="space-y-1">
+                                            <p className="text-lg sm:text-xl font-bold text-secondary-light">
+                                              {formatPrice(price)}
                                             </p>
-                                          )}
+                                            {currentCurrency.code !== "NGN" && (
+                                              <p className="text-xs text-muted-foreground">
+                                                {tier.usd_price ||
+                                                tier.eur_price ||
+                                                tier.gbp_price
+                                                  ? "Manually set price"
+                                                  : "Using base price (NGN)"}
+                                              </p>
+                                            )}
+                                          </div>
                                         </div>
-                                      </div>
-                                      {tier.is_popular && (
-                                        <Badge className="bg-secondary-light text-black">
-                                          Popular
-                                        </Badge>
-                                      )}
-                                    </div>
-
-                                    <p className="text-xs sm:text-sm font-normal text-muted-foreground mb-3">
-                                      {tier.description}
-                                    </p>
-
-                                    <div className="space-y-2">
-                                      <p className="text-xs font-semibold text-white">
-                                        Features:
-                                      </p>
-                                      <ul className="space-y-1">
-                                        {tier.features
-                                          .slice(0, 3)
-                                          .map((feature, index) => (
-                                            <li
-                                              key={index}
-                                              className="text-xs text-white"
-                                            >
-                                              • {feature}
-                                            </li>
-                                          ))}
-                                        {tier.features.length > 3 && (
-                                          <li className="text-xs text-secondary-light">
-                                            +{tier.features.length - 3} more
-                                            features
-                                          </li>
+                                        {tier.is_popular && (
+                                          <Badge className="bg-secondary-light text-black">
+                                            Popular
+                                          </Badge>
                                         )}
-                                      </ul>
-                                    </div>
+                                      </div>
 
-                                    {tier.services.length > 0 && (
-                                      <div className="mt-3 space-y-2">
+                                      <p className="text-xs sm:text-sm font-normal text-muted-foreground mb-3">
+                                        {tier.description}
+                                      </p>
+
+                                      <div className="space-y-2">
                                         <p className="text-xs font-semibold text-white">
-                                          Included Services:
+                                          Features:
                                         </p>
                                         <ul className="space-y-1">
-                                          {tier.services
-                                            .slice(0, 2)
-                                            .map((service, index) => (
+                                          {tier.features
+                                            .slice(0, 3)
+                                            .map((feature, index) => (
                                               <li
                                                 key={index}
-                                                className="text-xs text-muted-foreground"
+                                                className="text-xs text-white"
                                               >
-                                                • {service.name}
+                                                • {feature}
                                               </li>
                                             ))}
-                                          {tier.services.length > 2 && (
+                                          {tier.features.length > 3 && (
                                             <li className="text-xs text-secondary-light">
-                                              +{tier.services.length - 2} more
-                                              services
+                                              +{tier.features.length - 3} more
+                                              features
                                             </li>
                                           )}
                                         </ul>
                                       </div>
-                                    )}
 
-                                    {!tier.is_available && (
-                                      <div className="mt-3">
-                                        <Badge
-                                          variant="secondary"
-                                          className="text-xs"
-                                        >
-                                          Currently Unavailable
-                                        </Badge>
-                                      </div>
-                                    )}
-                                  </CardContent>
-                                </Card>
-                              ))}
+                                      {tier.services.length > 0 && (
+                                        <div className="mt-3 space-y-2">
+                                          <p className="text-xs font-semibold text-white">
+                                            Included Services:
+                                          </p>
+                                          <ul className="space-y-1">
+                                            {tier.services
+                                              .slice(0, 2)
+                                              .map((service, index) => (
+                                                <li
+                                                  key={index}
+                                                  className="text-xs text-muted-foreground"
+                                                >
+                                                  • {service.name}
+                                                </li>
+                                              ))}
+                                            {tier.services.length > 2 && (
+                                              <li className="text-xs text-secondary-light">
+                                                +{tier.services.length - 2} more
+                                                services
+                                              </li>
+                                            )}
+                                          </ul>
+                                        </div>
+                                      )}
+
+                                      {!tier.is_available && (
+                                        <div className="mt-3">
+                                          <Badge
+                                            variant="secondary"
+                                            className="text-xs"
+                                          >
+                                            Currently Unavailable
+                                          </Badge>
+                                        </div>
+                                      )}
+                                    </CardContent>
+                                  </Card>
+                                );
+                              })}
                             </div>
                           </div>
                         ))}
@@ -1287,13 +1148,22 @@ export default function TierBookingPage() {
                                 </p>
                                 <div>
                                   <p className="text-lg font-bold text-secondary-light">
-                                    {currentCurrency.symbol}
-                                    {selectedTier.convertedPrice.toFixed(2)}
+                                    {formatPrice(
+                                      getPriceInCurrency(
+                                        selectedTier,
+                                        currentCurrency.code
+                                      ),
+                                      currentCurrency.code // Pass currency code to format correctly
+                                    )}
                                   </p>
                                   {currentCurrency.code !== "NGN" && (
                                     <p className="text-xs text-muted-foreground">
-                                      Originally ₦
-                                      {selectedTier.originalPrice.toLocaleString()}
+                                      {selectedTier.usd_price ||
+                                      selectedTier.eur_price ||
+                                      selectedTier.gbp_price
+                                        ? "Fixed price in " +
+                                          currentCurrency.code
+                                        : "Converted from NGN"}
                                     </p>
                                   )}
                                 </div>
@@ -1424,8 +1294,15 @@ export default function TierBookingPage() {
                             </>
                           ) : (
                             `Proceed to Payment (${
-                              currentCurrency.symbol
-                            }${selectedTier?.convertedPrice.toFixed(2)})`
+                              selectedTier
+                                ? formatPrice(
+                                    getPriceInCurrency(
+                                      selectedTier,
+                                      currentCurrency.code
+                                    )
+                                  )
+                                : ""
+                            })`
                           )}
                         </Button>
                       </div>

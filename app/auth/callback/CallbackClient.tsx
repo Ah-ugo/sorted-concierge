@@ -12,13 +12,13 @@ export default function AuthCallbackPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Ensure searchParams are available
     if (!searchParams) return;
 
     const error = searchParams.get("error");
     const message = searchParams.get("message");
     const token = searchParams.get("token");
     const userJson = searchParams.get("user");
+    const originPath = searchParams.get("origin");
 
     const cleanUrl = () => {
       const cleanUrl = new URL(window.location.href);
@@ -26,6 +26,7 @@ export default function AuthCallbackPage() {
       cleanUrl.searchParams.delete("error");
       cleanUrl.searchParams.delete("user");
       cleanUrl.searchParams.delete("message");
+      cleanUrl.searchParams.delete("origin");
       window.history.replaceState({}, "", cleanUrl.toString());
     };
 
@@ -54,9 +55,25 @@ export default function AuthCallbackPage() {
       setAuthData(token, user);
       cleanUrl();
 
-      // Force a hard redirect if router.push isn't working
-      window.location.href =
-        user.role === "admin" ? "/admin/dashboard" : "/profile";
+      // Determine redirect path based on user role and origin
+      let redirectPath = "/profile"; // Default for regular users
+
+      if (user.role === "admin") {
+        redirectPath = "/admin/dashboard";
+      } else if (originPath) {
+        // Check if the origin was a booking-related path
+        const bookingPaths = ["/membership-booking", "/booking"];
+        const shouldStayOnPath = bookingPaths.some((path) =>
+          originPath.includes(path)
+        );
+
+        if (shouldStayOnPath) {
+          redirectPath = originPath;
+        }
+      }
+
+      // Use window.location.href for more reliable redirects
+      window.location.href = redirectPath;
     } catch (e) {
       handleError("Failed to process user data");
     }

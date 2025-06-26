@@ -90,6 +90,9 @@ export interface ServiceTierBase {
   features: string[];
   is_popular: boolean;
   is_available: boolean;
+  usd_price?: number;
+  eur_price?: number;
+  gbp_price?: number;
 }
 
 export interface ServiceTierCreate extends ServiceTierBase {}
@@ -103,6 +106,9 @@ export interface ServiceTierUpdate {
   features?: string[];
   is_popular?: boolean;
   is_available?: boolean;
+  usd_price?: number;
+  eur_price?: number;
+  gbp_price?: number;
 }
 
 export interface ServiceTier extends ServiceTierBase {

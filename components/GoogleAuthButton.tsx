@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { Google } from "./icons";
 import { useToast } from "./ui/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
 export function GoogleAuthButton({
@@ -14,7 +14,6 @@ export function GoogleAuthButton({
 }) {
   const { toast } = useToast();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
 
   const startGoogleAuth = () => {
@@ -23,48 +22,20 @@ export function GoogleAuthButton({
       process.env.NEXT_PUBLIC_API_URL ||
       "https://naija-concierge-api.onrender.com";
 
-    // Use the frontend callback URL (not the backend one)
+    // Get the current path before redirecting to Google auth
+    const currentPath = window.location.pathname;
+
     const frontendCallbackUrl = `${window.location.origin}/auth/callback`;
 
-    // Pass the frontend callback URL as a query parameter
+    // Include the original path in the callback URL
+    const callbackWithPath = `${frontendCallbackUrl}?origin=${encodeURIComponent(
+      currentPath
+    )}`;
+
     window.location.href = `${apiUrl}/auth/google/login?frontend_callback=${encodeURIComponent(
-      frontendCallbackUrl
+      callbackWithPath
     )}&register=${isRegister}`;
   };
-
-  //   useEffect(() => {
-  //     const token = searchParams.get("token");
-  //     const error = searchParams.get("error");
-  //     const user = searchParams.get("user");
-
-  //     if (error) {
-  //       toast({
-  //         title: "Authentication Error",
-  //         description: decodeURIComponent(error),
-  //         variant: "destructive",
-  //       });
-  //       cleanUrl();
-  //     }
-
-  //     if (token && user) {
-  //       // Store the token and user data
-  //       localStorage.setItem("auth_token", token);
-  //       localStorage.setItem("user", user);
-
-  //       // Redirect to dashboard
-  //       cleanUrl();
-  //       router.push("/dashboard");
-  //     }
-
-  //     function cleanUrl() {
-  //       const url = new URL(window.location.href);
-  //       url.searchParams.delete("token");
-  //       url.searchParams.delete("error");
-  //       url.searchParams.delete("user");
-  //       window.history.replaceState({}, "", url.toString());
-  //       setIsLoading(false);
-  //     }
-  //   }, [searchParams, router, toast]);
 
   return (
     <Button
