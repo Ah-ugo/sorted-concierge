@@ -66,7 +66,7 @@ const About = () => {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <img
-                  src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                  src="/image23.jpg"
                   alt="Lagos skyline"
                   className="w-full h-80 object-cover rounded-lg shadow-lg"
                 />

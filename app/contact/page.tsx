@@ -179,7 +179,8 @@ export default function ContactPage() {
                       Our Location
                     </h3>
                     <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                      123 Victoria Island, Lagos, Nigeria
+                      1st Floor, Wings Office Complex, 17A Ozumba Mbadiwe
+                      Avenue, Victoria Island, Lagos.
                     </p>
                   </div>
                 </div>
@@ -198,10 +199,10 @@ export default function ContactPage() {
                       Phone Number
                     </h3>
                     <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                      +234 123 456 7890
+                      +234 803 408 6086
                     </p>
                     <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                      +234 987 654 3210
+                      +234 903 480 3035
                     </p>
                   </div>
                 </div>
@@ -220,10 +221,10 @@ export default function ContactPage() {
                       Email Address
                     </h3>
                     <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                      info@sortedconcierge.com
+                      info@thesortedconcierge.com
                     </p>
                     <p className="text-sm sm:text-base font-lora text-muted-foreground">
-                      support@sortedconcierge.com
+                      emeka@thesortedconcierge.com
                     </p>
                   </div>
                 </div>

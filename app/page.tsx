@@ -378,9 +378,9 @@ export default function Home() {
                       <h3 className="text-xl sm:text-2xl font-cinzel font-bold uppercase tracking-wider text-white mb-2">
                         {item.title}
                       </h3>
-                      <p className="text-sm font-crimson_pro text-white/80 mb-4 line-clamp-2">
+                      {/* <p className="text-sm font-crimson_pro text-white/80 mb-4 line-clamp-2">
                         {item.description}
-                      </p>
+                      </p> */}
                       <Button
                         asChild
                         className="bg-gold-gradient w-full py-3 text-xs sm:text-sm font-crimson_pro uppercase tracking-widest text-black hover:bg-secondary-light/80 transition-all duration-300 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
