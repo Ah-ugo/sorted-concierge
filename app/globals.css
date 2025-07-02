@@ -1,3 +1,5 @@
+/** @format */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -48,7 +50,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-black text-white font-crimson_pro text-base font-normal leading-relaxed;
+    @apply bg-black text-white font-montreal text-base font-normal leading-relaxed;
     background-color: #000000;
     color: #ffffff;
     overflow-x: hidden; /* Prevent horizontal scroll during preloader */
@@ -83,7 +85,7 @@
     position: relative;
   }
   .link-underline::after {
-    content: "";
+    content: '';
     position: absolute;
     bottom: -2px;
     left: 0;
@@ -138,7 +140,7 @@
 
   /* Enhanced texture overlay utilities */
   .texture-overlay {
-    background-image: url("/images/texture-overlay.png");
+    background-image: url('/images/texture-overlay.png');
     background-repeat: repeat;
     background-size: 400px 400px;
     mix-blend-mode: overlay;
@@ -146,7 +148,7 @@
   }
 
   .texture-overlay-soft {
-    background-image: url("/images/texture-overlay.png");
+    background-image: url('/images/texture-overlay.png');
     background-repeat: repeat;
     background-size: 300px 300px;
     mix-blend-mode: soft-light;
